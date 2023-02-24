@@ -130,7 +130,6 @@ class _LoginState extends State<Login> {
                                             const SnackBar(
                                               content: Text('Bienvenido'),
                                               showCloseIcon: true,
-                                              closeIconColor: Colors.white,
                                             ),
                                           );
                                           Navigator.pushReplacement(

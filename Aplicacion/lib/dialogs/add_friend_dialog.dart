@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 final addFriendFormKey = GlobalKey<FormState>();
 
-class AddFriendPage extends StatelessWidget {
-  const AddFriendPage({super.key});
+class AddFriendDialog extends StatelessWidget {
+  const AddFriendDialog({super.key});
 
   @override
   Widget build(BuildContext context) {

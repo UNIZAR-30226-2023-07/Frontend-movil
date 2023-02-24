@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class GamePage extends StatelessWidget {
-  const GamePage({super.key, required this.id});
+class TournamentPage extends StatelessWidget {
+  const TournamentPage({super.key, required this.id});
   final int id;
 
   @override
@@ -11,7 +11,7 @@ class GamePage extends StatelessWidget {
         title: Text('Torneo'),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
+        padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -35,7 +35,7 @@ class GamePage extends StatelessWidget {
               child: ListView.builder(
                 itemCount: 16,
                 itemBuilder: (context, index) {
-                  return ListTile(
+                  return const ListTile(
                     title: Text('adasdasd'),
                   );
                 },

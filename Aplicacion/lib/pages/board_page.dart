@@ -42,6 +42,8 @@ class _BoardPageState extends State<BoardPage>{
           const SizedBox(height: 10,),
           Container(
             height: 100,
+            // width: double.infinity también serviría porque lo que hace es ocupar todo el espacio que puede
+            // no sé cual de los dos es mejor en este caso, pero es otra opción
             width: MediaQuery.of(context).size.width,
             decoration: BoxDecoration(
               gradient: LinearGradient(
