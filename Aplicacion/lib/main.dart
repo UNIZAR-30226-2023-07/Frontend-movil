@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:untitled/pages/board_page.dart';
 import 'dialogs/join_game_dialog.dart';
 import 'dialogs/add_friend_dialog.dart';
 import 'pages/settings_page.dart';
@@ -284,7 +285,12 @@ class _MainPageState extends State<MainPage> {
                           child: Padding(
                             padding: const EdgeInsets.all(10),
                             child: FilledButton(
-                              onPressed: (){},
+                              onPressed: (){
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const BoardPage()),
+                                );
+                              },
                               child: Text('Crear partida'),
                             ),
                           ),
