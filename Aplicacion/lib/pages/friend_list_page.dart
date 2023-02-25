@@ -22,17 +22,15 @@ class _FriendsPageState extends State<FriendsPage> {
                 Text(
                   'Amigo falso',
                   style: TextStyle(
-                    color: Colors.blueGrey,
                     fontSize: 18,
+                    fontWeight: FontWeight.bold
                   ),
                 ),
               ],
             ),
             subtitle: Text('perro'),
-            trailing: Icon(
-              Icons.chat,
-              size: 35,
-              color: Colors.indigoAccent,
+            trailing: Badge(
+              label: Text('1'),
             ),
             onTap: () {},
           );

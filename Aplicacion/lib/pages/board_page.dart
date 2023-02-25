@@ -12,6 +12,9 @@ class _BoardPageState extends State<BoardPage>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Turno de: '),
+      ),
       body: Column(
         children: [
         const SizedBox(height: 10),
@@ -69,10 +72,6 @@ class _BoardPageState extends State<BoardPage>{
             // )
           )
       ]),
-      appBar: AppBar(
-        title: const Text('Turno de: '),
-
-      ),
     );
   }
 }
@@ -81,7 +80,7 @@ class CardView extends StatefulWidget {
   const CardView({super.key});
 
   @override
-  _CardViewState createState() => _CardViewState();
+  State<CardView> createState() => _CardViewState();
 }
 
 

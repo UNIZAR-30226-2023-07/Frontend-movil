@@ -61,5 +61,9 @@ class DarkTheme {
           color: Colors.amber
       ),
     ),
+    badgeTheme: const BadgeThemeData(
+      textColor: Colors.black87,
+      backgroundColor: Colors.indigoAccent,
+    ),
   );
 }

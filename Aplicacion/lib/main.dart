@@ -96,9 +96,9 @@ class _MyHomePageState extends State<MyHomePage> {
       bottomNavigationBar: BottomNavigationBar(
         items: const [
           BottomNavigationBarItem(
-            tooltip: 'Juegos',
+            tooltip: 'Jugar',
             icon: Icon(Icons.games_rounded),
-            label: 'Juegos',
+            label: 'Jugar',
           ),
           BottomNavigationBarItem(
             tooltip: 'Amigos',
@@ -120,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: NavigationRail(
           leading: FloatingActionButton(
             shape: const CircleBorder(
-                side: BorderSide.none,
+              side: BorderSide.none,
             ),
             onPressed: (){},
             child: const Icon(Icons.add),

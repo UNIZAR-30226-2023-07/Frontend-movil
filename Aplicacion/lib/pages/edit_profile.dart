@@ -89,7 +89,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Perfil'),
+        title: const Text('Editar Perfil'),
       ),
       body: SingleChildScrollView(
         child: Column(

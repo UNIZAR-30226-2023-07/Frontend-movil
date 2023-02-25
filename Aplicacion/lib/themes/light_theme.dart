@@ -61,5 +61,9 @@ class LightTheme {
           color: Colors.amber
       ),
     ),
+    badgeTheme: const BadgeThemeData(
+      backgroundColor: Colors.indigoAccent,
+      textColor: Colors.white,
+    ),
   );
 }

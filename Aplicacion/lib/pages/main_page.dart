@@ -73,7 +73,6 @@ class TopSection extends StatelessWidget {
         children: [
           Image.network(
             "https://crehana-blog.imgix.net/media/filer_public/8c/a4/8ca49656-e762-45fc-81e0-948f1e7bc9c3/as-poker.jpeg?auto=format&q=50",
-            fit: BoxFit.fill,
           ),
           Container(
             decoration: BoxDecoration(
@@ -90,19 +89,6 @@ class TopSection extends StatelessWidget {
           ),
           Column(
             children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  gradient: LinearGradient(
-                    begin: FractionalOffset.topCenter,
-                    end: FractionalOffset.bottomCenter,
-                    colors: [
-                      Colors.black.withOpacity(0.0),
-                      Colors.black,
-                    ],
-                  ),
-                ),
-              ),
               Container(
                 margin: const EdgeInsets.all(10),
                 height: 70,
@@ -267,24 +253,35 @@ class RankingTab extends StatelessWidget {
               Text(
                 'Amigo falso',
                 style: TextStyle(
-                  color: Colors.blueGrey,
                   fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ],
           ),
-          trailing: Container(
-            padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 5.0),
-            decoration: const BoxDecoration(
-                color: Colors.amber,
-                borderRadius: BorderRadius.all(Radius.circular(50))
-            ),
-            child: const Text('8000'),
-          ),
+          trailing: const Points(value: 8000),
           onTap: () {},
         );
       },
       separatorBuilder: (context, index) => const Divider(),
+    );
+  }
+}
+
+class Points extends StatelessWidget {
+  const Points({super.key, required this.value});
+
+  final int value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 5.0),
+      decoration: const BoxDecoration(
+          color: Colors.amber,
+          borderRadius: BorderRadius.all(Radius.circular(50))
+      ),
+      child: Text('$value'),
     );
   }
 }
