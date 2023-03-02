@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../dialogs/add_friend_dialog.dart';
+import '../services/open_dialog.dart';
 import '../widgets/circular_border_picture.dart';
 
 class FriendsPage extends StatefulWidget {
@@ -41,15 +42,10 @@ class _FriendsPageState extends State<FriendsPage> {
         backgroundColor: Colors.indigo,
         tooltip: 'Añadir amigo',
         onPressed: () {
-          openDialog();
+          openDialog(context, const AddFriendDialog());
         },
         child: const Icon(Icons.add_rounded, size: 30, color: Colors.white,),
       ),
     );
   }
-
-  Future openDialog() => showDialog(
-      context: context,
-      builder: (context) => AddFriendDialog()
-  );
 }

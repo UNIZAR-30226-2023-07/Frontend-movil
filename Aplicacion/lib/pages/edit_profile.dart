@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import '../services/image_picker.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
@@ -84,6 +84,25 @@ class ProfilePicture extends StatefulWidget {
 
 class _ProfilePictureState extends State<ProfilePicture> {
   File? image;
+
+  pickFromCamera(BuildContext context) async {
+    File? aux;
+    aux = await pickImageFromCamera(context);
+    setState(() {
+      image = aux;
+    });
+    if (context.mounted) Navigator.pop(context);
+  }
+
+  /// Get from Camera
+  pickFromGallery(BuildContext context) async {
+    File? aux;
+    aux = await pickImageFromGallery(context);
+    setState(() {
+      image = aux;
+    });
+    if (context.mounted) Navigator.pop(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -187,46 +206,17 @@ class _ProfilePictureState extends State<ProfilePicture> {
       actions: [
         FilledButton(
           onPressed: () {
-            _pickImageFromGallery();
+            pickFromGallery(context);
           },
           child: const Text('Galería'),
         ),
         FilledButton(
           onPressed: () {
-            _pickImageFromCamera();
+            pickFromCamera(context);
           },
           child: const Text('Cámara'),
         ),
       ],
     ),
   );
-
-  _pickImageFromGallery() async {
-    XFile? pickedFile = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
-      maxWidth: 1800,
-      maxHeight: 1800,
-    );
-    if (pickedFile != null) {
-      setState(() {
-        image = File(pickedFile.path);
-      });
-    }
-    if (context.mounted) Navigator.pop(context);
-  }
-
-  /// Get from Camera
-  _pickImageFromCamera() async {
-    XFile? pickedFile = await ImagePicker().pickImage(
-      source: ImageSource.camera,
-      maxWidth: 1800,
-      maxHeight: 1800,
-    );
-    if (pickedFile != null) {
-      setState(() {
-        image = File(pickedFile.path);
-      });
-    }
-    if (context.mounted) Navigator.pop(context);
-  }
 }

@@ -8,7 +8,7 @@ class TournamentPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Torneo'),
+        title: const Text('Torneo'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),

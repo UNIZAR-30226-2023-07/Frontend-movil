@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:untitled/pages/board_page.dart';
 import '../dialogs/join_game_dialog.dart';
 import '../pages/tournament_page.dart';
+import '../dialogs/create_game_dialog.dart';
 import '../widgets/circular_border_picture.dart';
+import '../services/open_dialog.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -152,10 +153,7 @@ class TopSection extends StatelessWidget {
                     padding: const EdgeInsets.all(10),
                     child: FilledButton(
                       onPressed: (){
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const BoardPage()),
-                        );
+                        openDialog(context, const CreateGameDialog());
                       },
                       child: Text('Crear partida'),
                     ),
