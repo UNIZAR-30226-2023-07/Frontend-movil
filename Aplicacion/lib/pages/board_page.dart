@@ -9,7 +9,7 @@ class Carta {
 }
 
 class BoardPage extends StatefulWidget {
-  const BoardPage({super.key});
+  const BoardPage({Key? key}) : super(key: key);
   @override
   State<BoardPage> createState() => _BoardPageState();
 }
@@ -132,6 +132,7 @@ class _CardViewState extends State<CardView> {
   Suit suit = Suit.spades;
   CardValue value = CardValue.ace;
   final List<Carta> c;
+  List<bool> selected = [];
 
   _CardViewState(this.c);
 
@@ -216,6 +217,9 @@ class _CardViewState extends State<CardView> {
   void initState() {
     super.initState();
     deck = _createDeck(c);
+    for (int i = 0 ; i < deck!.length; i++) {
+      selected.add(false);
+    }
   }
 
   List<PlayingCard> _createDeck(List<Carta> c) {
@@ -239,13 +243,37 @@ class _CardViewState extends State<CardView> {
 
   @override
   Widget build(BuildContext context) {
+
     return Container(
       height: 100,
       color: Colors.white.withOpacity(0),
       child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
-            children: deck!.map((e) => PlayingCardView(card: e, style: myCardStyles)).toList(),
+            children: deck!.asMap().entries.map((entry) {
+              final int index = entry.key;
+              final PlayingCard card = entry.value;
+              return GestureDetector(
+                child: PlayingCardView(
+                  card: card,
+                  style: myCardStyles,
+                  shape: selected[index]
+                      ? RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    side: BorderSide(
+                      color: Colors.lightBlueAccent,
+                      width: 3,
+                    ),
+                  )
+                      : null, // No shape border when not selected
+                ),
+                onTap: () {
+                  setState(() {
+                    selected[index] = !selected[index];
+                  });
+                },
+              );
+            }).toList(),
           ),
         ),
     );
