@@ -16,6 +16,7 @@ class JoinGameDialog extends StatelessWidget {
           keyboardType: TextInputType.text,
           decoration: const InputDecoration(
             hintText: '45tg34g435',
+            border: UnderlineInputBorder(),
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {

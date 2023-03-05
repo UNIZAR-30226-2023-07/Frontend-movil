@@ -64,7 +64,7 @@ class _LoginState extends State<Login> {
                                     decoration: const InputDecoration(
                                       label: Text('Email'),
                                       hintText: 'email@gmail.com',
-                                      prefixIcon: Icon(Icons.person),
+                                      prefixIcon: Icon(Icons.mail),
                                     ),
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {

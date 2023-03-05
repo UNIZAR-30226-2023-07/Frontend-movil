@@ -64,7 +64,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                     decoration: const InputDecoration(
                                       labelText: 'Nickname',
                                       hintText: 'Ismaber',
-                                      prefixIcon: Icon(Icons.trip_origin),
+                                      prefixIcon: Icon(Icons.person),
                                     ),
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
@@ -79,7 +79,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                     decoration: const InputDecoration(
                                       labelText: 'Email',
                                       hintText: 'email@gmail.com',
-                                      prefixIcon: Icon(Icons.person),
+                                      prefixIcon: Icon(Icons.mail),
                                     ),
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
@@ -132,17 +132,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                       const Text('Recordarme'),
                                     ],
                                   ),
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => const ForgotPasswordPage(),
-                                        ),
-                                      );
-                                    },
-                                    child: const Text('¿Olvidaste la contraseña?'),
-                                  ),
                                   const SizedBox(height: 20),
                                   SizedBox(
                                     width: double.infinity,
@@ -165,7 +154,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                       child: const Text('Registrarse'),
                                     ),
                                   ),
-                                  const SizedBox(height: 10),
+                                  const SizedBox(height: 20),
                                   SizedBox(
                                     width: double.infinity,
                                     height: 50,

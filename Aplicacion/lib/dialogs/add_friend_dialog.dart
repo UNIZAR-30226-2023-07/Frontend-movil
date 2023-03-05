@@ -16,6 +16,7 @@ class AddFriendDialog extends StatelessWidget {
           keyboardType: TextInputType.text,
           decoration: const InputDecoration(
             hintText: '#1234',
+            border: UnderlineInputBorder(),
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
