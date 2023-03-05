@@ -7,6 +7,7 @@ import 'pages/profile_page.dart';
 import 'services/local_storage.dart';
 import 'themes/light_theme.dart';
 import 'themes/dark_theme.dart';
+import 'themes/theme_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,23 +15,42 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+
+  @override
+  void initState() {
+    themeManager.addListener(themeListener);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    themeManager.removeListener(themeListener);
+    super.dispose();
+  }
+
+  themeListener() {
+    setState(() {
+
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: SettingsPage.themeNotifier,
-      builder: (context, currentMode, child) {
-        return MaterialApp(
-          title: 'Rabino 7 reinas',
-          debugShowCheckedModeBanner: false,
-          theme: LightTheme.lightTheme,
-          darkTheme: DarkTheme.darkTheme,
-          themeMode: currentMode,
-          home: const Login(),
-        );
-      }
+    return MaterialApp(
+      title: 'Rabino 7 reinas',
+      debugShowCheckedModeBanner: false,
+      theme: lightTheme,
+      darkTheme: darkTheme,
+      themeMode: themeManager.thememode,
+      home: const Login(),
     );
   }
 }

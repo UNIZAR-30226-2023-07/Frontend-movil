@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:untitled/main.dart';
 import 'forgot_password_page.dart';
-import 'register_page.dart';
+import 'login_page.dart';
 
-final _loginKey = GlobalKey<FormState>();
+final _registerKey = GlobalKey<FormState>();
 
-class Login extends StatefulWidget {
-  const Login({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<Login> createState() => _LoginState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginState extends State<Login> {
+class _RegisterPageState extends State<RegisterPage> {
   bool visibility = true;
   Icon ojo = const Icon(Icons.visibility_off);
   bool isChecked = false;
@@ -54,15 +54,30 @@ class _LoginState extends State<Login> {
                             borderRadius: BorderRadius.circular(30),
                           ),
                           child: Form(
-                            key: _loginKey,
+                            key: _registerKey,
                             child: Padding(
                               padding: const EdgeInsets.all(20),
                               child: Column(
                                 children: [
                                   TextFormField(
+                                    keyboardType: TextInputType.text,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Nickname',
+                                      hintText: 'Ismaber',
+                                      prefixIcon: Icon(Icons.trip_origin),
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'El campo es obligatorio';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  const SizedBox(height: 20),
+                                  TextFormField(
                                     keyboardType: TextInputType.emailAddress,
                                     decoration: const InputDecoration(
-                                      label: Text('Email'),
+                                      labelText: 'Email',
                                       hintText: 'email@gmail.com',
                                       prefixIcon: Icon(Icons.person),
                                     ),
@@ -78,7 +93,7 @@ class _LoginState extends State<Login> {
                                     keyboardType: TextInputType.visiblePassword,
                                     obscureText: visibility,
                                     decoration: InputDecoration(
-                                      label: const Text('Contraseña'),
+                                      labelText: 'Contraseña',
                                       hintText: 'contraseña aquí',
                                       prefixIcon: const Icon(Icons.lock),
                                       suffixIcon: IconButton(
@@ -128,13 +143,13 @@ class _LoginState extends State<Login> {
                                     },
                                     child: const Text('¿Olvidaste la contraseña?'),
                                   ),
-                                  const SizedBox(height: 10),
+                                  const SizedBox(height: 20),
                                   SizedBox(
                                     width: double.infinity,
                                     height: 50,
                                     child: FilledButton(
                                       onPressed: () {
-                                        if(_loginKey.currentState!.validate()) {
+                                        if(_registerKey.currentState!.validate()) {
                                           ScaffoldMessenger.of(context).showSnackBar(
                                             const SnackBar(
                                               content: Text('Bienvenido'),
@@ -147,10 +162,10 @@ class _LoginState extends State<Login> {
                                           );
                                         }
                                       },
-                                      child: const Text('Iniciar sesión'),
+                                      child: const Text('Registrarse'),
                                     ),
                                   ),
-                                  const SizedBox(height: 20),
+                                  const SizedBox(height: 10),
                                   SizedBox(
                                     width: double.infinity,
                                     height: 50,
@@ -158,10 +173,10 @@ class _LoginState extends State<Login> {
                                       onPressed: () {
                                         Navigator.pushReplacement(
                                           context,
-                                          MaterialPageRoute(builder: (context) => const RegisterPage()),
+                                          MaterialPageRoute(builder: (context) => const Login()),
                                         );
                                       },
-                                      child: const Text('Registrarse'),
+                                      child: const Text('Iniciar sesión'),
                                     ),
                                   ),
                                   const SizedBox(height: 10),
@@ -174,7 +189,7 @@ class _LoginState extends State<Login> {
                                       ),
                                       SizedBox(width: 5,),
                                       Text(
-                                        'O iniciar sesión con',
+                                        'O registrarse con',
                                         style: TextStyle(
                                           color: Colors.grey,
                                         ),

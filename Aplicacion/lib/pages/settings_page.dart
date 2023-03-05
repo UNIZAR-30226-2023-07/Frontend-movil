@@ -1,22 +1,9 @@
 import 'package:flutter/material.dart';
+import '../themes/theme_manager.dart';
 import '../services/local_storage.dart';
-
-ValueNotifier<ThemeMode> themeNotifierValue() {
-  if (LocalStorage.prefs.getBool('darkMode') != null) {
-    if (LocalStorage.prefs.getBool('darkMode') as bool) {
-      return ValueNotifier(ThemeMode.dark);
-    } else {
-      return ValueNotifier(ThemeMode.light);
-    }
-  } else {
-    return ValueNotifier(ThemeMode.light);
-  }
-}
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
-
-  static final ValueNotifier<ThemeMode> themeNotifier = themeNotifierValue();
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
@@ -24,7 +11,6 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  bool _darkMode = false;
 
   final Icon _muted = const Icon(
     Icons.volume_off,
@@ -73,13 +59,6 @@ class _SettingsPageState extends State<SettingsPage> {
     });
   }
 
-  void setDarkMode() {
-    if (_darkMode) {
-      SettingsPage.themeNotifier.value = ThemeMode.dark;
-    } else {
-      SettingsPage.themeNotifier.value = ThemeMode.light;
-    }
-  }
 
   @override
   void initState() {
@@ -111,9 +90,9 @@ class _SettingsPageState extends State<SettingsPage> {
     if(LocalStorage.prefs.getDouble('oldSoundEffectsValue') != null) {
       _oldSoundEffectsValue = LocalStorage.prefs.getDouble('oldSoundEffectsValue') as double;
     }
-    if(LocalStorage.prefs.getBool('darkMode') != null) {
-      _darkMode = LocalStorage.prefs.getBool('darkMode') as bool;
-    }
+
+    themeManager.addListener(themeListener);
+
     super.initState();
   }
 
@@ -125,8 +104,16 @@ class _SettingsPageState extends State<SettingsPage> {
     LocalStorage.prefs.setDouble('soundEffectsValue', _soundEffectsValue);
     LocalStorage.prefs.setDouble('oldSoundEffectsValue', _oldSoundEffectsValue);
     LocalStorage.prefs.setBool('muteSoundEffects', _muteSoundEffects);
-    LocalStorage.prefs.setBool('darkMode', _darkMode);
+
+    themeManager.addListener(themeListener);
+
     super.dispose();
+  }
+
+  themeListener() {
+    setState(() {
+
+    });
   }
 
   @override
@@ -231,10 +218,9 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
                 const Spacer(),
                 Switch(
-                  value: _darkMode,
+                  value: themeManager.darkMode,
                   onChanged: (bool value) {
-                    _darkMode = value;
-                    setDarkMode();
+                    themeManager.toggleTheme();
                   },
                 ),
               ],
