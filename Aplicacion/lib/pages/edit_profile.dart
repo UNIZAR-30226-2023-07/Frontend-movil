@@ -117,38 +117,38 @@ class _ProfilePictureState extends State<ProfilePicture> {
               height: 300,
               width: double.infinity,
               child: image == null
-                  ? IconButton(
-                padding: const EdgeInsets.all(0),
-                onPressed: () {
-                  openDialog();
-                },
-                iconSize: 300,
-                icon: const Hero(
-                  tag: 'foto',
-                  child: CircleAvatar(
-                    backgroundImage: ResizeImage(
-                      AssetImage('images/pepoclown.jpg'),
-                      width: 300,
-                      height: 300,
+                ? IconButton(
+                  padding: const EdgeInsets.all(0),
+                  onPressed: () {
+                    _openBottomSheet();
+                  },
+                  iconSize: 300,
+                  icon: const Hero(
+                    tag: 'foto',
+                    child: CircleAvatar(
+                      backgroundImage: ResizeImage(
+                        AssetImage('images/pepoclown.jpg'),
+                        width: 300,
+                        height: 300,
+                      ),
+                      radius: 100,
                     ),
-                    radius: 100,
+                  ),
+                )
+                : IconButton(
+                  padding: const EdgeInsets.all(0),
+                  onPressed: () {
+                    _openBottomSheet();
+                  },
+                  iconSize: 300,
+                  icon: Hero(
+                    tag: 'foto',
+                    child: CircleAvatar(
+                      backgroundImage: FileImage(image!),
+                      radius: 100,
+                    ),
                   ),
                 ),
-              )
-                  : IconButton(
-                padding: const EdgeInsets.all(0),
-                onPressed: () {
-                  openDialog();
-                },
-                iconSize: 300,
-                icon: Hero(
-                  tag: 'foto',
-                  child: CircleAvatar(
-                    backgroundImage: FileImage(image!),
-                    radius: 100,
-                  ),
-                ),
-              ),
             ),
             Container(
               width: double.infinity,
@@ -156,13 +156,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Nickname',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  Text( 'Nickname', style: Theme.of(context).textTheme.headlineMedium),
                   TextField(
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
@@ -170,21 +164,22 @@ class _ProfilePictureState extends State<ProfilePicture> {
                       hintText: 'Ismaber',
                     ),
                   ),
-                  Container(
+                  const SizedBox(height: 10,),
+                  const Divider(
                     color: Colors.indigoAccent,
-                    height: 1,
                   ),
-                  const Text(
-                    'Descripción',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  const SizedBox(height: 10,),
+                  Text( 'Descripción', style: Theme.of(context).textTheme.headlineMedium),
+                  const SizedBox(height: 10,),
                   TextField(
                     keyboardType: TextInputType.text,
+                    maxLength: 200,
+                    maxLines: 5,
+                    minLines: 5,
                     decoration: InputDecoration(
-                      border: InputBorder.none,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
                       hintText: 'Sobre mí',
                     ),
                   ),
@@ -197,26 +192,60 @@ class _ProfilePictureState extends State<ProfilePicture> {
     );
   }
 
-  Future openDialog() => showDialog(
+  Future _openBottomSheet() => showModalBottomSheet(
     context: context,
-    builder: (context) => AlertDialog(
-      title: const Text('Elegir foto de perfil'),
-      scrollable: true,
-      actionsAlignment: MainAxisAlignment.spaceAround,
-      actions: [
-        FilledButton(
-          onPressed: () {
-            pickFromGallery(context);
-          },
-          child: const Text('Galería'),
-        ),
-        FilledButton(
-          onPressed: () {
-            pickFromCamera(context);
-          },
-          child: const Text('Cámara'),
-        ),
-      ],
+    builder: (context) => Container(
+      padding: const EdgeInsets.all(10),
+      height: 250,
+      width: double.infinity,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Text('Seleccionar foto', style: Theme.of(context).textTheme.headlineMedium),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Column(
+                children: [
+                  IconButton(
+                    color: Theme.of(context).colorScheme.primary,
+                    iconSize: 40,
+                    icon: const Icon(Icons.photo),
+                    tooltip: 'Galería',
+                    onPressed: () {
+                      pickFromGallery(context);
+                    },
+                  ),
+                  const Text('Galería'),
+                ],
+              ),
+              Column(
+                children: [
+                  IconButton(
+                    color: Theme.of(context).colorScheme.primary,
+                    iconSize: 40,
+                    icon: const Icon(Icons.camera_alt_rounded),
+                    tooltip: 'Cámara',
+                    onPressed: () {
+                      pickFromCamera(context);
+                    },
+                  ),
+                  const Text('Cámara'),
+                ],
+              ),
+            ],
+          ),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Cancelar'),
+            ),
+          ),
+        ],
+      ),
     ),
   );
 }

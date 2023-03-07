@@ -127,13 +127,7 @@ class _SettingsPageState extends State<SettingsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Sonido',
-              style: TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            Text( 'Sonido', style: Theme.of(context).textTheme.headlineMedium),
             Row(
               children: [
                 const SizedBox(
@@ -159,7 +153,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                 ),
                 IconButton(
-                  color: Colors.indigoAccent,
+                  color: Theme.of(context).colorScheme.primary,
                   iconSize: 30,
                   icon: _musicIcon,
                   onPressed: muteUnmuteMusic,
@@ -191,7 +185,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                 ),
                 IconButton(
-                  color: Colors.indigoAccent,
+                  color: Theme.of(context).colorScheme.primary,
                   iconSize: 30,
                   icon: _soundEffectsIcon,
                   onPressed: muteUnmuteSoundEffects,
@@ -203,13 +197,7 @@ class _SettingsPageState extends State<SettingsPage> {
               color: Colors.indigoAccent,
             ),
             const SizedBox(height: 10,),
-            const Text(
-              'Tema',
-              style: TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            Text( 'Tema', style: Theme.of(context).textTheme.headlineMedium),
             Row(
               children: [
                 const SizedBox(
