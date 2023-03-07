@@ -49,7 +49,7 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       theme: lightTheme,
       darkTheme: darkTheme,
-      themeMode: themeManager.thememode,
+      themeMode: themeManager.themeMode,
       home: const Login(),
     );
   }

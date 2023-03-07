@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import '../services/local_storage.dart';
 
 class ThemeManager extends ChangeNotifier {
-  static bool _darkMode = true;
+  static bool _darkMode = false;
   ThemeMode _themeMode = ThemeMode.light;
 
   get darkMode => _darkMode;
-  get thememode => _themeMode;
+  get themeMode => _themeMode;
 
   ThemeManager() {
     if(LocalStorage.prefs.getBool('darkMode') != null) {
@@ -17,7 +17,7 @@ class ThemeManager extends ChangeNotifier {
     }
   }
 
-  toggleTheme () {
+  void toggleTheme () {
     _darkMode = !_darkMode;
     _themeMode = _darkMode? ThemeMode.dark : ThemeMode.light;
     LocalStorage.prefs.setBool('darkMode', _darkMode);
