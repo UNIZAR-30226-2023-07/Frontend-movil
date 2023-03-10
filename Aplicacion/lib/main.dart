@@ -135,6 +135,7 @@ class _MyHomePageState extends State<MyHomePage> {
         onTap: onItemTapped,
         currentIndex: _selectedIndex,
       ),
+      /*
       drawer: Drawer(
         width: 80,
         child: NavigationRail(
@@ -166,6 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
+      */
     );
   }
 }

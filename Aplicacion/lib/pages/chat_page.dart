@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import '../widgets/circular_border_picture.dart';
 
-List<String> msg = [
-
-];
+List<String> msg = [];
 
 class mostrarMensajes extends StatefulWidget {
   @override
@@ -10,8 +9,9 @@ class mostrarMensajes extends StatefulWidget {
 }
 
 class _mostrarMensajesState extends State<mostrarMensajes> {
-  final ScrollController _scrollController = ScrollController();
+  ///final ScrollController _scrollController = ScrollController();
 
+  /*
   @override
   void initState() {
     super.initState();
@@ -23,27 +23,40 @@ class _mostrarMensajesState extends State<mostrarMensajes> {
       );
     });
   }
+  */
 
   @override
   Widget build(BuildContext context) {
-    return Flexible(
-      child: ListView.builder(
-        controller: _scrollController,
-        itemCount: msg.length,
-        addAutomaticKeepAlives: true,
-        itemBuilder: (BuildContext context, int index) {
-          return Container(
-            alignment: Alignment.centerLeft,
-            margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            padding: EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
-              color: Colors.grey,
-              borderRadius: BorderRadius.circular(16.0),
-            ),
-            child: Text(msg[index]),
-          );
-        },
-      ),
+    return ListView.builder(
+      ///controller: _scrollController,
+      itemCount: msg.length,
+      addAutomaticKeepAlives: true,
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                child: CircularBorderPicture(width: 52, height: 52,),
+              ),
+              Expanded(
+                child: Container(
+                  alignment: Alignment.centerLeft,
+                  margin: const EdgeInsets.only(right: 10),
+                  padding: const EdgeInsets.all(15.0),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.secondaryContainer,
+                    borderRadius: BorderRadius.circular(30.0),
+                  ),
+                  child: Text(msg[index]),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
@@ -73,61 +86,55 @@ class _ChatPage extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SizedBox(
-        height: MediaQuery.of(context).size.height,
-        child: ListView.builder(
-          itemCount: 1,
-          itemBuilder: (BuildContext context, int index) {
-            return Container(
-              height: 720,
-              child: Column(
-                children: [
-                  mostrarMensajes(),
-                  Row(
-                    children: [
-                      Flexible(
-                        child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: TextField(
-                            controller: _textController,
-                            decoration: InputDecoration(
-                                hintText: "Introduce tu mensaje aquí",
-                                border: OutlineInputBorder()),
-                            keyboardType: TextInputType.multiline,
-                            maxLines: null,
-                          ),
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          if (_textController.text.isNotEmpty) {
-                            setState(() {
-                              msg.add(_textController.text);
-                              _textController.clear();
-                            });
-                          }
-                          FocusScope.of(context).unfocus();
-                          Navigator.pop(context);
-                          Navigator.push(context,
-                            MaterialPageRoute(
-                                builder: (context) => const ChatPage()),);
-                        },
-                        icon: Icon(Icons.send),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-      ),
       appBar: AppBar(
         title: const Text('Chat'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+      ),
+      body: Column(
+        children: [
+          Expanded(child: mostrarMensajes(),),
+          Row(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                  child: TextField(
+                    controller: _textController,
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.all(15),
+                      hintText: "Introduce tu mensaje aquí",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 0, top: 5, right: 10, bottom: 5),
+                child: FloatingActionButton(
+                  elevation: 0,
+                  tooltip: 'Enviar mensaje',
+                  onPressed: () {
+                    if (_textController.text.isNotEmpty) {
+                      setState(() {
+                        msg.add(_textController.text);
+                        _textController.clear();
+                      });
+                    }
+                    FocusScope.of(context).unfocus();
+                    Navigator.pop(context);
+                    Navigator.push(context,
+                      MaterialPageRoute(
+                          builder: (context) => const ChatPage()),);
+                  },
+                  child: const Icon(Icons.send),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
