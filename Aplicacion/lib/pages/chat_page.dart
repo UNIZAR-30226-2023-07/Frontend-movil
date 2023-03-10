@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import '../widgets/circular_border_picture.dart';
 
-List<String> msg = [];
+List<String> msgs = [];
 
-class mostrarMensajes extends StatefulWidget {
+class ShowMessages extends StatefulWidget {
+  const ShowMessages({super.key, required this.len});
+
+  final List<String> len;
+
   @override
-  _mostrarMensajesState createState() => _mostrarMensajesState();
+  State<ShowMessages> createState() => _ShowMessagesState();
 }
 
-class _mostrarMensajesState extends State<mostrarMensajes> {
+class _ShowMessagesState extends State<ShowMessages> {
   ///final ScrollController _scrollController = ScrollController();
 
   /*
@@ -29,7 +33,7 @@ class _mostrarMensajesState extends State<mostrarMensajes> {
   Widget build(BuildContext context) {
     return ListView.builder(
       ///controller: _scrollController,
-      itemCount: msg.length,
+      itemCount: widget.len.length,
       addAutomaticKeepAlives: true,
       itemBuilder: (context, index) {
         return Padding(
@@ -50,7 +54,7 @@ class _mostrarMensajesState extends State<mostrarMensajes> {
                     color: Theme.of(context).colorScheme.secondaryContainer,
                     borderRadius: BorderRadius.circular(30.0),
                   ),
-                  child: Text(msg[index]),
+                  child: Text(widget.len[index]),
                 ),
               ),
             ],
@@ -70,6 +74,14 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPage extends State<ChatPage> {
   final TextEditingController _textController = TextEditingController();
+
+  List<String> msg = [];
+
+  @override
+  void initState() {
+    msg = msgs;
+    super.initState();
+  }
 
   @override
   Duration get transitionDuration => Duration(milliseconds: 200);
@@ -91,7 +103,7 @@ class _ChatPage extends State<ChatPage> {
       ),
       body: Column(
         children: [
-          Expanded(child: mostrarMensajes(),),
+          Expanded(child: ShowMessages(len: msg),),
           Row(
             children: [
               Expanded(
@@ -119,15 +131,11 @@ class _ChatPage extends State<ChatPage> {
                   onPressed: () {
                     if (_textController.text.isNotEmpty) {
                       setState(() {
-                        msg.add(_textController.text);
+                        msgs.add(_textController.text);
+                        ///msg.add(_textController.text);
                         _textController.clear();
                       });
                     }
-                    FocusScope.of(context).unfocus();
-                    Navigator.pop(context);
-                    Navigator.push(context,
-                      MaterialPageRoute(
-                          builder: (context) => const ChatPage()),);
                   },
                   child: const Icon(Icons.send),
                 ),
