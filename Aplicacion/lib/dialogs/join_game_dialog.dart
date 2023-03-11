@@ -34,7 +34,7 @@ class JoinGameDialog extends StatelessWidget {
             if(joinGameFormKey.currentState!.validate()) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Amigo añadido'),
+                  content: Text('Uniéndose'),
                   showCloseIcon: true,
                 ),
               );

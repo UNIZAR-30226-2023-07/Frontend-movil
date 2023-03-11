@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dialogs/close_session_dialog.dart';
+import 'package:untitled/services/open_dialog.dart';
 import 'pages/main_page.dart';
 import 'pages/friend_list_page.dart';
 import 'pages/settings_page.dart';
@@ -37,9 +39,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   themeListener() {
-    setState(() {
-
-    });
+    if (mounted) setState(() {});
   }
 
   @override
@@ -100,11 +100,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => SettingsPage(),
+                    builder: (context) => const SettingsPage(),
                   ),
                 );
               } else if (menu == 1) {
-
+                openDialog(context, const CloseSessionDialog());
               }
             },
           ),

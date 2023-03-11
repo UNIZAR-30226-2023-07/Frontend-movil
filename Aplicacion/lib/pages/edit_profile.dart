@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:untitled/dialogs/save_changes_dialog.dart';
+import 'package:untitled/services/open_dialog.dart';
 import '../services/image_picker.dart';
 
 class EditProfilePage extends StatefulWidget {
@@ -113,7 +115,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
+            SizedBox(
               height: 300,
               width: double.infinity,
               child: image == null
@@ -157,7 +159,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text( 'Nickname', style: Theme.of(context).textTheme.headlineMedium),
-                  TextField(
+                  const TextField(
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
                       border: InputBorder.none,
@@ -185,6 +187,12 @@ class _ProfilePictureState extends State<ProfilePicture> {
                   ),
                 ],
               ),
+            ),
+            FilledButton(
+                onPressed: () {
+                  openDialog(context, const SaveChangesDialog());
+                },
+                child: const Text('Guardar cambios')
             ),
           ],
         ),

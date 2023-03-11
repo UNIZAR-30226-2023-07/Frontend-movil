@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:untitled/services/audio_manager.dart';
 import '../themes/theme_manager.dart';
 import '../services/local_storage.dart';
 
@@ -19,6 +20,7 @@ class _SettingsPageState extends State<SettingsPage> {
     Icons.volume_up,
   );
 
+  bool _musicOn = false;
   double _musicValue = 100;
   double _oldMusicValue = 100;
   bool _muteMusic = false;
@@ -37,9 +39,11 @@ class _SettingsPageState extends State<SettingsPage> {
         _oldMusicValue = _musicValue;
         _musicValue = 0;
         _musicIcon = _muted;
+        AudioManager.setVolume(0);
       } else {
         _musicValue = _oldMusicValue;
         _musicIcon = _nonMuted;
+        AudioManager.setVolume(_musicValue / 100.0);
       }
     });
   }
@@ -105,15 +109,13 @@ class _SettingsPageState extends State<SettingsPage> {
     LocalStorage.prefs.setDouble('oldSoundEffectsValue', _oldSoundEffectsValue);
     LocalStorage.prefs.setBool('muteSoundEffects', _muteSoundEffects);
 
-    themeManager.addListener(themeListener);
+    themeManager.removeListener(themeListener);
 
     super.dispose();
   }
 
   themeListener() {
-    setState(() {
-
-    });
+    if (mounted) setState(() {});
   }
 
   @override
@@ -145,6 +147,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       if (_muteMusic) {
                         null;
                       } else {
+                        AudioManager.setVolume(value / 100.0);
                         setState(() {
                           _musicValue = value;
                         });
@@ -189,6 +192,21 @@ class _SettingsPageState extends State<SettingsPage> {
                   iconSize: 30,
                   icon: _soundEffectsIcon,
                   onPressed: muteUnmuteSoundEffects,
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                const Text('Play music'),
+                const Spacer(),
+                Switch(
+                    value: _musicOn,
+                    onChanged: (bool value){
+                      AudioManager.toggleSFX(value);
+                      setState(() {
+                        _musicOn = value;
+                      });
+                    }
                 ),
               ],
             ),

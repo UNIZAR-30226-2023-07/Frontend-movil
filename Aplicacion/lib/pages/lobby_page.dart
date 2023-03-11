@@ -17,7 +17,6 @@ class LobbyPage extends StatelessWidget {
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             ListView.separated(
               shrinkWrap: true,
@@ -41,6 +40,7 @@ class LobbyPage extends StatelessWidget {
               },
               separatorBuilder: (context, index) => const Divider(),
             ),
+            const SizedBox(height: 10,),
             Container(
               height: 200,
               decoration: BoxDecoration(
@@ -56,6 +56,7 @@ class LobbyPage extends StatelessWidget {
                 },
               ),
             ),
+            const SizedBox(height: 10,),
             FilledButton(
               onPressed: (){
                 Navigator.push(
@@ -65,6 +66,7 @@ class LobbyPage extends StatelessWidget {
               },
               child: const Text('Empezar partida'),
             ),
+            const SizedBox(height: 10,),
             const Text('work in progress'),
           ],
         ),
