@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:untitled/main.dart';
+import '../services/http_petitions.dart';
 import 'forgot_password_page.dart';
 import 'register_page.dart';
 
@@ -16,6 +17,8 @@ class _LoginState extends State<Login> {
   bool visibility = true;
   Icon ojo = const Icon(Icons.visibility_off);
   bool isChecked = false;
+
+  //String emailError = '';
 
   @override
   Widget build(BuildContext context) {
@@ -65,6 +68,12 @@ class _LoginState extends State<Login> {
                                       label: Text('Email'),
                                       hintText: 'email@gmail.com',
                                       prefixIcon: Icon(Icons.mail),
+                                      /*
+                                      errorText: (emailError.isEmpty)
+                                        ? null
+                                        : emailError,
+
+                                       */
                                     ),
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
@@ -141,6 +150,14 @@ class _LoginState extends State<Login> {
                                               showCloseIcon: true,
                                             ),
                                           );
+                                          /*
+                                          Future<Post> post = fetchPost();
+                                          post.whenComplete(() =>
+                                              setState(() {
+                                                emailError = 'mal';
+                                              })
+                                          );
+                                          */
                                           Navigator.pushReplacement(
                                             context,
                                             MaterialPageRoute(builder: (context) => const MyHomePage()),

@@ -26,6 +26,7 @@ class _SettingsPageState extends State<SettingsPage> {
   bool _muteMusic = false;
   late Icon _musicIcon = _nonMuted;
 
+  bool _soundEffectsOn = false;
   double _soundEffectsValue = 100;
   double _oldSoundEffectsValue = 100;
   bool _muteSoundEffects = false;
@@ -39,11 +40,11 @@ class _SettingsPageState extends State<SettingsPage> {
         _oldMusicValue = _musicValue;
         _musicValue = 0;
         _musicIcon = _muted;
-        AudioManager.setVolume(0);
+        AudioManager.setBGMVolume(0);
       } else {
         _musicValue = _oldMusicValue;
         _musicIcon = _nonMuted;
-        AudioManager.setVolume(_musicValue / 100.0);
+        AudioManager.setBGMVolume(_musicValue / 100.0);
       }
     });
   }
@@ -56,9 +57,11 @@ class _SettingsPageState extends State<SettingsPage> {
         _oldSoundEffectsValue = _soundEffectsValue;
         _soundEffectsValue = 0;
         _soundEffectsIcon = _muted;
+        AudioManager.setSFXVolume(0);
       } else {
         _soundEffectsValue = _oldSoundEffectsValue;
         _soundEffectsIcon = _nonMuted;
+        AudioManager.setSFXVolume(_musicValue / 100.0);
       }
     });
   }
@@ -66,6 +69,9 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   void initState() {
+    if(LocalStorage.prefs.getBool('musicOn') != null) {
+      _musicOn = LocalStorage.prefs.getBool('musicOn') as bool;
+    }
     if(LocalStorage.prefs.getDouble('musicValue') != null) {
       _musicValue = LocalStorage.prefs.getDouble('musicValue') as double;
     }
@@ -79,6 +85,9 @@ class _SettingsPageState extends State<SettingsPage> {
     }
     if(LocalStorage.prefs.getDouble('oldMusicValue') != null) {
       _oldMusicValue = LocalStorage.prefs.getDouble('oldMusicValue') as double;
+    }
+    if(LocalStorage.prefs.getBool('soundEffectsOn') != null) {
+      _soundEffectsOn = LocalStorage.prefs.getBool('soundEffectsOn') as bool;
     }
     if(LocalStorage.prefs.getDouble('soundEffectsValue') != null) {
       _soundEffectsValue = LocalStorage.prefs.getDouble('soundEffectsValue') as double;
@@ -102,9 +111,11 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   void dispose() {
+    LocalStorage.prefs.setBool('musicOn', _musicOn);
     LocalStorage.prefs.setDouble('musicValue', _musicValue);
     LocalStorage.prefs.setDouble('oldMusicValue', _oldMusicValue);
     LocalStorage.prefs.setBool('muteMusic', _muteMusic);
+    LocalStorage.prefs.setBool('soundEffectsOn', _soundEffectsOn);
     LocalStorage.prefs.setDouble('soundEffectsValue', _soundEffectsValue);
     LocalStorage.prefs.setDouble('oldSoundEffectsValue', _oldSoundEffectsValue);
     LocalStorage.prefs.setBool('muteSoundEffects', _muteSoundEffects);
@@ -132,9 +143,23 @@ class _SettingsPageState extends State<SettingsPage> {
             Text( 'Sonido', style: Theme.of(context).textTheme.headlineMedium),
             Row(
               children: [
+                const Text('Música'),
+                const Spacer(),
+                Switch(
+                    value: _musicOn,
+                    onChanged: (bool value){
+                      AudioManager.toggleBGM(value);
+                      setState(() {
+                        _musicOn = value;
+                      });
+                    }
+                ),
+              ],
+            ),
+            Row(
+              children: [
                 const SizedBox(
-                  width: 100,
-                  child: Text('Música'),
+                  child: Text('Volumen'),
                 ),
                 Expanded(
                   child: Slider.adaptive(
@@ -147,7 +172,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       if (_muteMusic) {
                         null;
                       } else {
-                        AudioManager.setVolume(value / 100.0);
+                        AudioManager.setBGMVolume(value / 100.0);
                         setState(() {
                           _musicValue = value;
                         });
@@ -163,11 +188,26 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ],
             ),
+            const SizedBox(height: 10,),
+            Row(
+              children: [
+                const Text('Efectos de sonido'),
+                const Spacer(),
+                Switch(
+                  value: _soundEffectsOn,
+                  onChanged: (bool value){
+                    AudioManager.toggleSFX(value);
+                    setState(() {
+                      _soundEffectsOn = value;
+                    });
+                  }
+                ),
+              ],
+            ),
             Row(
               children: [
                 const SizedBox(
-                  width: 100,
-                  child: Text('Efectos de sonido'),
+                  child: Text('Volumen'),
                 ),
                 Expanded(
                   child: Slider.adaptive(
@@ -180,6 +220,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       if (_muteSoundEffects) {
                         null;
                       } else {
+                        AudioManager.setSFXVolume(value / 100.0);
                         setState(() {
                           _soundEffectsValue = value;
                         });
@@ -192,21 +233,6 @@ class _SettingsPageState extends State<SettingsPage> {
                   iconSize: 30,
                   icon: _soundEffectsIcon,
                   onPressed: muteUnmuteSoundEffects,
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                const Text('Play music'),
-                const Spacer(),
-                Switch(
-                    value: _musicOn,
-                    onChanged: (bool value){
-                      AudioManager.toggleSFX(value);
-                      setState(() {
-                        _musicOn = value;
-                      });
-                    }
                 ),
               ],
             ),
