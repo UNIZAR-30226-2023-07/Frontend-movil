@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:untitled/main.dart';
 import 'forgot_password_page.dart';
 import 'login_page.dart';
+import '../services/http_petitions.dart';
 
 final _registerKey = GlobalKey<FormState>();
 
@@ -16,6 +17,14 @@ class _RegisterPageState extends State<RegisterPage> {
   bool visibility = true;
   Icon ojo = const Icon(Icons.visibility_off);
   bool isChecked = false;
+
+  final TextEditingController _nickname = TextEditingController();
+  final TextEditingController _email = TextEditingController();
+  final TextEditingController _password = TextEditingController();
+
+  String _nicknameError = '';
+  String _emailError = '';
+  String _passwordError = '';
 
   @override
   Widget build(BuildContext context) {
@@ -60,11 +69,15 @@ class _RegisterPageState extends State<RegisterPage> {
                               child: Column(
                                 children: [
                                   TextFormField(
+                                    controller: _nickname,
                                     keyboardType: TextInputType.text,
-                                    decoration: const InputDecoration(
+                                    decoration: InputDecoration(
                                       labelText: 'Nickname',
                                       hintText: 'Ismaber',
-                                      prefixIcon: Icon(Icons.person),
+                                      prefixIcon: const Icon(Icons.person),
+                                      errorText: (_nicknameError.isEmpty)
+                                          ? null
+                                          : _nicknameError,
                                     ),
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
@@ -75,11 +88,15 @@ class _RegisterPageState extends State<RegisterPage> {
                                   ),
                                   const SizedBox(height: 20),
                                   TextFormField(
+                                    controller: _email,
                                     keyboardType: TextInputType.emailAddress,
-                                    decoration: const InputDecoration(
+                                    decoration: InputDecoration(
                                       labelText: 'Email',
                                       hintText: 'email@gmail.com',
                                       prefixIcon: Icon(Icons.mail),
+                                      errorText: (_emailError.isEmpty)
+                                          ? null
+                                          : _emailError,
                                     ),
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
@@ -90,6 +107,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                   ),
                                   const SizedBox(height: 20),
                                   TextFormField(
+                                    controller: _password,
                                     keyboardType: TextInputType.visiblePassword,
                                     obscureText: visibility,
                                     decoration: InputDecoration(
@@ -110,6 +128,9 @@ class _RegisterPageState extends State<RegisterPage> {
                                           });
                                         },
                                       ),
+                                      errorText: (_passwordError.isEmpty)
+                                          ? null
+                                          : _passwordError,
                                     ),
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
@@ -137,18 +158,16 @@ class _RegisterPageState extends State<RegisterPage> {
                                     width: double.infinity,
                                     height: 50,
                                     child: FilledButton(
-                                      onPressed: () {
+                                      onPressed: () async {
                                         if(_registerKey.currentState!.validate()) {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(
-                                              content: Text('Bienvenido'),
-                                              showCloseIcon: true,
-                                            ),
-                                          );
-                                          Navigator.pushReplacement(
-                                            context,
-                                            MaterialPageRoute(builder: (context) => const MyHomePage()),
-                                          );
+                                          bool res = await register(_nickname, _email, _password, context);
+                                          if (!res) {
+                                            setState(() {
+                                              _nicknameError = 'El email o la contraseña no coinciden';
+                                              _emailError = 'El email o la contraseña no coinciden';
+                                              _passwordError = 'El email o la contraseña no coinciden';
+                                            });
+                                          }
                                         }
                                       },
                                       child: const Text('Registrarse'),

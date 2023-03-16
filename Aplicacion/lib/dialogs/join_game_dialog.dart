@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/open_snack_bar.dart';
 
 final joinGameFormKey = GlobalKey<FormState>();
 
@@ -32,12 +33,7 @@ class JoinGameDialog extends StatelessWidget {
         FilledButton(
           onPressed: () {
             if(joinGameFormKey.currentState!.validate()) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Uniéndose'),
-                  showCloseIcon: true,
-                ),
-              );
+              openSnackBar(context, const Text('Uniéndose'));
               Navigator.pop(context);
             }
           },

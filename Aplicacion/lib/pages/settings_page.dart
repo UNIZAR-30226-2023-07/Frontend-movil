@@ -135,7 +135,7 @@ class _SettingsPageState extends State<SettingsPage> {
       appBar: AppBar(
         title: const Text('Ajustes'),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -145,14 +145,14 @@ class _SettingsPageState extends State<SettingsPage> {
               children: [
                 const Text('Música'),
                 const Spacer(),
-                Switch(
-                    value: _musicOn,
-                    onChanged: (bool value){
-                      AudioManager.toggleBGM(value);
-                      setState(() {
-                        _musicOn = value;
-                      });
-                    }
+                Switch.adaptive(
+                  value: _musicOn,
+                  onChanged: (bool value){
+                    AudioManager.toggleBGM(value);
+                    setState(() {
+                      _musicOn = value;
+                    });
+                  }
                 ),
               ],
             ),
@@ -193,7 +193,7 @@ class _SettingsPageState extends State<SettingsPage> {
               children: [
                 const Text('Efectos de sonido'),
                 const Spacer(),
-                Switch(
+                Switch.adaptive(
                   value: _soundEffectsOn,
                   onChanged: (bool value){
                     AudioManager.toggleSFX(value);
@@ -244,12 +244,9 @@ class _SettingsPageState extends State<SettingsPage> {
             Text( 'Tema', style: Theme.of(context).textTheme.headlineMedium),
             Row(
               children: [
-                const SizedBox(
-                  width: 100,
-                  child: Text('Modo oscuro'),
-                ),
+                const Text('Modo oscuro'),
                 const Spacer(),
-                Switch(
+                Switch.adaptive(
                   value: themeManager.darkMode,
                   onChanged: (bool value) {
                     themeManager.toggleTheme();

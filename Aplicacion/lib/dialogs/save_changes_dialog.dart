@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/open_snack_bar.dart';
 
 class SaveChangesDialog extends StatelessWidget {
   const SaveChangesDialog({super.key});
@@ -14,6 +15,7 @@ class SaveChangesDialog extends StatelessWidget {
           onPressed: () {
             Navigator.pop(context);
             Navigator.pop(context);
+            openSnackBar(context, const Text('Cambios guardados'));
           },
           child: const Text('Sí'),
         ),

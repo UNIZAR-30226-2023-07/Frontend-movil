@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../main.dart';
+
+const String _URL = 'https://httpbin.org/ip';
 
 class User {
   final String nickname;
@@ -78,11 +81,17 @@ class Prueba extends StatelessWidget {
   }
 }
 
-Future<void> login(TextEditingController email, TextEditingController password, BuildContext context) async {
-  final response = await http.post(Uri.parse('http://nuestradireccion'),
+Future<bool> login(TextEditingController email, TextEditingController password, BuildContext context) async {
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(builder: (context) => const MyHomePage()),
+  );
+  return true;
+  /*
+  final response = await http.post(Uri.parse(_URL),
     body: ({
       'email': email.text,
-      'password': password.text
+      'contra': password.text
     })
   );
 
@@ -94,20 +103,63 @@ Future<void> login(TextEditingController email, TextEditingController password, 
         showCloseIcon: true,
       ),
     );
-    /*
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => const MyHomePage()),
     );
-    */
   } else {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('mal'),
+        content: Text('Ha habido un error'),
         showCloseIcon: true,
       ),
     );
     // Si esta respuesta no fue OK, lanza un error.
     throw Exception('Failed to load post');
   }
+
+   */
+}
+
+Future<bool> register(TextEditingController nickname, TextEditingController email, TextEditingController password, BuildContext context) async {
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(builder: (context) => const MyHomePage()),
+  );
+  return true;
+  /*
+  final response = await http.post(Uri.parse(_URL),
+      body: ({
+        'nombre': nickname.text,
+        'email': email.text,
+        'contra': password.text
+      })
+  );
+
+  if (response.statusCode == 200) {
+    // Si el servidor devuelve una repuesta OK, parseamos el JSON
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Bienvenido'),
+        showCloseIcon: true,
+      ),
+    );
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const MyHomePage()),
+    );
+    return true;
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Ha habido un error'),
+        showCloseIcon: true,
+      ),
+    );
+    // Si esta respuesta no fue OK, lanza un error.
+    //throw Exception('Failed to load post');
+    return false;
+  }
+  */
+
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:untitled/main.dart';
+import '../services/open_snack_bar.dart';
+import '../widgets/custom_filled_button.dart';
 import '../services/http_petitions.dart';
 import 'forgot_password_page.dart';
 import 'register_page.dart';
@@ -18,7 +20,11 @@ class _LoginState extends State<Login> {
   Icon ojo = const Icon(Icons.visibility_off);
   bool isChecked = false;
 
-  //String emailError = '';
+  final TextEditingController email = TextEditingController();
+  final TextEditingController password = TextEditingController();
+
+  String _emailError = '';
+  String _passwordError = '';
 
   @override
   Widget build(BuildContext context) {
@@ -64,16 +70,13 @@ class _LoginState extends State<Login> {
                                 children: [
                                   TextFormField(
                                     keyboardType: TextInputType.emailAddress,
-                                    decoration: const InputDecoration(
-                                      label: Text('Email'),
+                                    decoration: InputDecoration(
+                                      label: const Text('Email'),
                                       hintText: 'email@gmail.com',
-                                      prefixIcon: Icon(Icons.mail),
-                                      /*
-                                      errorText: (emailError.isEmpty)
+                                      prefixIcon: const Icon(Icons.mail),
+                                      errorText: (_emailError.isEmpty)
                                         ? null
-                                        : emailError,
-
-                                       */
+                                        : _emailError,
                                     ),
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
@@ -104,6 +107,9 @@ class _LoginState extends State<Login> {
                                           });
                                         },
                                       ),
+                                      errorText: (_passwordError.isEmpty)
+                                          ? null
+                                          : _passwordError,
                                     ),
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
@@ -138,34 +144,19 @@ class _LoginState extends State<Login> {
                                     child: const Text('¿Olvidaste la contraseña?'),
                                   ),
                                   const SizedBox(height: 10),
-                                  SizedBox(
-                                    width: double.infinity,
-                                    height: 50,
-                                    child: FilledButton(
-                                      onPressed: () {
-                                        if(_loginKey.currentState!.validate()) {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(
-                                              content: Text('Bienvenido'),
-                                              showCloseIcon: true,
-                                            ),
-                                          );
-                                          /*
-                                          Future<Post> post = fetchPost();
-                                          post.whenComplete(() =>
-                                              setState(() {
-                                                emailError = 'mal';
-                                              })
-                                          );
-                                          */
-                                          Navigator.pushReplacement(
-                                            context,
-                                            MaterialPageRoute(builder: (context) => const MyHomePage()),
-                                          );
+                                  CustomFilledButton(
+                                    onPressed: () async {
+                                      if(_loginKey.currentState!.validate()) {
+                                        bool res = await login(email, password, context);
+                                        if (!res) {
+                                          setState(() {
+                                            _emailError = 'El email o la contraseña no coinciden';
+                                            _passwordError = 'El email o la contraseña no coinciden';
+                                          });
                                         }
-                                      },
-                                      child: const Text('Iniciar sesión'),
-                                    ),
+                                      }
+                                    },
+                                    content: const Text('Iniciar sesión'),
                                   ),
                                   const SizedBox(height: 20),
                                   SizedBox(

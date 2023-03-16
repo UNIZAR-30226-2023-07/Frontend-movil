@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/open_snack_bar.dart';
 
 final addFriendFormKey = GlobalKey<FormState>();
 
@@ -32,12 +33,7 @@ class AddFriendDialog extends StatelessWidget {
         FilledButton(
           onPressed: () {
             if(addFriendFormKey.currentState!.validate()) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Amigo añadido'),
-                  showCloseIcon: true,
-                ),
-              );
+              openSnackBar(context, const Text('Amigo añadido'));
               Navigator.pop(context);
             }
           },

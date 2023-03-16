@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:untitled/dialogs/save_changes_dialog.dart';
 import 'package:untitled/services/open_dialog.dart';
 import '../services/image_picker.dart';
+import '../widgets/custom_filled_button.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
@@ -113,13 +114,15 @@ class _ProfilePictureState extends State<ProfilePicture> {
         title: const Text('Editar Perfil'),
       ),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(
-              height: 300,
-              width: double.infinity,
-              child: image == null
-                ? IconButton(
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            children: [
+              SizedBox(
+                height: 250,
+                width: double.infinity,
+                child: image == null
+                    ? IconButton(
                   padding: const EdgeInsets.all(0),
                   onPressed: () {
                     _openBottomSheet();
@@ -137,7 +140,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
                     ),
                   ),
                 )
-                : IconButton(
+                    : IconButton(
                   padding: const EdgeInsets.all(0),
                   onPressed: () {
                     _openBottomSheet();
@@ -151,50 +154,51 @@ class _ProfilePictureState extends State<ProfilePicture> {
                     ),
                   ),
                 ),
-            ),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text( 'Nickname', style: Theme.of(context).textTheme.headlineMedium),
-                  const TextField(
-                    keyboardType: TextInputType.text,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'Ismaber',
-                    ),
-                  ),
-                  const SizedBox(height: 10,),
-                  const Divider(
-                    color: Colors.indigoAccent,
-                  ),
-                  const SizedBox(height: 10,),
-                  Text( 'Descripción', style: Theme.of(context).textTheme.headlineMedium),
-                  const SizedBox(height: 10,),
-                  TextField(
-                    keyboardType: TextInputType.text,
-                    maxLength: 200,
-                    maxLines: 5,
-                    minLines: 5,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      hintText: 'Sobre mí',
-                    ),
-                  ),
-                ],
               ),
-            ),
-            FilledButton(
+              SizedBox(
+                width: double.infinity,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text( 'Nickname', style: Theme.of(context).textTheme.headlineMedium),
+                    const TextField(
+                      keyboardType: TextInputType.text,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'Ismaber',
+                      ),
+                    ),
+                    const SizedBox(height: 10,),
+                    const Divider(
+                      color: Colors.indigoAccent,
+                    ),
+                    const SizedBox(height: 10,),
+                    Text( 'Descripción', style: Theme.of(context).textTheme.headlineMedium),
+                    const SizedBox(height: 10,),
+                    TextField(
+                      keyboardType: TextInputType.text,
+                      maxLength: 200,
+                      maxLines: 5,
+                      minLines: 5,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        hintText: 'Sobre mí',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10,),
+              CustomFilledButton(
+                content: const Text('Guardar cambios'),
                 onPressed: () {
                   openDialog(context, const SaveChangesDialog());
                 },
-                child: const Text('Guardar cambios')
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -243,14 +247,11 @@ class _ProfilePictureState extends State<ProfilePicture> {
               ),
             ],
           ),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Cancelar'),
-            ),
+          CustomFilledButton(
+            content: const Text('Cancelar'),
+            onPressed: () {
+              Navigator.pop(context);
+            },
           ),
         ],
       ),
