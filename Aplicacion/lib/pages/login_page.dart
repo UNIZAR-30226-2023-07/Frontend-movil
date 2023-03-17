@@ -20,8 +20,8 @@ class _LoginState extends State<Login> {
   Icon ojo = const Icon(Icons.visibility_off);
   bool isChecked = false;
 
-  final TextEditingController email = TextEditingController();
-  final TextEditingController password = TextEditingController();
+  final TextEditingController _email = TextEditingController();
+  final TextEditingController _password = TextEditingController();
 
   String _emailError = '';
   String _passwordError = '';
@@ -69,6 +69,7 @@ class _LoginState extends State<Login> {
                               child: Column(
                                 children: [
                                   TextFormField(
+                                    controller: _email,
                                     keyboardType: TextInputType.emailAddress,
                                     decoration: InputDecoration(
                                       label: const Text('Email'),
@@ -87,6 +88,7 @@ class _LoginState extends State<Login> {
                                   ),
                                   const SizedBox(height: 20),
                                   TextFormField(
+                                    controller: _password,
                                     keyboardType: TextInputType.visiblePassword,
                                     obscureText: visibility,
                                     decoration: InputDecoration(
@@ -147,7 +149,7 @@ class _LoginState extends State<Login> {
                                   CustomFilledButton(
                                     onPressed: () async {
                                       if(_loginKey.currentState!.validate()) {
-                                        bool res = await login(email, password, context);
+                                        bool res = await login(_email, _password, context);
                                         if (!res) {
                                           setState(() {
                                             _emailError = 'El email o la contraseña no coinciden';

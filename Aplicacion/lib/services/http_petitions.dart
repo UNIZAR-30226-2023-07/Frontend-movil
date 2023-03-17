@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../main.dart';
 
-const String _URL = 'https://httpbin.org/ip';
+const String _loginURL = 'http://51.103.94.220:3001/api/auth/login';
+const String _registerURL = 'https://httpbin.org/ip';
+const String _comillas = "\"";
 
 class User {
   final String nickname;
@@ -81,62 +83,8 @@ class Prueba extends StatelessWidget {
   }
 }
 
-Future<bool> login(TextEditingController email, TextEditingController password, BuildContext context) async {
-  Navigator.pushReplacement(
-    context,
-    MaterialPageRoute(builder: (context) => const MyHomePage()),
-  );
-  return true;
-  /*
-  final response = await http.post(Uri.parse(_URL),
-    body: ({
-      'email': email.text,
-      'contra': password.text
-    })
-  );
-
-  if (response.statusCode == 200) {
-    // Si el servidor devuelve una repuesta OK, parseamos el JSON
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Bienvenido'),
-        showCloseIcon: true,
-      ),
-    );
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const MyHomePage()),
-    );
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Ha habido un error'),
-        showCloseIcon: true,
-      ),
-    );
-    // Si esta respuesta no fue OK, lanza un error.
-    throw Exception('Failed to load post');
-  }
-
-   */
-}
-
-Future<bool> register(TextEditingController nickname, TextEditingController email, TextEditingController password, BuildContext context) async {
-  Navigator.pushReplacement(
-    context,
-    MaterialPageRoute(builder: (context) => const MyHomePage()),
-  );
-  return true;
-  /*
-  final response = await http.post(Uri.parse(_URL),
-      body: ({
-        'nombre': nickname.text,
-        'email': email.text,
-        'contra': password.text
-      })
-  );
-
-  if (response.statusCode == 200) {
+bool _actions(http.Response response, BuildContext context) {
+  if (response.statusCode == 200 || response.statusCode == 202) {
     // Si el servidor devuelve una repuesta OK, parseamos el JSON
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -156,10 +104,31 @@ Future<bool> register(TextEditingController nickname, TextEditingController emai
         showCloseIcon: true,
       ),
     );
-    // Si esta respuesta no fue OK, lanza un error.
-    //throw Exception('Failed to load post');
     return false;
   }
-  */
+}
 
+Future<bool> login(TextEditingController email, TextEditingController password, BuildContext context) async {
+  String e = _comillas + email.text + _comillas;
+  String p = _comillas + password.text + _comillas;
+  final json = '{"email": $e, "contra": $p}';
+
+  final response = await http.post(Uri.parse(_loginURL), body: json);
+
+  print(response.statusCode);
+
+  return _actions(response, context);
+}
+
+Future<bool> register(TextEditingController nickname, TextEditingController email, TextEditingController password, BuildContext context) async {
+  String n = _comillas + nickname.text + _comillas;
+  String e = _comillas + email.text + _comillas;
+  String p = _comillas + password.text + _comillas;
+  final json = '{"nombre": $n, "email": $e, "contra": $p}';
+
+  final response = await http.post(Uri.parse(_registerURL), body: json);
+
+  print(response.statusCode);
+
+  return _actions(response, context);
 }
