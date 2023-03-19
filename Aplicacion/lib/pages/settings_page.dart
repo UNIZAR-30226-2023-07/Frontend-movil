@@ -69,6 +69,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   void initState() {
+    super.initState();
+
     if(LocalStorage.prefs.getBool('musicOn') != null) {
       _musicOn = LocalStorage.prefs.getBool('musicOn') as bool;
     }
@@ -106,7 +108,6 @@ class _SettingsPageState extends State<SettingsPage> {
 
     themeManager.addListener(themeListener);
 
-    super.initState();
   }
 
   @override

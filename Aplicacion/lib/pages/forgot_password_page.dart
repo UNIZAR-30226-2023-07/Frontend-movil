@@ -3,8 +3,28 @@ import 'login_page.dart';
 
 final _passwordKey = GlobalKey<FormState>();
 
-class ForgotPasswordPage extends StatelessWidget {
+
+class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
+
+  @override
+  State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
+}
+
+class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
+
+  bool _passwordVisibility = true;
+  Icon _passwordEye = const Icon(Icons.visibility_off);
+  bool _repeatPasswordVisibility = true;
+  Icon _repeatPasswordEye = const Icon(Icons.visibility_off);
+  bool isChecked = false;
+
+  final TextEditingController _email = TextEditingController();
+  final TextEditingController _password = TextEditingController();
+  final TextEditingController _repeatPassword = TextEditingController();
+
+  String _emailError = '';
+  String _passwordError = '';
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +57,7 @@ class ForgotPasswordPage extends StatelessWidget {
                           ),
                         ),
                         Container(
-                          margin: const EdgeInsets.all(40),
+                          margin: const EdgeInsets.all(30),
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.background,
                             borderRadius: BorderRadius.circular(30),
@@ -48,18 +68,93 @@ class ForgotPasswordPage extends StatelessWidget {
                               padding: const EdgeInsets.all(20),
                               child: Column(
                                 children: [
-                                  const Text('Introduce el correo asociado a a la cuenta en la que quieres cambiar la contraseña'),
+                                  const Text('Introduce el correo asociado a la cuenta en la que quieres cambiar la contraseña'),
                                   const SizedBox(height: 20,),
                                   TextFormField(
                                     keyboardType: TextInputType.emailAddress,
-                                    decoration: const InputDecoration(
+                                    decoration: InputDecoration(
                                       labelText: 'Email',
                                       hintText: 'email@gmail.com',
-                                      prefixIcon: Icon(Icons.person),
+                                      prefixIcon: const Icon(Icons.person),
+                                      errorText: (_emailError.isEmpty)
+                                          ? null
+                                          : _emailError,
                                     ),
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
                                         return 'El campo es obligatorio';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  const SizedBox(height: 20),
+                                  TextFormField(
+                                    controller: _password,
+                                    keyboardType: TextInputType.visiblePassword,
+                                    obscureText: _passwordVisibility,
+                                    decoration: InputDecoration(
+                                      labelText: 'Nueva contraseña',
+                                      hintText: 'contraseña aquí',
+                                      prefixIcon: const Icon(Icons.lock),
+                                      suffixIcon: IconButton(
+                                        icon: _passwordEye,
+                                        onPressed: () {
+                                          setState(() {
+                                            if (_passwordVisibility) {
+                                              _passwordVisibility = false;
+                                              _passwordEye = const Icon(Icons.visibility);
+                                            } else {
+                                              _passwordVisibility = true;
+                                              _passwordEye = const Icon(Icons.visibility_off);
+                                            }
+                                          });
+                                        },
+                                      ),
+                                      errorText: (_passwordError.isEmpty)
+                                          ? null
+                                          : _passwordError,
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'El campo es obligatorio';
+                                      } else if (value != _repeatPassword.text) {
+                                        return 'Las contraseñas no coinciden';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  const SizedBox(height: 20),
+                                  TextFormField(
+                                    controller: _repeatPassword,
+                                    keyboardType: TextInputType.visiblePassword,
+                                    obscureText: _repeatPasswordVisibility,
+                                    decoration: InputDecoration(
+                                      labelText: 'Confirmar contraseña',
+                                      hintText: 'contraseña aquí',
+                                      prefixIcon: const Icon(Icons.lock),
+                                      suffixIcon: IconButton(
+                                        icon: _repeatPasswordEye,
+                                        onPressed: () {
+                                          setState(() {
+                                            if (_repeatPasswordVisibility) {
+                                              _repeatPasswordVisibility = false;
+                                              _repeatPasswordEye = const Icon(Icons.visibility);
+                                            } else {
+                                              _repeatPasswordVisibility = true;
+                                              _repeatPasswordEye = const Icon(Icons.visibility_off);
+                                            }
+                                          });
+                                        },
+                                      ),
+                                      errorText: (_passwordError.isEmpty)
+                                          ? null
+                                          : _passwordError,
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'El campo es obligatorio';
+                                      } else if (value != _password.text) {
+                                        return 'Las contraseñas no coinciden';
                                       }
                                       return null;
                                     },
@@ -69,11 +164,10 @@ class ForgotPasswordPage extends StatelessWidget {
                                     width: double.infinity,
                                     height: 50,
                                     child: FilledButton(
-                                      onPressed: () {
-                                        Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(builder: (context) => const Login()),
-                                        );
+                                      onPressed: () async {
+                                        if(_passwordKey.currentState!.validate()) {
+                                          Navigator.pop(context);
+                                        }
                                       },
                                       child: const Text('Enviar'),
                                     ),

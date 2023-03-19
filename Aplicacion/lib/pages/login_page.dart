@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:untitled/main.dart';
-import '../services/open_snack_bar.dart';
 import '../widgets/custom_filled_button.dart';
 import '../services/http_petitions.dart';
+import '../services/local_storage.dart';
 import 'forgot_password_page.dart';
 import 'register_page.dart';
 
@@ -18,13 +17,22 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   bool visibility = true;
   Icon ojo = const Icon(Icons.visibility_off);
-  bool isChecked = false;
+  bool rememberMe = false;
 
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
 
   String _emailError = '';
   String _passwordError = '';
+
+  @override
+  void initState() {
+    super.initState();
+
+    if(LocalStorage.prefs.getBool('rememberMe') != null) {
+      rememberMe = LocalStorage.prefs.getBool('rememberMe') as bool;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +65,7 @@ class _LoginState extends State<Login> {
                           ),
                         ),
                         Container(
-                          margin: const EdgeInsets.all(40),
+                          margin: const EdgeInsets.all(30),
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.background,
                             borderRadius: BorderRadius.circular(30),
@@ -124,10 +132,11 @@ class _LoginState extends State<Login> {
                                     children: [
                                       Checkbox(
                                         checkColor: Colors.white,
-                                        value: isChecked,
+                                        value: rememberMe,
                                         onChanged: (bool? value) {
                                           setState(() {
-                                            isChecked = value!;
+                                            rememberMe = value!;
+                                            LocalStorage.prefs.setBool('rememberMe', rememberMe);
                                           });
                                         },
                                       ),
@@ -149,7 +158,7 @@ class _LoginState extends State<Login> {
                                   CustomFilledButton(
                                     onPressed: () async {
                                       if(_loginKey.currentState!.validate()) {
-                                        bool res = await login(_email, _password, context);
+                                        bool res = await login(_email.text, _password.text, context);
                                         if (!res) {
                                           setState(() {
                                             _emailError = 'El email o la contraseña no coinciden';

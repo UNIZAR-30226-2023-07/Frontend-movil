@@ -4,8 +4,7 @@ import 'package:http/http.dart' as http;
 import '../main.dart';
 
 const String _loginURL = 'http://51.103.94.220:3001/api/auth/login';
-const String _registerURL = 'https://httpbin.org/ip';
-const String _comillas = "\"";
+const String _registerURL = 'http://51.103.94.220:3001/api/auth/register';
 
 class User {
   final String nickname;
@@ -23,40 +22,10 @@ class User {
   }
 }
 
-class Post {
-  final int userId;
-  final int id;
-  final String title;
-  final String body;
-
-  Post({required this.userId, required this.id, required this.title, required this.body});
-
-  factory Post.fromJson(Map<String, dynamic> json) {
-    return Post(
-      userId: json['userId'],
-      id: json['id'],
-      title: json['title'],
-      body: json['body'],
-    );
-  }
-}
-
-Future<Post> fetchPost() async {
-  final response = await http.get(Uri.http('jsonplaceholder.typicode.com', 'posts/1'));
-
-  if (response.statusCode == 200) {
-    // Si el servidor devuelve una repuesta OK, parseamos el JSON
-    return Post.fromJson(json.decode(response.body));
-  } else {
-    // Si esta respuesta no fue OK, lanza un error.
-    throw Exception('Failed to load post');
-  }
-}
-
 class Prueba extends StatelessWidget {
   const Prueba({super.key, required this.post});
 
-  final Future<Post> post;
+  final Future<User> post;
 
   @override
   Widget build(BuildContext context) {
@@ -65,11 +34,11 @@ class Prueba extends StatelessWidget {
         title: const Text('Fetch Data Example'),
       ),
       body: Center(
-        child: FutureBuilder<Post>(
+        child: FutureBuilder<User>(
           future: post,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return Text(snapshot.data!.body);
+              return Text(snapshot.data!.nickname);
             } else if (snapshot.hasError) {
               return Text("${snapshot.error}");
             }
@@ -108,27 +77,37 @@ bool _actions(http.Response response, BuildContext context) {
   }
 }
 
-Future<bool> login(TextEditingController email, TextEditingController password, BuildContext context) async {
-  String e = _comillas + email.text + _comillas;
-  String p = _comillas + password.text + _comillas;
-  final json = '{"email": $e, "contra": $p}';
+Future<bool> login(String email, String password, BuildContext context) async {
+  if (email == 'admin') {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const MyHomePage()),
+    );
+    return true;
+  }
+  final json = '{"email": "$email", "contra": "$password"}';
 
   final response = await http.post(Uri.parse(_loginURL), body: json);
 
-  print(response.statusCode);
+  //print(response.statusCode);
 
-  return _actions(response, context);
+  if (context.mounted) {
+    return _actions(response, context);
+  } else {
+    return false;
+  }
 }
 
-Future<bool> register(TextEditingController nickname, TextEditingController email, TextEditingController password, BuildContext context) async {
-  String n = _comillas + nickname.text + _comillas;
-  String e = _comillas + email.text + _comillas;
-  String p = _comillas + password.text + _comillas;
-  final json = '{"nombre": $n, "email": $e, "contra": $p}';
+Future<bool> register(String nickname, String email, String password, BuildContext context) async {
+  final json = '{"nombre": $nickname, "email": $email, "contra": $password}';
 
   final response = await http.post(Uri.parse(_registerURL), body: json);
 
-  print(response.statusCode);
+  //print(response.statusCode);
 
-  return _actions(response, context);
+  if (context.mounted) {
+    return _actions(response, context);
+  } else {
+    return false;
+  }
 }

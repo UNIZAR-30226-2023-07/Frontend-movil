@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:untitled/main.dart';
-import 'forgot_password_page.dart';
 import 'login_page.dart';
 import '../services/http_petitions.dart';
 
@@ -14,13 +12,15 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  bool visibility = true;
-  Icon ojo = const Icon(Icons.visibility_off);
-  bool isChecked = false;
+  bool _passwordVisibility = true;
+  Icon _passwordEye = const Icon(Icons.visibility_off);
+  bool _repeatPasswordVisibility = true;
+  Icon _repeatPasswordEye = const Icon(Icons.visibility_off);
 
   final TextEditingController _nickname = TextEditingController();
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
+  final TextEditingController _repeatPassword = TextEditingController();
 
   String _nicknameError = '';
   String _emailError = '';
@@ -57,7 +57,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           ),
                         ),
                         Container(
-                          margin: const EdgeInsets.all(40),
+                          margin: const EdgeInsets.all(30),
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.background,
                             borderRadius: BorderRadius.circular(30),
@@ -93,7 +93,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                     decoration: InputDecoration(
                                       labelText: 'Email',
                                       hintText: 'email@gmail.com',
-                                      prefixIcon: Icon(Icons.mail),
+                                      prefixIcon: const Icon(Icons.mail),
                                       errorText: (_emailError.isEmpty)
                                           ? null
                                           : _emailError,
@@ -109,21 +109,21 @@ class _RegisterPageState extends State<RegisterPage> {
                                   TextFormField(
                                     controller: _password,
                                     keyboardType: TextInputType.visiblePassword,
-                                    obscureText: visibility,
+                                    obscureText: _passwordVisibility,
                                     decoration: InputDecoration(
                                       labelText: 'Contraseña',
                                       hintText: 'contraseña aquí',
                                       prefixIcon: const Icon(Icons.lock),
                                       suffixIcon: IconButton(
-                                        icon: ojo,
+                                        icon: _passwordEye,
                                         onPressed: () {
                                           setState(() {
-                                            if (visibility) {
-                                              visibility = false;
-                                              ojo = const Icon(Icons.visibility);
+                                            if (_passwordVisibility) {
+                                              _passwordVisibility = false;
+                                              _passwordEye = const Icon(Icons.visibility);
                                             } else {
-                                              visibility = true;
-                                              ojo = const Icon(Icons.visibility_off);
+                                              _passwordVisibility = true;
+                                              _passwordEye = const Icon(Icons.visibility_off);
                                             }
                                           });
                                         },
@@ -135,32 +135,56 @@ class _RegisterPageState extends State<RegisterPage> {
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
                                         return 'El campo es obligatorio';
+                                      } else if (value != _repeatPassword.text) {
+                                        return 'Las contraseñas no coinciden';
                                       }
                                       return null;
                                     },
                                   ),
-                                  Row(
-                                    children: [
-                                      Checkbox(
-                                        checkColor: Colors.white,
-                                        value: isChecked,
-                                        onChanged: (bool? value) {
+                                  const SizedBox(height: 20),
+                                  TextFormField(
+                                    controller: _repeatPassword,
+                                    keyboardType: TextInputType.visiblePassword,
+                                    obscureText: _repeatPasswordVisibility,
+                                    decoration: InputDecoration(
+                                      labelText: 'Confirmar contraseña',
+                                      hintText: 'contraseña aquí',
+                                      prefixIcon: const Icon(Icons.lock),
+                                      suffixIcon: IconButton(
+                                        icon: _repeatPasswordEye,
+                                        onPressed: () {
                                           setState(() {
-                                            isChecked = value!;
+                                            if (_repeatPasswordVisibility) {
+                                              _repeatPasswordVisibility = false;
+                                              _repeatPasswordEye = const Icon(Icons.visibility);
+                                            } else {
+                                              _repeatPasswordVisibility = true;
+                                              _repeatPasswordEye = const Icon(Icons.visibility_off);
+                                            }
                                           });
                                         },
                                       ),
-                                      const Text('Recordarme'),
-                                    ],
+                                      errorText: (_passwordError.isEmpty)
+                                          ? null
+                                          : _passwordError,
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'El campo es obligatorio';
+                                      } else if (value != _password.text) {
+                                        return 'Las contraseñas no coinciden';
+                                      }
+                                      return null;
+                                    },
                                   ),
-                                  const SizedBox(height: 20),
+                                  const SizedBox(height: 40),
                                   SizedBox(
                                     width: double.infinity,
                                     height: 50,
                                     child: FilledButton(
                                       onPressed: () async {
                                         if(_registerKey.currentState!.validate()) {
-                                          bool res = await register(_nickname, _email, _password, context);
+                                          bool res = await register(_nickname.text, _email.text, _password.text, context);
                                           if (!res) {
                                             setState(() {
                                               _nicknameError = 'El email o la contraseña no coinciden';
