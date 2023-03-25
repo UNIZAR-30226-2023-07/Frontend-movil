@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:playing_cards/playing_cards.dart';
+import 'package:untitled/dialogs/pause_game_dialog.dart';
 import '../pages/chat_page.dart';
+import '../widgets/circular_border_picture.dart';
 
 List<int> CSelecion= [];
 
@@ -67,90 +69,60 @@ class _BoardPageState extends State<BoardPage>{
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return WillPopScope(
+        onWillPop: () async {
+          showDialog(
+              context: context,
+              builder: (context) => const PauseGameDialog()
+          );
+      return true;
+    },
+    child: Scaffold(
       body: Container(
-       height: 800,
-       child: Column(
-        children: [
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            const SizedBox(width: 20,),
-            Container(
-              height: 100,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: FractionalOffset.topCenter,
-                  end: FractionalOffset.bottomCenter,
-                  colors: [
-                    Colors.brown.shade900,
-                    Colors.brown,
-                    Colors.brown.shade900
-                  ],
-                ),
-              ),
-              child: GestureDetector(
-                onTap: (){
-                  if(modo == 1) {
-                    PlayingCard temp = PlayingCard(Suit.hearts, CardValue.two);
-                    Carta t2 = Carta(
-                        ValueToNum(temp.value), SuitToPalo(temp.suit));
-                    cartMano.insert(0, t2);
-                    modo = 2;
-                    Navigator.pop(context);
-                    Navigator.push(context,
-                      MaterialPageRoute(
-                          builder: (context) => const BoardPage()),);
-                  }
-                },
-                child: PlayingCardView(
-                  card: PlayingCard(Suit.hearts, CardValue.ace),
-                  style: setStyle(),
-                  showBack: true,
-                ),
-              ),
-            ),
-            const SizedBox(width: 20,),
-            Container(
-              height: 100,
-              width: 70,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: FractionalOffset.topCenter,
-                  end: FractionalOffset.bottomCenter,
-                  colors: [
-                    Colors.brown.shade900,
-                    Colors.brown,
-                    Colors.brown.shade900
-                  ],
-                ),
-              ),
-                child: GestureDetector(
-                  onTap: (){
-                    if(modo == 1 && descarte != null) {
-                      PlayingCard temp = PlayingCard(descarte!.suit, descarte!.value);
-                      Carta t2 = Carta(ValueToNum(temp.value), SuitToPalo(temp.suit));
-                      cartMano.insert(0, t2);
-                      descarte = null;
-                      modo = 2;
-                      Navigator.pop(context);
-                      Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => const BoardPage()),
-                      );
-                    } else if(modo == 2) {
-                      if (CSelecion.length == 1){
-                        descarte = PlayingCard(PaloToSuit(cartMano[CSelecion[0]].palo),NumToValue(cartMano[CSelecion[0]].numero));
-                        modo = 1;
-                        cartMano.removeAt(CSelecion[0]);
-                        CSelecion.clear();
-                        Navigator.pop(context);
-                        Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => const BoardPage()),
-                        );
-                      }
-                    }
-                  },
-                  child: descarte == null ? Container(
+        height: 800,
+        child: Column(
+            children: [
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  const SizedBox(width: 20,),
+                  Container(
+                    height: 100,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: FractionalOffset.topCenter,
+                        end: FractionalOffset.bottomCenter,
+                        colors: [
+                          Colors.brown.shade900,
+                          Colors.brown,
+                          Colors.brown.shade900
+                        ],
+                      ),
+                    ),
+                    child: GestureDetector(
+                      onTap: () {
+                        if (modo == 1) {
+                          PlayingCard temp = PlayingCard(
+                              Suit.hearts, CardValue.two);
+                          Carta t2 = Carta(
+                              ValueToNum(temp.value), SuitToPalo(temp.suit));
+                          cartMano.insert(0, t2);
+                          modo = 2;
+                          Navigator.pop(context);
+                          Navigator.push(context,
+                            MaterialPageRoute(
+                                builder: (context) => const BoardPage()),);
+                        }
+                      },
+                      child: PlayingCardView(
+                        card: PlayingCard(Suit.hearts, CardValue.ace),
+                        style: setStyle(),
+                        showBack: true,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 20,),
+                  Container(
                     height: 100,
                     width: 70,
                     decoration: BoxDecoration(
@@ -164,109 +136,198 @@ class _BoardPageState extends State<BoardPage>{
                         ],
                       ),
                     ),
-                  )
-                      : PlayingCardView(card: descarte!, style: setStyle(),),
-                ),
-
-            ),
-            const SizedBox(width: 20,),
-            Column(
-              children: [
-                ElevatedButton(
-                  child: Text('Mostrar chat'),
-                  onPressed: () {
-                    Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => const ChatPage()),);
-
-                  },
-                ),
-                FilledButton(
-                  onPressed: (){
-                    setState(() {
-                      if(CSelecion.isNotEmpty){
-                        t.insert(0,[]);
-                        for (int i in CSelecion) {
-                          t[0].add(cartMano[i]);
+                    child: GestureDetector(
+                      onTap: () {
+                        if (modo == 1 && descarte != null) {
+                          PlayingCard temp = PlayingCard(
+                              descarte!.suit, descarte!.value);
+                          Carta t2 = Carta(ValueToNum(temp.value), SuitToPalo(
+                              temp.suit));
+                          cartMano.insert(0, t2);
+                          descarte = null;
+                          modo = 2;
+                          Navigator.pop(context);
+                          Navigator.push(context,
+                            MaterialPageRoute(builder: (
+                                context) => const BoardPage()),
+                          );
+                        } else if (modo == 2) {
+                          if (CSelecion.length == 1) {
+                            descarte = PlayingCard(PaloToSuit(
+                                cartMano[CSelecion[0]].palo),
+                                NumToValue(cartMano[CSelecion[0]].numero));
+                            modo = 1;
+                            cartMano.removeAt(CSelecion[0]);
+                            CSelecion.clear();
+                            Navigator.pop(context);
+                            Navigator.push(context,
+                              MaterialPageRoute(
+                                  builder: (context) => const BoardPage()),
+                            );
+                          }
                         }
-                        CSelecion.sort((a, b) => b.compareTo(a));
-                        for (int i in CSelecion){
-                          cartMano.removeAt(i);
-                        }
-                        CSelecion.clear();
-                        Navigator.pop(context);
-                        Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => const BoardPage()),);
-                      }
-                    });
-                  },
-                  child: Text('Añadir Combinación'),
-                ),
-              ],
-            )
-          ],
-        ),
-        const SizedBox(height: 10,),
-        Align(
-          alignment: Alignment.topCenter,
-          child:Container(
-              height: 490,
-              decoration: BoxDecoration(
-                color:Colors.green.shade900,
-              ),
-              child:Align(
-                child: Container(
-                  height: 480,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    border: Border(
-                      top: BorderSide(width: 4.0, color: Colors.red.shade900),
-                      bottom: BorderSide(width: 4.0, color: Colors.red.shade900),
-                    ),
-                  ),
-                    child:SizedBox(
-                      height: 480,
-                      child:SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
-                        child: Column(
-                          children: t.map((e) => Column(
-                            children: [
-                              CardView(e, false),
-                              const Divider(thickness: 2,),
+                      },
+                      child: descarte == null ? Container(
+                        height: 100,
+                        width: 70,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: FractionalOffset.topCenter,
+                            end: FractionalOffset.bottomCenter,
+                            colors: [
+                              Colors.brown.shade900,
+                              Colors.brown,
+                              Colors.brown.shade900
                             ],
-                          )).toList(),
+                          ),
+                        ),
+                      )
+                          : PlayingCardView(
+                        card: descarte!, style: setStyle(),),
+                    ),
+
+                  ),
+                  const SizedBox(width: 20,),
+                  Column(
+                    children: [
+                      ElevatedButton(
+                        child: Text('Mostrar chat'),
+                        onPressed: () {
+                          Navigator.push(context,
+                            MaterialPageRoute(builder: (
+                                context) => const ChatPage()),);
+                        },
+                      ),
+                      FilledButton(
+                        onPressed: () {
+                          setState(() {
+                            if (CSelecion.isNotEmpty) {
+                              t.insert(0, []);
+                              for (int i in CSelecion) {
+                                t[0].add(cartMano[i]);
+                              }
+                              CSelecion.sort((a, b) => b.compareTo(a));
+                              for (int i in CSelecion) {
+                                cartMano.removeAt(i);
+                              }
+                              CSelecion.clear();
+                              Navigator.pop(context);
+                              Navigator.push(context,
+                                MaterialPageRoute(
+                                    builder: (context) => const BoardPage()),);
+                            }
+                          });
+                        },
+                        child: Text('Añadir Combinación'),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+              const SizedBox(height: 10,),
+              Align(
+                alignment: Alignment.topCenter,
+                child: Container(
+                  height: 490,
+                  decoration: BoxDecoration(
+                    color: Colors.green.shade900,
+                  ),
+                  child: Align(
+                    child: Container(
+                      height: 480,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        border: Border(
+                          top: BorderSide(width: 4.0, color: Colors.red
+                              .shade900),
+                          bottom: BorderSide(width: 4.0, color: Colors.red
+                              .shade900),
+                        ),
+                      ),
+                      child: SizedBox(
+                        height: 480,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          child: Column(
+                            children: t.map((e) =>
+                                Column(
+                                  children: [
+                                    CardView(e, false),
+                                    const Divider(thickness: 2,),
+                                  ],
+                                )).toList(),
+                          ),
                         ),
                       ),
                     ),
+                  ),
                 ),
               ),
-          ),
-        ),
-          const SizedBox(height: 10,),
-          Container(
-            //height: 100,
-            width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: FractionalOffset.topCenter,
-                end: FractionalOffset.bottomCenter,
-                colors: [
-                  Colors.brown.shade900,
-                  Colors.brown,
-                  Colors.brown.shade900
-                ],
-              ),
-            ),
+              const SizedBox(height: 10,),
+              Container(
+                //height: 100,
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: FractionalOffset.topCenter,
+                    end: FractionalOffset.bottomCenter,
+                    colors: [
+                      Colors.brown.shade900,
+                      Colors.brown,
+                      Colors.brown.shade900
+                    ],
+                  ),
+                ),
 
-            child: CardView(cartMano,true),
-          )
-      ]),
+                child: CardView(cartMano, true),
+              )
+            ]),
       ),
       appBar: AppBar(
         title: const Text('Turno de: '),
-
+        actions: [
+          IconButton(
+            onPressed: _openBottomSheet,
+            icon: const Icon(Icons.person),
+          ),
+        ],
       ),
+    ),
     );
   }
+  Future _openBottomSheet() => showModalBottomSheet(
+    context: context,
+    builder: (context) => ListView.separated(
+    shrinkWrap: true,
+    physics: const NeverScrollableScrollPhysics(),
+    itemCount: 4,
+    itemBuilder: (context, index) {
+      return ListTile(
+        leading: CircularBorderPicture(),
+        title: Row(
+          children: const [
+            Text(
+              'Amigo falso',
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold
+              ),
+            ),
+          ],
+        ),
+        trailing: Badge(
+          label: Text('Cartas en mano: 4'),
+        ),
+        onTap: () {},
+      );
+    },
+    separatorBuilder: (context, index) => const Divider(),
+  ),
+  );
+
 }
 
 class CardView extends StatefulWidget {
