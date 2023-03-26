@@ -7,6 +7,7 @@ import 'pages/settings_page.dart';
 import 'pages/login_page.dart';
 import 'pages/profile_page.dart';
 import 'services/local_storage.dart';
+import 'services/app_state.dart';
 import 'themes/light_theme.dart';
 import 'themes/dark_theme.dart';
 import 'themes/theme_manager.dart';
@@ -30,11 +31,13 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     themeManager.addListener(themeListener);
+    WidgetsBinding.instance.addObserver(AppStateListener());
   }
 
   @override
   void dispose() {
     themeManager.removeListener(themeListener);
+    WidgetsBinding.instance.removeObserver(AppStateListener());
     super.dispose();
   }
 

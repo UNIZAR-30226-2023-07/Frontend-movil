@@ -20,6 +20,18 @@ class AudioManager {
     await _BGMPlayer.setVolume(value);
   }
 
+  static Future<void> resumeBGM() async {
+    if (_BGMPlayer.state == PlayerState.PAUSED) {
+      await _BGMPlayer.resume();
+    }
+  }
+
+  static Future<void> pauseBGM() async {
+    if (_BGMPlayer.state == PlayerState.PLAYING) {
+      await _BGMPlayer.pause();
+    }
+  }
+
   static Future<void> toggleSFX(bool value) async {
     if (value) {
       _SFXPlayer.setReleaseMode(ReleaseMode.LOOP);
@@ -33,5 +45,17 @@ class AudioManager {
 
   static Future<void> setSFXVolume(double value) async {
     await _SFXPlayer.setVolume(value);
+  }
+
+  static Future<void> resumeSFX() async {
+    if (_SFXPlayer.state == PlayerState.PAUSED) {
+      await _SFXPlayer.resume();
+    }
+  }
+
+  static Future<void> pauseSFX() async {
+    if (_SFXPlayer.state == PlayerState.PLAYING) {
+      await _SFXPlayer.pause();
+    }
   }
 }
