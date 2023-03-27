@@ -1,3 +1,5 @@
+import 'dart:js_util';
+
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -5,6 +7,7 @@ import '../main.dart';
 
 const String _loginURL = 'http://51.103.94.220:3001/api/auth/login';
 const String _registerURL = 'http://51.103.94.220:3001/api/auth/register';
+const String _getUserURL = 'http://51.103.94.220:3001/api/jugador/get/:email';
 
 class User {
   final String nickname;
@@ -52,7 +55,7 @@ class Prueba extends StatelessWidget {
   }
 }
 
-bool _actions(http.Response response, BuildContext context) {
+bool _actions(http.Response response, BuildContext context,String email) {
   if (response.statusCode == 200 || response.statusCode == 202) {
     // Si el servidor devuelve una repuesta OK, parseamos el JSON
     ScaffoldMessenger.of(context).showSnackBar(
@@ -63,7 +66,8 @@ bool _actions(http.Response response, BuildContext context) {
     );
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const MyHomePage()),
+      // pasar el email con el que se ha registrado el usuario para luego poder hacer consultas
+      MaterialPageRoute(builder: (context) => MyHomePage(email: email)),
     );
     return true;
   } else {
@@ -77,11 +81,12 @@ bool _actions(http.Response response, BuildContext context) {
   }
 }
 
-Future<bool> login(String email, String password, BuildContext context) async {
+Future<bool> login(final String email, String password, BuildContext context) async {
   if (email == 'admin') {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const MyHomePage()),
+      //pasar el email para saber con cual esta registrado
+      MaterialPageRoute(builder: (context) => MyHomePage(email: email)),
     );
     return true;
   }
@@ -92,7 +97,7 @@ Future<bool> login(String email, String password, BuildContext context) async {
   //print(response.statusCode);
 
   if (context.mounted) {
-    return _actions(response, context);
+    return _actions(response, context, email);
   } else {
     return false;
   }
@@ -106,8 +111,62 @@ Future<bool> register(String nickname, String email, String password, BuildConte
   //print(response.statusCode);
 
   if (context.mounted) {
-    return _actions(response, context);
+    return _actions(response, context, email);
   } else {
     return false;
   }
+}
+
+class Pendientes{
+  final int codigo;
+  final String creador;
+    Pendientes({required this.codigo, required this.creador});
+  factory Pendientes.fromJson(Map<String, dynamic> json) {
+    return Pendientes(
+      codigo: json['codigo'],
+      creador: json['creador']
+    );
+  }
+}
+
+class UserApp {
+  final String nickname;
+  final int foto;
+  final String descripcion;
+  final int pganadas;
+  final int pjugadas;
+  final String codigo;
+  final int puntos;
+
+  UserApp({required this.nickname, required this.foto, required this.descripcion,
+  required this.pganadas, required this.pjugadas, required this.codigo, required this.puntos});
+
+  factory UserApp.fromJson(Map<String, dynamic> json) {
+    return UserApp(
+      nickname: json['nickname'],
+      foto: json['foto'],
+      descripcion: json['descripcion'],
+      pganadas: json['pganadas'],
+      pjugadas: json['pjugadas'],
+      codigo: json['codigo'],
+      puntos: json['puntos']
+    );
+  }
+}
+
+
+Future<Map<String, dynamic>?> getUser(String email, BuildContext context) async {
+  String uri = "$_getUserURL?email=$email";
+
+  final response = await http.get(Uri.parse(uri));
+
+  //print(response.statusCode);
+
+  Map<String, dynamic>? datos = null;
+  if (response.statusCode == 200) {
+    datos = jsonDecode(response.body);
+  } else {
+    print('Error al hacer la solicitud: ${response.statusCode}');
+  }
+  return datos;
 }

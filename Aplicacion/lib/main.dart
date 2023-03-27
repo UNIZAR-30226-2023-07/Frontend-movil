@@ -59,19 +59,29 @@ class _MyAppState extends State<MyApp> {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+  final String email;
+
+  MyHomePage({required this.email});
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
+  late List<Widget> _widgetOptions;
 
-  static final List<Widget> _widgetOptions = <Widget>[
-    const MainPage(),
-    const FriendsPage(),
-    const ProfilePage(),
-  ];
+  static List<Widget> getWidgetOptions(String email) {
+    return [
+      MainPage(email: email),
+      const FriendsPage(),
+      const ProfilePage(),
+    ];
+  }
+  @override
+  void initState() {
+    super.initState();
+    _widgetOptions = getWidgetOptions(widget.email);
+  }
 
   void onItemTapped(int index) {
     setState(() {

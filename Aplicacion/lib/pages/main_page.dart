@@ -2,17 +2,42 @@ import 'package:flutter/material.dart';
 import '../dialogs/join_game_dialog.dart';
 import '../pages/tournament_page.dart';
 import '../dialogs/create_game_dialog.dart';
+import '../services/http_petitions.dart';
 import '../widgets/circular_border_picture.dart';
 import '../services/open_dialog.dart';
 
+// 0 - nombre
+// 1 - foto;
+// 2 - descripcion;
+// 3 - pganadas;
+// 4 - pjugadas;
+// 5 - codigo;
+// 6 - puntos;
+Map<String, dynamic>? user;
+
 class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+  final String email;
+
+  MainPage({required this.email});
 
   @override
-  State<MainPage> createState() => _MainPageState();
+  State<MainPage> createState() => _MainPageState(email!);
 }
 
 class _MainPageState extends State<MainPage> {
+  final String email;
+  _MainPageState(this.email);
+  @override
+  void initState() {
+    super.initState();
+    _getUser();
+  }
+
+  Future<void> _getUser() async {
+    // saber el email con el que ha entrado el usuario, no se si pasandolo entre clases
+    // o se puede de otra manera
+    user = await getUser(email, context);
+  }
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -65,6 +90,8 @@ class _MainPageState extends State<MainPage> {
 class TopSection extends StatelessWidget {
   const TopSection({super.key});
 
+  //String nombre = user![0];
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -110,17 +137,17 @@ class TopSection extends StatelessWidget {
                   radius: 35,
                 ),
               ),
-              const Text(
-                'Ismaber',
-                style: TextStyle(
+              Text(
+                user![0],
+                style: const TextStyle(
                   color: Colors.indigoAccent,
                   fontSize: 25,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const Text(
-                'Puntos: 9000',
-                style: TextStyle(
+              Text(
+                'Puntos: ${user![6]}',
+                style: const TextStyle(
                   color: Colors.blueGrey,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
