@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:untitled/services/http_petitions.dart';
 import 'dialogs/close_session_dialog.dart';
 import 'package:untitled/services/open_dialog.dart';
 import 'pages/main_page.dart';
@@ -11,6 +12,15 @@ import 'services/app_state.dart';
 import 'themes/light_theme.dart';
 import 'themes/dark_theme.dart';
 import 'themes/theme_manager.dart';
+
+// 0 - nombre
+// 1 - foto;
+// 2 - descripcion;
+// 3 - pganadas;
+// 4 - pjugadas;
+// 5 - codigo;
+// 6 - puntos;
+Map<String, dynamic>? user;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -69,18 +79,25 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   late List<Widget> _widgetOptions;
-
-  static List<Widget> getWidgetOptions(String email) {
-    return [
-      MainPage(email: email),
-      const FriendsPage(),
-      const ProfilePage(),
-    ];
-  }
   @override
   void initState() {
     super.initState();
-    _widgetOptions = getWidgetOptions(widget.email);
+    _getUser();
+    _widgetOptions = getWidgetOptions(user!, widget.email);
+  }
+
+  Future<void> _getUser() async {
+    // saber el email con el que ha entrado el usuario, no se si pasandolo entre clases
+    // o se puede de otra manera
+    user = await getUser(widget.email, context);
+  }
+
+  static List<Widget> getWidgetOptions(Map<String, dynamic> user, String email) {
+    return [
+      MainPage(user: user),
+      FriendsPage(codigo: user[5]),
+      ProfilePage(user: user, email: email),
+    ];
   }
 
   void onItemTapped(int index) {

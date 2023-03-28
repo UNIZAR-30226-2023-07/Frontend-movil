@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'edit_profile.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+  final String email;
+  final Map<String, dynamic> user;
+  ProfilePage({required this.email, required this.user});
   @override
   State<ProfilePage> createState() => _ProfilePageState();
 }
@@ -14,7 +16,7 @@ class _ProfilePageState extends State<ProfilePage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const EditProfilePage(),
+            EditProfilePage(nombre: widget.user[0], foto: widget.user[1], desc: widget.user[2], email: widget.email),
             Container(
               padding: const EdgeInsets.all(20),
               child: Row(
@@ -29,7 +31,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        '420',
+                        widget.user![4],
                         style: TextStyle(
                           color: Colors.blueGrey,
                           fontSize: 20,
@@ -53,8 +55,8 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                       Text(
-                        '100%',
-                        style: TextStyle(
+                        widget.user![3]/widget.user![4]*100 + '%',
+                        style: const TextStyle(
                           color: Colors.blueGrey,
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -77,7 +79,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                       Text(
-                        '9000',
+                        widget.user![6],
                         style: TextStyle(
                           color: Colors.blueGrey,
                           fontSize: 20,

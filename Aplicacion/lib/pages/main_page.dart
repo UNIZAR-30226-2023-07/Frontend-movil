@@ -6,38 +6,19 @@ import '../services/http_petitions.dart';
 import '../widgets/circular_border_picture.dart';
 import '../services/open_dialog.dart';
 
-// 0 - nombre
-// 1 - foto;
-// 2 - descripcion;
-// 3 - pganadas;
-// 4 - pjugadas;
-// 5 - codigo;
-// 6 - puntos;
-Map<String, dynamic>? user;
-
 class MainPage extends StatefulWidget {
-  final String email;
+  final Map<String, dynamic>? user;
 
-  MainPage({required this.email});
+  MainPage({required this.user});
 
   @override
-  State<MainPage> createState() => _MainPageState(email!);
+  State<MainPage> createState() => _MainPageState(user!);
 }
 
 class _MainPageState extends State<MainPage> {
-  final String email;
-  _MainPageState(this.email);
-  @override
-  void initState() {
-    super.initState();
-    _getUser();
-  }
+  final Map<String, dynamic> user;
+  _MainPageState(this.user);
 
-  Future<void> _getUser() async {
-    // saber el email con el que ha entrado el usuario, no se si pasandolo entre clases
-    // o se puede de otra manera
-    user = await getUser(email, context);
-  }
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -45,9 +26,9 @@ class _MainPageState extends State<MainPage> {
       child: Scaffold(
         body:
         Column(
-          children: const [
-            TopSection(),
-            Material(
+          children: [
+            TopSection(user),
+            const Material(
               color: Colors.indigo,
               child: TabBar(
                 tabs: [
@@ -75,7 +56,7 @@ class _MainPageState extends State<MainPage> {
             Expanded(
               child: TabBarView(
                 children: [
-                  TournamentTab(),
+                  TournamentTab(codigo: user![0]),
                   RankingTab(),
                 ],
               ),
@@ -88,9 +69,8 @@ class _MainPageState extends State<MainPage> {
 }
 
 class TopSection extends StatelessWidget {
-  const TopSection({super.key});
-
-  //String nombre = user![0];
+  final Map<String, dynamic> user;
+  TopSection(this.user);
 
   @override
   Widget build(BuildContext context) {
@@ -195,8 +175,29 @@ class TopSection extends StatelessWidget {
   }
 }
 
-class TournamentTab extends StatelessWidget {
-  const TournamentTab({super.key});
+class TournamentTab extends StatefulWidget {
+  final String codigo;
+
+  const TournamentTab({Key? key, required this.codigo}) : super(key: key);
+
+  @override
+  _TournamentTabState createState() => _TournamentTabState();
+}
+
+class _TournamentTabState extends State<TournamentTab> {
+
+  // 0 - codigo partida;
+  // 1 - creador;
+  List<Map<String, dynamic>>? pendientes;
+
+  void initState() {
+    super.initState();
+    _getPartidasPendientes();
+  }
+
+  Future<void> _getPartidasPendientes() async {
+    pendientes = await getPartidasPendientes(widget.codigo, context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -212,7 +213,8 @@ class TournamentTab extends StatelessWidget {
               color: Colors.amber,
             ),
           ),
-          title: const Text('Torneo de fulanito'),
+          title: Text('Partida de ' + (pendientes![index])[1]),
+          subtitle: Text('Codigo: ' + (pendientes![index])[0]),
           onTap: () {
             Navigator.push(
                 context,

@@ -6,7 +6,8 @@ import '../services/image_picker.dart';
 import '../widgets/custom_filled_button.dart';
 
 class EditProfilePage extends StatefulWidget {
-  const EditProfilePage({super.key});
+  final String nombre, foto, desc, email;
+  EditProfilePage({required this.nombre, required this.foto, required this.desc, required this.email});
 
   @override
   State<EditProfilePage> createState() => _EditProfilePageState();
@@ -33,7 +34,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ProfilePicture()),
+                MaterialPageRoute(builder: (context) => ProfilePicture(email: widget.email)),
               );
             },
             icon: const Hero(
@@ -51,21 +52,21 @@ class _EditProfilePageState extends State<EditProfilePage> {
         ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
+          children: [
             Text(
-              'Ismaber#1234',
-              style: TextStyle(
+              widget.nombre,
+              style: const TextStyle(
                 color: Colors.indigoAccent,
                 fontSize: 25,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Text(
-              'El puto amo',
-              style: TextStyle(
+              widget.desc,
+              style: const TextStyle(
                 color: Colors.blueGrey,
                 fontSize: 18,
                 fontWeight: FontWeight.w300,
@@ -79,7 +80,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
 }
 
 class ProfilePicture extends StatefulWidget {
-  const ProfilePicture({super.key});
+  final String email;
+  const ProfilePicture({required this.email});
 
   @override
   State<ProfilePicture> createState() => _ProfilePictureState();
@@ -87,6 +89,8 @@ class ProfilePicture extends StatefulWidget {
 
 class _ProfilePictureState extends State<ProfilePicture> {
   File? image;
+  final TextEditingController _nombre = TextEditingController();
+  final TextEditingController _descripcion = TextEditingController();
 
   pickFromCamera(BuildContext context) async {
     File? aux;
@@ -161,11 +165,12 @@ class _ProfilePictureState extends State<ProfilePicture> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text( 'Nickname', style: Theme.of(context).textTheme.headlineMedium),
-                    const TextField(
+                    TextField(
+                      controller: _nombre,
                       keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         border: InputBorder.none,
-                        hintText: 'Ismaber',
+                        hintText: 'apodo',
                       ),
                     ),
                     const SizedBox(height: 10,),
@@ -176,6 +181,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
                     Text( 'Descripción', style: Theme.of(context).textTheme.headlineMedium),
                     const SizedBox(height: 10,),
                     TextField(
+                      controller: _descripcion,
                       keyboardType: TextInputType.text,
                       maxLength: 200,
                       maxLines: 5,
@@ -194,7 +200,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
               CustomFilledButton(
                 content: const Text('Guardar cambios'),
                 onPressed: () {
-                  openDialog(context, const SaveChangesDialog());
+                  openDialog(context, SaveChangesDialog(nombre: _nombre.text, desc: _descripcion.text, foto: "foto",email: widget.email));
                 },
               ),
             ],
