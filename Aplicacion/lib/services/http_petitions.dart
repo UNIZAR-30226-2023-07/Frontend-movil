@@ -12,6 +12,7 @@ const String _getPartidasPendientesURL = 'http://51.103.94.220:3001/api/partidas
 const String _getAmistadesURL = 'http://51.103.94.220:3001/api/amistad/get/:';
 const String _nuevoAmigoURL = 'http://51.103.94.220:3001/api/amistad/add';
 const String _editProfileURL = 'http://51.103.94.220:3001/api/jugador/mod';
+const String _changePasswordURL = 'http://51.103.94.220:3001/api/auth/mod-login';
 
 class User {
   final String nickname;
@@ -204,7 +205,7 @@ Future<bool> nuevoAmigo(String codigo1, String codigo2, BuildContext context) as
 Future<bool> editProfile(String email, String nombre, String desc, String foto, BuildContext context) async {
   final json = '{"email": $email, "nombre": $nombre, "foto": $foto, "descripcion": $desc}';
 
-  final response = await http.post(Uri.parse(_nuevoAmigoURL), body: json);
+  final response = await http.post(Uri.parse(_editProfileURL), body: json);
 
   //print(response.statusCode);
 
@@ -218,6 +219,38 @@ Future<bool> editProfile(String email, String nombre, String desc, String foto, 
         ),
       );
       Navigator.pop(context);
+      Navigator.pop(context);
+      return true;
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Ha habido un error'),
+          showCloseIcon: true,
+        ),
+      );
+      return false;
+    }
+  } else {
+    return false;
+  }
+}
+
+Future<bool> changePassword(String email, String contra, BuildContext context) async {
+  final json = '{"email": $email, "contra": $contra}';
+
+  final response = await http.post(Uri.parse(_changePasswordURL), body: json);
+
+  //print(response.statusCode);
+
+  if (context.mounted) {
+    if (response.statusCode == 200 || response.statusCode == 202) {
+      // Si el servidor devuelve una repuesta OK, parseamos el JSON
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Contraseña cambiada'),
+          showCloseIcon: true,
+        ),
+      );
       Navigator.pop(context);
       return true;
     } else {

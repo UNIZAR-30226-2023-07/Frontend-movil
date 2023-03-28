@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:untitled/services/http_petitions.dart';
 import 'login_page.dart';
 
 final _passwordKey = GlobalKey<FormState>();
@@ -166,7 +167,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                     child: FilledButton(
                                       onPressed: () async {
                                         if(_passwordKey.currentState!.validate()) {
-                                          Navigator.pop(context);
+                                          bool res = await changePassword(_email.text, _password.text, context);
+                                          if (!res) {
+                                            setState(() {
+                                              _emailError = 'El email no existe';
+                                            });
+                                          }
                                         }
                                       },
                                       child: const Text('Enviar'),
