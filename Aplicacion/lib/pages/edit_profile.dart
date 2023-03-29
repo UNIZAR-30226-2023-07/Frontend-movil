@@ -8,7 +8,12 @@ import '../services/image_picker.dart';
 import '../widgets/custom_filled_button.dart';
 
 class EditProfilePage extends StatefulWidget {
-  const EditProfilePage({super.key});
+  final String nombre, foto, desc, email;
+  EditProfilePage(
+      {required this.nombre,
+      required this.foto,
+      required this.desc,
+      required this.email});
 
   @override
   State<EditProfilePage> createState() => _EditProfilePageState();
@@ -35,7 +40,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ProfilePicture()),
+                MaterialPageRoute(
+                    builder: (context) => ProfilePicture(email: widget.email)),
               );
             },
             icon: Hero(
@@ -53,21 +59,21 @@ class _EditProfilePageState extends State<EditProfilePage> {
         ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
+          children: [
             Text(
-              'Ismaber#1234',
-              style: TextStyle(
+              widget.nombre,
+              style: const TextStyle(
                 color: Colors.indigoAccent,
                 fontSize: 25,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Text(
-              'El puto amo',
-              style: TextStyle(
+              widget.desc,
+              style: const TextStyle(
                 color: Colors.blueGrey,
                 fontSize: 18,
                 fontWeight: FontWeight.w300,
@@ -81,7 +87,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
 }
 
 class ProfilePicture extends StatefulWidget {
-  const ProfilePicture({super.key});
+  final String email;
+  const ProfilePicture({required this.email});
 
   @override
   State<ProfilePicture> createState() => _ProfilePictureState();
@@ -91,6 +98,8 @@ class _ProfilePictureState extends State<ProfilePicture> {
   File? _image;
   String _urlImage = ProfileImage.image;
   bool _tipo = true;
+  final TextEditingController _nombre = TextEditingController();
+  final TextEditingController _descripcion = TextEditingController();
 
   pickFromCamera(BuildContext context) async {
     File? aux;
@@ -115,37 +124,37 @@ class _ProfilePictureState extends State<ProfilePicture> {
 
   pickFromPredefined(BuildContext context) {
     openDialog(
-      context,
-      AlertDialog(
-        scrollable: true,
-        content: SizedBox(
-          height: 200,
-          width: 350,
-          child: GridView.count(
-            crossAxisCount: 3, // especifica 3 columnas en cada fila
-            children: List.generate(ProfileImage.urls.length, (index) {
-              return GestureDetector(
-                onTap: () {
-                  ProfileImage.changeImage(index);
-                  setState(() {
-                    _tipo = false;
-                    _urlImage = ProfileImage.urls[index]!;
-                  });
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                },
-                child: Container(
-                  margin: const EdgeInsets.all(5.0),
-                  child: Center(
-                      child: CircularBorderPicture(image: ProfileImage.urls[index]!,width: 100, height: 100,)
-                  ),
-                )
-              );
-            }),
-          )
-        ),
-      )
-    );
+        context,
+        AlertDialog(
+          scrollable: true,
+          content: SizedBox(
+              height: 200,
+              width: 350,
+              child: GridView.count(
+                crossAxisCount: 3, // especifica 3 columnas en cada fila
+                children: List.generate(ProfileImage.urls.length, (index) {
+                  return GestureDetector(
+                      onTap: () {
+                        ProfileImage.changeImage(index);
+                        setState(() {
+                          _tipo = false;
+                          _urlImage = ProfileImage.urls[index]!;
+                        });
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.all(5.0),
+                        child: Center(
+                            child: CircularBorderPicture(
+                          image: ProfileImage.urls[index]!,
+                          width: 100,
+                          height: 100,
+                        )),
+                      ));
+                }),
+              )),
+        ));
   }
 
   @override
@@ -171,17 +180,13 @@ class _ProfilePictureState extends State<ProfilePicture> {
                   icon: Hero(
                     tag: 'foto',
                     child: (_tipo && _image != null)
-                      ? CircleAvatar(
-                        backgroundImage: FileImage(_image!),
-                        radius: 100)
-                      : CircleAvatar(
-                        backgroundImage: ResizeImage(
-                          AssetImage(_urlImage),
-                          width: 250,
-                          height: 250
-                        ),
-                        radius: 100,
-                    ),
+                        ? CircleAvatar(
+                            backgroundImage: FileImage(_image!), radius: 100)
+                        : CircleAvatar(
+                            backgroundImage: ResizeImage(AssetImage(_urlImage),
+                                width: 250, height: 250),
+                            radius: 100,
+                          ),
                   ),
                 ),
               ),
@@ -190,22 +195,32 @@ class _ProfilePictureState extends State<ProfilePicture> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Nickname', style: Theme.of(context).textTheme.headlineMedium),
-                    const TextField(
+                    Text('Nickname',
+                        style: Theme.of(context).textTheme.headlineMedium),
+                    TextField(
+                      controller: _nombre,
                       keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         border: InputBorder.none,
-                        hintText: 'Ismaber',
+                        hintText: 'apodo',
                       ),
                     ),
-                    const SizedBox(height: 10,),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     const Divider(
                       color: Colors.indigoAccent,
                     ),
-                    const SizedBox(height: 10,),
-                    Text( 'Descripción', style: Theme.of(context).textTheme.headlineMedium),
-                    const SizedBox(height: 10,),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Text('Descripción',
+                        style: Theme.of(context).textTheme.headlineMedium),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     TextField(
+                      controller: _descripcion,
                       keyboardType: TextInputType.text,
                       maxLength: 200,
                       maxLines: 5,
@@ -220,11 +235,19 @@ class _ProfilePictureState extends State<ProfilePicture> {
                   ],
                 ),
               ),
-              const SizedBox(height: 10,),
+              const SizedBox(
+                height: 10,
+              ),
               CustomFilledButton(
                 content: const Text('Guardar cambios'),
                 onPressed: () {
-                  openDialog(context, const SaveChangesDialog());
+                  openDialog(
+                      context,
+                      SaveChangesDialog(
+                          nombre: _nombre.text,
+                          desc: _descripcion.text,
+                          foto: "foto",
+                          email: widget.email));
                 },
               ),
             ],
@@ -235,70 +258,71 @@ class _ProfilePictureState extends State<ProfilePicture> {
   }
 
   Future _openBottomSheet() => showModalBottomSheet(
-    context: context,
-    builder: (context) => Container(
-      padding: const EdgeInsets.all(10),
-      height: 250,
-      width: double.infinity,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          Text('Seleccionar foto', style: Theme.of(context).textTheme.headlineMedium),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        context: context,
+        builder: (context) => Container(
+          padding: const EdgeInsets.all(10),
+          height: 250,
+          width: double.infinity,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Column(
+              Text('Seleccionar foto',
+                  style: Theme.of(context).textTheme.headlineMedium),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  IconButton(
-                    color: Theme.of(context).colorScheme.primary,
-                    iconSize: 40,
-                    icon: const Icon(Icons.photo),
-                    tooltip: 'Galería',
-                    onPressed: () {
-                      pickFromGallery(context);
-                    },
+                  Column(
+                    children: [
+                      IconButton(
+                        color: Theme.of(context).colorScheme.primary,
+                        iconSize: 40,
+                        icon: const Icon(Icons.photo),
+                        tooltip: 'Galería',
+                        onPressed: () {
+                          pickFromGallery(context);
+                        },
+                      ),
+                      const Text('Galería'),
+                    ],
                   ),
-                  const Text('Galería'),
+                  Column(
+                    children: [
+                      IconButton(
+                        color: Theme.of(context).colorScheme.primary,
+                        iconSize: 40,
+                        icon: const Icon(Icons.account_circle_rounded),
+                        tooltip: 'Predefinidos',
+                        onPressed: () {
+                          pickFromPredefined(context);
+                        },
+                      ),
+                      const Text('Predefinidos'),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      IconButton(
+                        color: Theme.of(context).colorScheme.primary,
+                        iconSize: 40,
+                        icon: const Icon(Icons.camera_alt_rounded),
+                        tooltip: 'Cámara',
+                        onPressed: () {
+                          pickFromCamera(context);
+                        },
+                      ),
+                      const Text('Cámara'),
+                    ],
+                  ),
                 ],
               ),
-              Column(
-                children: [
-                  IconButton(
-                    color: Theme.of(context).colorScheme.primary,
-                    iconSize: 40,
-                    icon: const Icon(Icons.account_circle_rounded),
-                    tooltip: 'Predefinidos',
-                    onPressed: () {
-                      pickFromPredefined(context);
-                    },
-                  ),
-                  const Text('Predefinidos'),
-                ],
-              ),
-              Column(
-                children: [
-                  IconButton(
-                    color: Theme.of(context).colorScheme.primary,
-                    iconSize: 40,
-                    icon: const Icon(Icons.camera_alt_rounded),
-                    tooltip: 'Cámara',
-                    onPressed: () {
-                      pickFromCamera(context);
-                    },
-                  ),
-                  const Text('Cámara'),
-                ],
+              CustomFilledButton(
+                content: const Text('Cancelar'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
               ),
             ],
           ),
-          CustomFilledButton(
-            content: const Text('Cancelar'),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-        ],
-      ),
-    ),
-  );
+        ),
+      );
 }

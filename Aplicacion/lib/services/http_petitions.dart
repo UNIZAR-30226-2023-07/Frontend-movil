@@ -5,7 +5,12 @@ import '../main.dart';
 
 const String _loginURL = 'http://51.103.94.220:3001/api/auth/login';
 const String _registerURL = 'http://51.103.94.220:3001/api/auth/register';
-const String _getUserURL = 'http://51.103.94.220:3001/api/jugador/get/:email';
+const String _getUserURL = 'http://51.103.94.220:3001/api/jugador/get/:';
+const String _getPartidasPendientesURL = 'http://51.103.94.220:3001/api/partidas/pendientes/get/:';
+const String _getAmistadesURL = 'http://51.103.94.220:3001/api/amistad/get/:';
+const String _nuevoAmigoURL = 'http://51.103.94.220:3001/api/amistad/add';
+const String _editProfileURL = 'http://51.103.94.220:3001/api/jugador/mod';
+const String _changePasswordURL = 'http://51.103.94.220:3001/api/auth/mod-login';
 
 class User {
   final String nickname;
@@ -115,57 +120,148 @@ Future<bool> register(String nickname, String email, String password, BuildConte
   }
 }
 
-class Pendientes{
-  final int codigo;
-  final String creador;
-    Pendientes({required this.codigo, required this.creador});
-  factory Pendientes.fromJson(Map<String, dynamic> json) {
-    return Pendientes(
-      codigo: json['codigo'],
-      creador: json['creador']
-    );
-  }
-}
-
-class UserApp {
-  final String nickname;
-  final int foto;
-  final String descripcion;
-  final int pganadas;
-  final int pjugadas;
-  final String codigo;
-  final int puntos;
-
-  UserApp({required this.nickname, required this.foto, required this.descripcion,
-  required this.pganadas, required this.pjugadas, required this.codigo, required this.puntos});
-
-  factory UserApp.fromJson(Map<String, dynamic> json) {
-    return UserApp(
-      nickname: json['nickname'],
-      foto: json['foto'],
-      descripcion: json['descripcion'],
-      pganadas: json['pganadas'],
-      pjugadas: json['pjugadas'],
-      codigo: json['codigo'],
-      puntos: json['puntos']
-    );
-  }
-}
-
-
 Future<Map<String, dynamic>?> getUser(String email, BuildContext context) async {
-  String uri = "$_getUserURL?email=$email";
+  String uri = "$_getUserURL$email";
 
   final response = await http.get(Uri.parse(uri));
 
   //print(response.statusCode);
 
   Map<String, dynamic>? datos = null;
-  if (response.statusCode == 200) {
+  if (response.statusCode == 200 || response.statusCode == 202) {
     datos = jsonDecode(response.body);
   } else {
     print('Error al hacer la solicitud: ${response.statusCode}');
   }
   datos!['0'] = 'ismaber';
   return datos;
+}
+
+Future<List<Map<String, dynamic>>?> getPartidasPendientes(String codigo, BuildContext context) async {
+  String uri = "$_getPartidasPendientesURL$codigo";
+
+  final response = await http.get(Uri.parse(uri));
+
+  //print(response.statusCode);
+
+  List<Map<String, dynamic>>? datos = null;
+  if (response.statusCode == 200 || response.statusCode == 202) {
+    datos = jsonDecode(response.body);
+  } else {
+    print('Error al hacer la solicitud: ${response.statusCode}');
+  }
+  return datos;
+}
+
+Future<List<Map<String, dynamic>>?> getAmistades(String codigo, BuildContext context) async {
+  String uri = "$_getAmistadesURL$codigo";
+
+  final response = await http.get(Uri.parse(uri));
+
+  //print(response.statusCode);
+
+  List<Map<String, dynamic>>? datos = null;
+  if (response.statusCode == 200 || response.statusCode == 202) {
+    datos = jsonDecode(response.body);
+  } else {
+    print('Error al hacer la solicitud: ${response.statusCode}');
+  }
+  return datos;
+}
+
+Future<bool> nuevoAmigo(String codigo1, String codigo2, BuildContext context) async {
+  final json = '{"emisor": $codigo1, "receptor": $codigo2}';
+
+  final response = await http.post(Uri.parse(_nuevoAmigoURL), body: json);
+
+  //print(response.statusCode);
+
+  if (context.mounted) {
+    if (response.statusCode == 200 || response.statusCode == 202) {
+      // Si el servidor devuelve una repuesta OK, parseamos el JSON
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Peticion enviada'),
+          showCloseIcon: true,
+        ),
+      );
+      Navigator.pop(context);
+      return true;
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Ha habido un error'),
+          showCloseIcon: true,
+        ),
+      );
+      return false;
+    }
+  } else {
+    return false;
+  }
+}
+
+Future<bool> editProfile(String email, String nombre, String desc, String foto, BuildContext context) async {
+  final json = '{"email": $email, "nombre": $nombre, "foto": $foto, "descripcion": $desc}';
+
+  final response = await http.post(Uri.parse(_editProfileURL), body: json);
+
+  //print(response.statusCode);
+
+  if (context.mounted) {
+    if (response.statusCode == 200 || response.statusCode == 202) {
+      // Si el servidor devuelve una repuesta OK, parseamos el JSON
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Cambios guardados'),
+          showCloseIcon: true,
+        ),
+      );
+      Navigator.pop(context);
+      Navigator.pop(context);
+      return true;
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Ha habido un error'),
+          showCloseIcon: true,
+        ),
+      );
+      return false;
+    }
+  } else {
+    return false;
+  }
+}
+
+Future<bool> changePassword(String email, String contra, BuildContext context) async {
+  final json = '{"email": $email, "contra": $contra}';
+
+  final response = await http.post(Uri.parse(_changePasswordURL), body: json);
+
+  //print(response.statusCode);
+
+  if (context.mounted) {
+    if (response.statusCode == 200 || response.statusCode == 202) {
+      // Si el servidor devuelve una repuesta OK, parseamos el JSON
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Contraseña cambiada'),
+          showCloseIcon: true,
+        ),
+      );
+      Navigator.pop(context);
+      return true;
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Ha habido un error'),
+          showCloseIcon: true,
+        ),
+      );
+      return false;
+    }
+  } else {
+    return false;
+  }
 }
