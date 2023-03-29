@@ -20,7 +20,7 @@ class _FriendsPageState extends State<FriendsPage> {
   @override
   void initState() {
     super.initState();
-    _getAmistades();
+    //_getAmistades();
   }
 
   Future<void> _getAmistades() async {
@@ -36,7 +36,7 @@ class _FriendsPageState extends State<FriendsPage> {
           Padding(
             padding: const EdgeInsets.all(10),
             child: Text('Solicitudes de amistad',
-                style: Theme.of(context).textTheme.headlineSmall),
+              style: Theme.of(context).textTheme.headlineSmall),
           ),
           SizedBox(
             height: 70,
@@ -45,13 +45,14 @@ class _FriendsPageState extends State<FriendsPage> {
               itemCount: 10,
               itemBuilder: (context, index) {
                 return GestureDetector(
-                    onTap: () {
-                      openDialog(context, const AcceptFriendDialog());
-                    },
-                    child: const Padding(
-                      padding: EdgeInsets.all(5),
-                      child: CircularBorderPicture(),
-                    ));
+                  onTap: () {
+                    openDialog(context, const AcceptFriendDialog());
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.all(5),
+                    child: CircularBorderPicture(),
+                  )
+                );
               },
             ),
           ),
@@ -75,9 +76,9 @@ class _FriendsPageState extends State<FriendsPage> {
                       ),
                     ],
                   ),
-                  subtitle: Text('perro'),
+                  subtitle: Text('perro'), //Text((amigos![index])[2])
                   trailing: Badge(
-                    label: Text('1'),
+                    label: Text('1'), //Text((amigos![index])[1])
                   ),
                   onTap: () {},
                 );

@@ -89,6 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _getUser() async {
     // saber el email con el que ha entrado el usuario, no se si pasandolo entre clases
     // o se puede de otra manera
+    // Si no se puede pasar entre clases, tiramos de variable global y ya
     user = await getUser(widget.email, context);
   }
 
