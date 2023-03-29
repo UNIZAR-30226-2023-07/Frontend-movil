@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:untitled/dialogs/save_changes_dialog.dart';
 import 'package:untitled/services/open_dialog.dart';
+import 'package:untitled/services/profile_image.dart';
+import 'package:untitled/widgets/circular_border_picture.dart';
 import '../services/image_picker.dart';
 import '../widgets/custom_filled_button.dart';
 
@@ -36,11 +38,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 MaterialPageRoute(builder: (context) => const ProfilePicture()),
               );
             },
-            icon: const Hero(
+            icon: Hero(
               tag: 'foto',
               child: CircleAvatar(
                 backgroundImage: ResizeImage(
-                  AssetImage('images/pepoclown.jpg'),
+                  AssetImage(ProfileImage.image),
                   width: 200,
                   height: 200,
                 ),
@@ -86,25 +88,64 @@ class ProfilePicture extends StatefulWidget {
 }
 
 class _ProfilePictureState extends State<ProfilePicture> {
-  File? image;
+  File? _image;
+  String _urlImage = ProfileImage.image;
+  bool _tipo = true;
 
   pickFromCamera(BuildContext context) async {
     File? aux;
     aux = await pickImageFromCamera(context);
     setState(() {
-      image = aux;
+      _tipo = true;
+      _image = aux;
     });
     if (context.mounted) Navigator.pop(context);
   }
 
-  /// Get from Camera
+  // Get from Camera
   pickFromGallery(BuildContext context) async {
     File? aux;
     aux = await pickImageFromGallery(context);
     setState(() {
-      image = aux;
+      _tipo = true;
+      _image = aux;
     });
     if (context.mounted) Navigator.pop(context);
+  }
+
+  pickFromPredefined(BuildContext context) {
+    openDialog(
+      context,
+      AlertDialog(
+        scrollable: true,
+        content: SizedBox(
+          height: 200,
+          width: 350,
+          child: GridView.count(
+            crossAxisCount: 3, // especifica 3 columnas en cada fila
+            children: List.generate(ProfileImage.urls.length, (index) {
+              return GestureDetector(
+                onTap: () {
+                  ProfileImage.changeImage(index);
+                  setState(() {
+                    _tipo = false;
+                    _urlImage = ProfileImage.urls[index]!;
+                  });
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
+                child: Container(
+                  margin: const EdgeInsets.all(5.0),
+                  child: Center(
+                      child: CircularBorderPicture(image: ProfileImage.urls[index]!,width: 100, height: 100,)
+                  ),
+                )
+              );
+            }),
+          )
+        ),
+      )
+    );
   }
 
   @override
@@ -121,26 +162,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
               SizedBox(
                 height: 250,
                 width: double.infinity,
-                child: image == null
-                    ? IconButton(
-                  padding: const EdgeInsets.all(0),
-                  onPressed: () {
-                    _openBottomSheet();
-                  },
-                  iconSize: 300,
-                  icon: const Hero(
-                    tag: 'foto',
-                    child: CircleAvatar(
-                      backgroundImage: ResizeImage(
-                        AssetImage('images/pepoclown.jpg'),
-                        width: 300,
-                        height: 300,
-                      ),
-                      radius: 100,
-                    ),
-                  ),
-                )
-                    : IconButton(
+                child: IconButton(
                   padding: const EdgeInsets.all(0),
                   onPressed: () {
                     _openBottomSheet();
@@ -148,9 +170,17 @@ class _ProfilePictureState extends State<ProfilePicture> {
                   iconSize: 300,
                   icon: Hero(
                     tag: 'foto',
-                    child: CircleAvatar(
-                      backgroundImage: FileImage(image!),
-                      radius: 100,
+                    child: (_tipo && _image != null)
+                      ? CircleAvatar(
+                        backgroundImage: FileImage(_image!),
+                        radius: 100)
+                      : CircleAvatar(
+                        backgroundImage: ResizeImage(
+                          AssetImage(_urlImage),
+                          width: 250,
+                          height: 250
+                        ),
+                        radius: 100,
                     ),
                   ),
                 ),
@@ -160,7 +190,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text( 'Nickname', style: Theme.of(context).textTheme.headlineMedium),
+                    Text('Nickname', style: Theme.of(context).textTheme.headlineMedium),
                     const TextField(
                       keyboardType: TextInputType.text,
                       decoration: InputDecoration(
@@ -211,7 +241,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
       height: 250,
       width: double.infinity,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           Text('Seleccionar foto', style: Theme.of(context).textTheme.headlineMedium),
           Row(
@@ -229,6 +259,20 @@ class _ProfilePictureState extends State<ProfilePicture> {
                     },
                   ),
                   const Text('Galería'),
+                ],
+              ),
+              Column(
+                children: [
+                  IconButton(
+                    color: Theme.of(context).colorScheme.primary,
+                    iconSize: 40,
+                    icon: const Icon(Icons.account_circle_rounded),
+                    tooltip: 'Predefinidos',
+                    onPressed: () {
+                      pickFromPredefined(context);
+                    },
+                  ),
+                  const Text('Predefinidos'),
                 ],
               ),
               Column(

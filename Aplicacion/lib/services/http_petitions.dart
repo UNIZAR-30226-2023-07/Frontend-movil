@@ -1,5 +1,3 @@
-import 'dart:js_util';
-
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -55,7 +53,7 @@ class Prueba extends StatelessWidget {
   }
 }
 
-bool _actions(http.Response response, BuildContext context,String email) {
+bool _actions(http.Response response, BuildContext context, String email) {
   if (response.statusCode == 200 || response.statusCode == 202) {
     // Si el servidor devuelve una repuesta OK, parseamos el JSON
     ScaffoldMessenger.of(context).showSnackBar(
@@ -168,5 +166,6 @@ Future<Map<String, dynamic>?> getUser(String email, BuildContext context) async 
   } else {
     print('Error al hacer la solicitud: ${response.statusCode}');
   }
+  datos!['0'] = 'ismaber';
   return datos;
 }

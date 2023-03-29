@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 class CircularBorderPicture extends StatelessWidget {
-  const CircularBorderPicture({super.key, this.width = 60, this.height = 60});
+  const CircularBorderPicture({super.key, this.image = 'images/pepoclown.jpg', this.width = 60, this.height = 60});
 
+  final String image;
   final int width;
   final int height;
 
@@ -12,7 +13,7 @@ class CircularBorderPicture extends StatelessWidget {
       children: [
         CircleAvatar(
           backgroundImage: ResizeImage(
-              const AssetImage('images/pepoclown.jpg'),
+              AssetImage(image),
               width: width * 2, height: height * 2
           ),
           radius: width / 2,

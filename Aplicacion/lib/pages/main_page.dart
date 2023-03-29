@@ -30,7 +30,13 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
-    _getUser();
+
+    //
+    //
+    // Acuerdate de esto
+    //
+    //
+    //_getUser();
   }
 
   Future<void> _getUser() async {
@@ -138,7 +144,7 @@ class TopSection extends StatelessWidget {
                 ),
               ),
               Text(
-                user![0],
+                'Ismaber', //user[0]
                 style: const TextStyle(
                   color: Colors.indigoAccent,
                   fontSize: 25,
@@ -146,7 +152,7 @@ class TopSection extends StatelessWidget {
                 ),
               ),
               Text(
-                'Puntos: ${user![6]}',
+                'Puntos: 100', //user[6]
                 style: const TextStyle(
                   color: Colors.blueGrey,
                   fontSize: 18,
