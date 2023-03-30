@@ -5,9 +5,9 @@ import '../main.dart';
 
 const String _loginURL = 'http://51.103.94.220:3001/api/auth/login';
 const String _registerURL = 'http://51.103.94.220:3001/api/auth/register';
-const String _getUserURL = 'http://51.103.94.220:3001/api/jugador/get/:';
-const String _getPartidasPendientesURL = 'http://51.103.94.220:3001/api/partidas/pendientes/get/:';
-const String _getAmistadesURL = 'http://51.103.94.220:3001/api/amistad/get/:';
+const String _getUserURL = 'http://51.103.94.220:3001/api/jugador/get/';
+const String _getPartidasPendientesURL = 'http://51.103.94.220:3001/api/partidas/pendientes/get/';
+const String _getAmistadesURL = 'http://51.103.94.220:3001/api/amistad/get/';
 const String _nuevoAmigoURL = 'http://51.103.94.220:3001/api/amistad/add';
 const String _editProfileURL = 'http://51.103.94.220:3001/api/jugador/mod';
 const String _changePasswordURL = 'http://51.103.94.220:3001/api/auth/mod-login';
@@ -133,7 +133,7 @@ Future<Map<String, dynamic>?> getUser(String email, BuildContext context) async 
   } else {
     print('Error al hacer la solicitud: ${response.statusCode}');
   }
-  datos!['0'] = 'ismaber';
+  //datos!['0'] = 'ismaber';
   return datos;
 }
 
@@ -153,14 +153,14 @@ Future<List<Map<String, dynamic>>?> getPartidasPendientes(String codigo, BuildCo
   return datos;
 }
 
-Future<List<Map<String, dynamic>>?> getAmistades(String codigo, BuildContext context) async {
+Future <Map<String, dynamic>?> getAmistades(String codigo, BuildContext context) async {
   String uri = "$_getAmistadesURL$codigo";
 
   final response = await http.get(Uri.parse(uri));
 
   //print(response.statusCode);
 
-  List<Map<String, dynamic>>? datos = null;
+  Map<String, dynamic>? datos = null;
   if (response.statusCode == 200 || response.statusCode == 202) {
     datos = jsonDecode(response.body);
   } else {

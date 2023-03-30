@@ -8,7 +8,8 @@ import '../services/image_picker.dart';
 import '../widgets/custom_filled_button.dart';
 
 class EditProfilePage extends StatefulWidget {
-  final String nombre, foto, desc, email;
+  final String nombre, desc, email;
+  final int foto;
   EditProfilePage(
       {required this.nombre,
       required this.foto,
@@ -19,9 +20,10 @@ class EditProfilePage extends StatefulWidget {
   State<EditProfilePage> createState() => _EditProfilePageState();
 }
 
-class _EditProfilePageState extends State<EditProfilePage> {
+class _EditProfilePageState extends State<EditProfilePage>{
   @override
   Widget build(BuildContext context) {
+    String descrp = widget.desc.length > 20 ? widget.desc.substring(0, 20) + '...' : widget.desc;
     return Row(
       children: [
         Container(
@@ -72,7 +74,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               height: 10,
             ),
             Text(
-              widget.desc,
+              descrp,
               style: const TextStyle(
                 color: Colors.blueGrey,
                 fontSize: 18,

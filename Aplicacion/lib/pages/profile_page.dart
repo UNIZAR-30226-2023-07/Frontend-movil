@@ -16,7 +16,7 @@ class _ProfilePageState extends State<ProfilePage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            EditProfilePage(nombre: widget.user[0], foto: widget.user[1], desc: widget.user[2], email: widget.email),
+            EditProfilePage(nombre: widget.user["nombre"], foto: widget.user["foto"], desc: widget.user["descrp"], email: widget.email),
             Container(
               padding: const EdgeInsets.all(20),
               child: Row(
@@ -31,7 +31,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        widget.user![4],
+                        '${widget.user!["pjugadas"]}',
                         style: TextStyle(
                           color: Colors.blueGrey,
                           fontSize: 20,
@@ -55,7 +55,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                       Text(
-                        widget.user![3]/widget.user![4]*100 + '%',
+                        '${widget.user!["pganadas"]~/widget.user!["pjugadas"]*100}%',
                         style: const TextStyle(
                           color: Colors.blueGrey,
                           fontSize: 20,
@@ -79,7 +79,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                       Text(
-                        widget.user![6],
+                        '${widget.user!["puntos"]}',
                         style: TextStyle(
                           color: Colors.blueGrey,
                           fontSize: 20,

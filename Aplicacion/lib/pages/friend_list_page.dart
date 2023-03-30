@@ -16,21 +16,36 @@ class _FriendsPageState extends State<FriendsPage> {
   // 0 - codigo amigo;
   // 1 - mensajes sin leer;
   // 2 - descripcion
-  List<Map<String, dynamic>>? amigos;
+  Map<String, dynamic>? amigos;
+  bool _load = false;
+  late List<dynamic> lista_amigos;
   @override
   void initState() {
     super.initState();
-    //_getAmistades();
+    _getAmistades();
   }
 
   Future<void> _getAmistades() async {
+    if(widget.codigo == "#admin"){
+      _load = true;
+      setState(() { });
+      lista_amigos = [
+        [{'Nombre': 'Amigo falso', 'Descp': 'Hola', 'Foto': '2'}]
+      ];
+    }
     amigos = await getAmistades(widget.codigo, context);
+    lista_amigos = amigos!.values.toList();
+    _load = true;
+    setState(() { });
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
-      body: Column(
+      body: !_load
+          ? Center(child: CircularProgressIndicator())
+          :Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
@@ -63,20 +78,20 @@ class _FriendsPageState extends State<FriendsPage> {
           ),
           Expanded(
             child: ListView.separated(
-              itemCount: 20,
+              itemCount: lista_amigos[0].length,
               itemBuilder: (context, index) {
                 return ListTile(
                   leading: CircularBorderPicture(),
                   title: Row(
-                    children: const [
+                    children:  [
                       Text(
-                        'Amigo falso',
-                        style: TextStyle(
+                        (lista_amigos[0][index])["Nombre"],
+                        style: const TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
-                  subtitle: Text('perro'), //Text((amigos![index])[2])
+                  subtitle: Text((lista_amigos[0][index])["Descp"]),
                   trailing: Badge(
                     label: Text('1'), //Text((amigos![index])[1])
                   ),

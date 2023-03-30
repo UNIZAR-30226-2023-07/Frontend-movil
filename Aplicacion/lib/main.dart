@@ -79,24 +79,43 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   late List<Widget> _widgetOptions;
+  bool _load = false;
   @override
   void initState() {
     super.initState();
     _getUser();
-    _widgetOptions = getWidgetOptions(user!, widget.email);
   }
 
   Future<void> _getUser() async {
     // saber el email con el que ha entrado el usuario, no se si pasandolo entre clases
     // o se puede de otra manera
     // Si no se puede pasar entre clases, tiramos de variable global y ya
+    if(widget.email == "#admin"){
+      _load = true;
+      setState(() { });
+    }
     user = await getUser(widget.email, context);
+    if (user == null){
+        user = {
+          "nombre": "Ismaber",
+          "codigo": "#admin",
+          "puntos": 200,
+          "pganadas": 100,
+          "pjugadas": 200,
+          "foto": 0,
+          "descrp": "hola"
+        };
+    }
+      print(user);
+    _widgetOptions = getWidgetOptions(user!, widget.email);
+    _load = true;
+    setState(() { });
   }
 
   static List<Widget> getWidgetOptions(Map<String, dynamic> user, String email) {
     return [
       MainPage(user: user),
-      FriendsPage(codigo: user[5]),
+      FriendsPage(codigo: user["codigo"]),
       ProfilePage(user: user, email: email),
     ];
   }
@@ -141,7 +160,9 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: Center(
+      body: !_load
+          ? Center(child: CircularProgressIndicator())
+          :Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(

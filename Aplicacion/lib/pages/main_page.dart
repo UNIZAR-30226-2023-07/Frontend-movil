@@ -16,7 +16,7 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  final Map<String, dynamic> user;
+  late final Map<String, dynamic> user;
   _MainPageState(this.user);
 
   @override
@@ -55,7 +55,7 @@ class _MainPageState extends State<MainPage> {
             Expanded(
               child: TabBarView(
                 children: [
-                  TournamentTab(codigo: user![0]),
+                  TournamentTab(codigo: user!["codigo"]),
                   RankingTab(),
                 ],
               ),
@@ -117,7 +117,7 @@ class TopSection extends StatelessWidget {
                 ),
               ),
               Text(
-                'Ismaber', //user[0]
+                user["nombre"],
                 style: const TextStyle(
                   color: Colors.indigoAccent,
                   fontSize: 25,
@@ -125,7 +125,7 @@ class TopSection extends StatelessWidget {
                 ),
               ),
               Text(
-                'Puntos: 100', //user[6]
+                'Puntos: ${user["puntos"]}',
                 style: const TextStyle(
                   color: Colors.blueGrey,
                   fontSize: 18,
@@ -210,8 +210,10 @@ class _TournamentTabState extends State<TournamentTab> {
               color: Colors.amber,
             ),
           ),
-          title: Text('Partida de ' + (pendientes![index])[1]),
-          subtitle: Text('Codigo: ' + (pendientes![index])[0]),
+          title: Text(
+              "partida de"), //Text('Partida de ' + (pendientes![index])[1]),
+          subtitle:
+              Text("codigo"), //Text('Codigo: ' + (pendientes![index])[0]),
           onTap: () {
             Navigator.push(
                 context,
