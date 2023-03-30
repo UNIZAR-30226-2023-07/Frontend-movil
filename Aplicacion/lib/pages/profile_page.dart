@@ -55,7 +55,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                       Text(
-                        '${widget.user!["pganadas"]~/widget.user!["pjugadas"]*100}%',
+                        '${widget.user!["pganadas"]*100~/widget.user!["pjugadas"]}%',
                         style: const TextStyle(
                           color: Colors.blueGrey,
                           fontSize: 20,

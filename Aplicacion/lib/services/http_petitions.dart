@@ -133,6 +133,17 @@ Future<Map<String, dynamic>?> getUser(String email, BuildContext context) async 
   } else {
     print('Error al hacer la solicitud: ${response.statusCode}');
   }
+  if(email == "admin") {
+    datos = {
+      "nombre": "Ismaber",
+      "codigo": "#admin",
+      "puntos": 200,
+      "pganadas": 100,
+      "pjugadas": 200,
+      "foto": 0,
+      "descrp": "hola"
+    };
+  }
   //datos!['0'] = 'ismaber';
   return datos;
 }

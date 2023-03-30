@@ -95,17 +95,17 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() { });
     }
     user = await getUser(widget.email, context);
-    if (user == null){
-        user = {
-          "nombre": "Ismaber",
-          "codigo": "#admin",
-          "puntos": 200,
-          "pganadas": 100,
-          "pjugadas": 200,
-          "foto": 0,
-          "descrp": "hola"
-        };
-    }
+    // if (user == null){
+    //     user = {
+    //       "nombre": "Ismaber",
+    //       "codigo": "#admin",
+    //       "puntos": 200,
+    //       "pganadas": 100,
+    //       "pjugadas": 200,
+    //       "foto": 0,
+    //       "descrp": "hola"
+    //     };
+    // }
       print(user);
     _widgetOptions = getWidgetOptions(user!, widget.email);
     _load = true;

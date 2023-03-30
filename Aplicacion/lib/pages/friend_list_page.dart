@@ -77,7 +77,8 @@ class _FriendsPageState extends State<FriendsPage> {
                 style: Theme.of(context).textTheme.headlineSmall),
           ),
           Expanded(
-            child: ListView.separated(
+            child: lista_amigos.isNotEmpty
+                ? Container() : ListView.separated(
               itemCount: lista_amigos[0].length,
               itemBuilder: (context, index) {
                 return ListTile(
