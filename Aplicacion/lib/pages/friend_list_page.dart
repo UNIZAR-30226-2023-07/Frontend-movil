@@ -33,7 +33,7 @@ class _FriendsPageState extends State<FriendsPage> {
         [{'Nombre': 'Amigo falso', 'Descp': 'Hola', 'Foto': '2'}]
       ];
     }
-    amigos = await getAmistades(widget.codigo, context);
+    amigos = await getAmistades(widget.codigo);
     lista_amigos = amigos!.values.toList();
     _load = true;
     setState(() { });
@@ -44,8 +44,8 @@ class _FriendsPageState extends State<FriendsPage> {
 
     return Scaffold(
       body: !_load
-          ? Center(child: CircularProgressIndicator())
-          :Column(
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(

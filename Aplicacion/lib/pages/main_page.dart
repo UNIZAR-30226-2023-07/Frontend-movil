@@ -160,7 +160,7 @@ class TopSection extends StatelessWidget {
                       onPressed: () {
                         openDialog(context, const CreateGameDialog());
                       },
-                      child: Text('Crear partida'),
+                      child: const Text('Crear partida'),
                     ),
                   ),
                 ),
@@ -193,7 +193,7 @@ class _TournamentTabState extends State<TournamentTab> {
   }
 
   Future<void> _getPartidasPendientes() async {
-    pendientes = await getPartidasPendientes(widget.codigo, context);
+    pendientes = await getPartidasPendientes(widget.codigo);
   }
 
   @override

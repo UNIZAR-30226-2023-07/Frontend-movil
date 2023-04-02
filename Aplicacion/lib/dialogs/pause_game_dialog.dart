@@ -15,11 +15,8 @@ class PauseGameDialog extends StatelessWidget {
         FilledButton(
           onPressed: () {
             Navigator.pop(context);
-            Navigator.pushReplacement(
-              context,
-              // poder pasar el email
-              MaterialPageRoute(builder: (context) => MyHomePage(email: "a@gmail.com",))
-            );
+            Navigator.pop(context);
+            Navigator.pop(context);
           },
           child: const Text('Guardar y Salir'),
         ),

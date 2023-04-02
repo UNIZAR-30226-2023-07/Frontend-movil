@@ -22,14 +22,34 @@ import 'themes/theme_manager.dart';
 // 6 - puntos;
 Map<String, dynamic>? user;
 
+Future<bool> _startPage() async {
+  bool existsRememberMe = LocalStorage.prefs.getBool('rememberMe') != null;
+  bool rememberMe;
+  if (existsRememberMe) {
+    rememberMe = LocalStorage.prefs.getBool('rememberMe') as bool;
+    bool existsEmail = LocalStorage.prefs.getString('email') != null;
+    bool existsPassword = LocalStorage.prefs.getString('password') != null;
+    if (rememberMe && existsEmail && existsPassword) {
+      String emailAux = LocalStorage.prefs.getString('email') as String;
+      String passwordAux = LocalStorage.prefs.getString('password') as String;
+      bool res = await login(emailAux, passwordAux);
+      return res;
+    }
+  }
+  return false;
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await LocalStorage.configurePrefs();
-  runApp(const MyApp());
+  bool res = await _startPage();
+  runApp(MyApp(res: res));
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  const MyApp({super.key, required this.res});
+
+  final bool res;
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -63,7 +83,9 @@ class _MyAppState extends State<MyApp> {
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: themeManager.themeMode,
-      home: const Login(),
+      home: (widget.res)
+        ? MyHomePage(email: LocalStorage.prefs.getString('email') as String)
+        : const Login(),
     );
   }
 }
@@ -94,7 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _load = true;
       setState(() { });
     }
-    user = await getUser(widget.email, context);
+    user = await getUser(widget.email);
     // if (user == null){
     //     user = {
     //       "nombre": "Ismaber",

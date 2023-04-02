@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:untitled/services/http_petitions.dart';
+import '../services/open_snack_bar.dart';
 import 'login_page.dart';
 
 final _passwordKey = GlobalKey<FormState>();
@@ -72,6 +73,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                   const Text('Introduce el correo asociado a la cuenta en la que quieres cambiar la contraseña'),
                                   const SizedBox(height: 20,),
                                   TextFormField(
+                                    controller: _email,
                                     keyboardType: TextInputType.emailAddress,
                                     decoration: InputDecoration(
                                       labelText: 'Email',
@@ -167,11 +169,20 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                     child: FilledButton(
                                       onPressed: () async {
                                         if(_passwordKey.currentState!.validate()) {
-                                          bool res = await changePassword(_email.text, _password.text, context);
+                                          print(_email.text);
+                                          bool res = await changePassword(_email.text, _password.text);
                                           if (!res) {
+                                            if (context.mounted) {
+                                              openSnackBar(context, const Text('Ha habido un error'));
+                                            }
                                             setState(() {
                                               _emailError = 'El email no existe';
                                             });
+                                          } else {
+                                            if (context.mounted) {
+                                              openSnackBar(context, const Text('Contraseña cambiada'));
+                                              Navigator.pop(context);
+                                            }
                                           }
                                         }
                                       },

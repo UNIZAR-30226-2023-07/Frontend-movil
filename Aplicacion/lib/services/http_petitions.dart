@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../main.dart';
+import 'package:untitled/services/open_snack_bar.dart';
+import '../services/encrypt_password.dart';
 
 const String _loginURL = 'http://51.103.94.220:3001/api/auth/login';
 const String _registerURL = 'http://51.103.94.220:3001/api/auth/register';
@@ -58,69 +59,32 @@ class Prueba extends StatelessWidget {
   }
 }
 
-bool _actions(http.Response response, BuildContext context, String email) {
-  if (response.statusCode == 200 || response.statusCode == 202) {
-    // Si el servidor devuelve una repuesta OK, parseamos el JSON
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Bienvenido'),
-        showCloseIcon: true,
-      ),
-    );
-    Navigator.pushReplacement(
-      context,
-      // pasar el email con el que se ha registrado el usuario para luego poder hacer consultas
-      MaterialPageRoute(builder: (context) => MyHomePage(email: email)),
-    );
-    return true;
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Ha habido un error'),
-        showCloseIcon: true,
-      ),
-    );
-    return false;
-  }
-}
 
-Future<bool> login(final String email, String password, BuildContext context) async {
-  if (email == 'admin') {
-    Navigator.pushReplacement(
-      context,
-      //pasar el email para saber con cual esta registrado
-      MaterialPageRoute(builder: (context) => MyHomePage(email: email)),
-    );
-    return true;
-  }
-  final json = '{"email": "$email", "contra": "$password"}';
+
+Future<bool> login(String email, String password) async {
+  String encryptedPassword = encryptPassword(password);
+  final json = '{"email": "$email", "contra": "$encryptedPassword"}';
 
   final response = await http.post(Uri.parse(_loginURL), body: json);
 
-  //print(response.statusCode);
+  print(response.statusCode);
+  print(response.body);
 
-  if (context.mounted) {
-    return _actions(response, context, email);
-  } else {
-    return false;
-  }
+  return response.statusCode == 200 || response.statusCode == 202;
 }
 
-Future<bool> register(String nickname, String email, String password, BuildContext context) async {
-  final json = '{"nombre": $nickname, "email": $email, "contra": $password}';
+Future<bool> register(String nickname, String email, String password) async {
+  String encryptedPassword = encryptPassword(password);
+  final json = '{"nombre": $nickname, "email": $email, "contra": $encryptedPassword}';
 
   final response = await http.post(Uri.parse(_registerURL), body: json);
 
   //print(response.statusCode);
 
-  if (context.mounted) {
-    return _actions(response, context, email);
-  } else {
-    return false;
-  }
+  return response.statusCode == 200 || response.statusCode == 202;
 }
 
-Future<Map<String, dynamic>?> getUser(String email, BuildContext context) async {
+Future<Map<String, dynamic>?> getUser(String email) async {
   String uri = "$_getUserURL$email";
 
   final response = await http.get(Uri.parse(uri));
@@ -148,7 +112,7 @@ Future<Map<String, dynamic>?> getUser(String email, BuildContext context) async 
   return datos;
 }
 
-Future<List<Map<String, dynamic>>?> getPartidasPendientes(String codigo, BuildContext context) async {
+Future<List<Map<String, dynamic>>?> getPartidasPendientes(String codigo) async {
   String uri = "$_getPartidasPendientesURL$codigo";
 
   final response = await http.get(Uri.parse(uri));
@@ -164,7 +128,7 @@ Future<List<Map<String, dynamic>>?> getPartidasPendientes(String codigo, BuildCo
   return datos;
 }
 
-Future <Map<String, dynamic>?> getAmistades(String codigo, BuildContext context) async {
+Future <Map<String, dynamic>?> getAmistades(String codigo) async {
   String uri = "$_getAmistadesURL$codigo";
 
   final response = await http.get(Uri.parse(uri));
@@ -180,99 +144,34 @@ Future <Map<String, dynamic>?> getAmistades(String codigo, BuildContext context)
   return datos;
 }
 
-Future<bool> nuevoAmigo(String codigo1, String codigo2, BuildContext context) async {
+Future<bool> nuevoAmigo(String codigo1, String codigo2) async {
   final json = '{"emisor": $codigo1, "receptor": $codigo2}';
 
   final response = await http.post(Uri.parse(_nuevoAmigoURL), body: json);
 
   //print(response.statusCode);
 
-  if (context.mounted) {
-    if (response.statusCode == 200 || response.statusCode == 202) {
-      // Si el servidor devuelve una repuesta OK, parseamos el JSON
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Peticion enviada'),
-          showCloseIcon: true,
-        ),
-      );
-      Navigator.pop(context);
-      return true;
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Ha habido un error'),
-          showCloseIcon: true,
-        ),
-      );
-      return false;
-    }
-  } else {
-    return false;
-  }
+  return response.statusCode == 200 || response.statusCode == 202;
 }
 
-Future<bool> editProfile(String email, String nombre, String desc, String foto, BuildContext context) async {
+Future<bool> editProfile(String email, String nombre, String desc, String foto) async {
   final json = '{"email": $email, "nombre": $nombre, "foto": $foto, "descripcion": $desc}';
 
   final response = await http.post(Uri.parse(_editProfileURL), body: json);
 
   //print(response.statusCode);
 
-  if (context.mounted) {
-    if (response.statusCode == 200 || response.statusCode == 202) {
-      // Si el servidor devuelve una repuesta OK, parseamos el JSON
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Cambios guardados'),
-          showCloseIcon: true,
-        ),
-      );
-      Navigator.pop(context);
-      Navigator.pop(context);
-      return true;
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Ha habido un error'),
-          showCloseIcon: true,
-        ),
-      );
-      return false;
-    }
-  } else {
-    return false;
-  }
+  return response.statusCode == 200 || response.statusCode == 202;
 }
 
-Future<bool> changePassword(String email, String contra, BuildContext context) async {
-  final json = '{"email": $email, "contra": $contra}';
+Future<bool> changePassword(String email, String password) async {
+  String encryptedPassword = encryptPassword(password);
+  final json = '{"email": "$email", "contra": "$encryptedPassword"}';
 
   final response = await http.post(Uri.parse(_changePasswordURL), body: json);
 
   //print(response.statusCode);
+  //print(response.body);
 
-  if (context.mounted) {
-    if (response.statusCode == 200 || response.statusCode == 202) {
-      // Si el servidor devuelve una repuesta OK, parseamos el JSON
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Contraseña cambiada'),
-          showCloseIcon: true,
-        ),
-      );
-      Navigator.pop(context);
-      return true;
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Ha habido un error'),
-          showCloseIcon: true,
-        ),
-      );
-      return false;
-    }
-  } else {
-    return false;
-  }
+  return response.statusCode == 200 || response.statusCode == 202 ;
 }

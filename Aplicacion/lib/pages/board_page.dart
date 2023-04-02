@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:playing_cards/playing_cards.dart';
 import 'package:untitled/dialogs/pause_game_dialog.dart';
+import 'package:untitled/services/audio_manager.dart';
 import '../pages/chat_page.dart';
 import '../widgets/circular_border_picture.dart';
 
@@ -66,6 +67,18 @@ class BoardPage extends StatefulWidget {
 }
 
 class _BoardPageState extends State<BoardPage>{
+
+  @override
+  void initState() {
+    super.initState();
+    AudioManager.toggleBGM(true);
+  }
+
+  @override
+  void dispose() {
+    AudioManager.toggleBGM(false);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

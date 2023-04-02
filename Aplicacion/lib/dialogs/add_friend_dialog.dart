@@ -6,8 +6,8 @@ final addFriendFormKey = GlobalKey<FormState>();
 
 class AddFriendDialog extends StatelessWidget {
   final String codigo;
-  final TextEditingController id_amigo = TextEditingController();
-  AddFriendDialog({required this.codigo});
+  final TextEditingController idAmigo = TextEditingController();
+  AddFriendDialog({super.key, required this.codigo});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,7 @@ class AddFriendDialog extends StatelessWidget {
       content: Form(
         key: addFriendFormKey,
         child: TextFormField(
-          controller: id_amigo,
+          controller: idAmigo,
           autofocus: true,
           keyboardType: TextInputType.text,
           decoration: const InputDecoration(
@@ -37,9 +37,13 @@ class AddFriendDialog extends StatelessWidget {
         FilledButton(
           onPressed: () async {
             if(addFriendFormKey.currentState!.validate()) {
-              bool res = await nuevoAmigo(codigo, id_amigo.text, context);
-              if (!res) {
-                openSnackBar(context, const Text('No se ha podido añadir'));
+              bool res = await nuevoAmigo(codigo, idAmigo.text);
+              if (context.mounted) {
+                if (!res) {
+                  openSnackBar(context, const Text('No se ha podido enviar la petición'));
+                } else {
+                  openSnackBar(context, const Text('Petición enviada'));
+                }
                 Navigator.pop(context);
               }
             }

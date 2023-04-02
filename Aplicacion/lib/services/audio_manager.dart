@@ -2,17 +2,25 @@ import 'package:audioplayers/audioplayers.dart';
 
 class AudioManager {
   static final _BGMPlayer = AudioPlayer();
+  static bool _BGMplay = false;
 
   static final _SFXPlayer = AudioPlayer();
+  static bool _SFXPlay = false;
+
+  static Future<void> playBGM(bool value) async {
+    _BGMplay = value;
+  }
 
   static Future<void> toggleBGM(bool value) async {
-    if (value) {
-      _BGMPlayer.setReleaseMode(ReleaseMode.LOOP);
-      final player = AudioCache(prefix: 'music/');
-      final url = await player.load('musiquita.mp3');
-      await _BGMPlayer.play(url.path, isLocal: true);
-    } else {
-      await _BGMPlayer.release();
+    if(_BGMplay) {
+      if (value) {
+        _BGMPlayer.setReleaseMode(ReleaseMode.LOOP);
+        final player = AudioCache(prefix: 'music/');
+        final url = await player.load('musiquita.mp3');
+        await _BGMPlayer.play(url.path, isLocal: true);
+      } else {
+        await _BGMPlayer.release();
+      }
     }
   }
 
@@ -32,14 +40,20 @@ class AudioManager {
     }
   }
 
+  static Future<void> playSFX(bool value) async {
+    _SFXPlay = value;
+  }
+
   static Future<void> toggleSFX(bool value) async {
-    if (value) {
-      _SFXPlayer.setReleaseMode(ReleaseMode.LOOP);
-      final player = AudioCache(prefix: 'music/');
-      final url = await player.load('musiquita.mp3');
-      await _SFXPlayer.play(url.path, isLocal: true);
-    } else {
-      await _SFXPlayer.release();
+    if (_SFXPlay) {
+      if (value) {
+        _SFXPlayer.setReleaseMode(ReleaseMode.LOOP);
+        final player = AudioCache(prefix: 'music/');
+        final url = await player.load('musiquita.mp3');
+        await _SFXPlayer.play(url.path, isLocal: true);
+      } else {
+        await _SFXPlayer.release();
+      }
     }
   }
 

@@ -149,7 +149,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 Switch.adaptive(
                   value: _musicOn,
                   onChanged: (bool value){
-                    AudioManager.toggleBGM(value);
+                    AudioManager.playBGM(value);
                     setState(() {
                       _musicOn = value;
                     });
@@ -197,7 +197,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 Switch.adaptive(
                   value: _soundEffectsOn,
                   onChanged: (bool value){
-                    AudioManager.toggleSFX(value);
+                    AudioManager.playSFX(value);
                     setState(() {
                       _soundEffectsOn = value;
                     });

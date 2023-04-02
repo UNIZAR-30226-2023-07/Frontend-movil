@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'login_page.dart';
+import '../services/open_snack_bar.dart';
 import '../services/http_petitions.dart';
+import '../main.dart';
 
 final _registerKey = GlobalKey<FormState>();
 
@@ -25,6 +27,18 @@ class _RegisterPageState extends State<RegisterPage> {
   String _nicknameError = '';
   String _emailError = '';
   String _passwordError = '';
+
+  void _actions(bool response, BuildContext context, String email) {
+    if (response) {
+      openSnackBar(context, const Text('Bienvenido'));
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MyHomePage(email: email)),
+      );
+    } else {
+      openSnackBar(context, const Text('Ha habido un error'));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -184,13 +198,17 @@ class _RegisterPageState extends State<RegisterPage> {
                                     child: FilledButton(
                                       onPressed: () async {
                                         if(_registerKey.currentState!.validate()) {
-                                          bool res = await register(_nickname.text, _email.text, _password.text, context);
+                                          bool res = await register(_nickname.text, _email.text, _password.text);
                                           if (!res) {
                                             setState(() {
                                               _nicknameError = 'El email o la contraseña no coinciden';
                                               _emailError = 'El email o la contraseña no coinciden';
                                               _passwordError = 'El email o la contraseña no coinciden';
                                             });
+                                          } else {
+                                            if (context.mounted) {
+                                              return _actions(res, context, _email.text);
+                                            }
                                           }
                                         }
                                       },
