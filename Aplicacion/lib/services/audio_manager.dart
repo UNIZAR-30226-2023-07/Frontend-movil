@@ -1,4 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'local_storage.dart';
 
 class AudioManager {
   static final _BGMPlayer = AudioPlayer();
@@ -6,6 +7,23 @@ class AudioManager {
 
   static final _SFXPlayer = AudioPlayer();
   static bool _SFXPlay = false;
+
+  static void startAudio() {
+    if(LocalStorage.prefs.getBool('musicOn') != null) {
+      _BGMplay = LocalStorage.prefs.getBool('musicOn') as bool;
+    }
+    if(LocalStorage.prefs.getDouble('musicValue') != null) {
+      double musicValue = LocalStorage.prefs.getDouble('musicValue') as double;
+      _BGMPlayer.setVolume(musicValue);
+    }
+    if(LocalStorage.prefs.getBool('soundEffectsOn') != null) {
+      _SFXPlay = LocalStorage.prefs.getBool('soundEffectsOn') as bool;
+    }
+    if(LocalStorage.prefs.getDouble('soundEffectsValue') != null) {
+      double soundEffectsValue = LocalStorage.prefs.getDouble('soundEffectsValue') as double;
+      _SFXPlayer.setVolume(soundEffectsValue);
+    }
+  }
 
   static Future<void> playBGM(bool value) async {
     _BGMplay = value;
@@ -16,7 +34,7 @@ class AudioManager {
       if (value) {
         _BGMPlayer.setReleaseMode(ReleaseMode.LOOP);
         final player = AudioCache(prefix: 'music/');
-        final url = await player.load('musiquita.mp3');
+        final url = await player.load('musiquita2.mp3');
         await _BGMPlayer.play(url.path, isLocal: true);
       } else {
         await _BGMPlayer.release();

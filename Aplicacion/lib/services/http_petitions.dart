@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:untitled/services/open_snack_bar.dart';
 import '../services/encrypt_password.dart';
 
-const String _loginURL = 'http://51.103.94.220:3001/api/auth/login';
-const String _registerURL = 'http://51.103.94.220:3001/api/auth/register';
-const String _getUserURL = 'http://51.103.94.220:3001/api/jugador/get/';
-const String _getPartidasPendientesURL = 'http://51.103.94.220:3001/api/partidas/pendientes/get/';
-const String _getAmistadesURL = 'http://51.103.94.220:3001/api/amistad/get/';
-const String _nuevoAmigoURL = 'http://51.103.94.220:3001/api/amistad/add';
-const String _editProfileURL = 'http://51.103.94.220:3001/api/jugador/mod';
-const String _changePasswordURL = 'http://51.103.94.220:3001/api/auth/mod-login';
+const String _IP = '52.174.124.24';
+const String _PUERTO = '3001';
+
+const String _loginURL = 'http://$_IP:$_PUERTO/api/auth/login';
+const String _registerURL = 'http://$_IP:$_PUERTO/api/auth/register';
+const String _getUserURL = 'http://$_IP:$_PUERTO/api/jugador/get/';
+const String _getPartidasPendientesURL = 'http://$_IP:$_PUERTO/api/partidas/pendientes/get/';
+const String _getAmistadesURL = 'http://$_IP:$_PUERTO/api/amistad/get/';
+const String _nuevoAmigoURL = 'http://$_IP:$_PUERTO/api/amistad/add';
+const String _editProfileURL = 'http://$_IP:$_PUERTO/api/jugador/mod';
+const String _changePasswordURL = 'http://$_IP:$_PUERTO/api/auth/mod-login';
 
 class User {
   final String nickname;

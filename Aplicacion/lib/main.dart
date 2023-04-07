@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:untitled/pages/board_page.dart';
+import 'package:untitled/services/audio_manager.dart';
 import 'package:untitled/services/http_petitions.dart';
 import 'dialogs/close_session_dialog.dart';
 import 'package:untitled/services/open_dialog.dart';
@@ -42,6 +44,7 @@ Future<bool> _startPage() async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await LocalStorage.configurePrefs();
+  AudioManager.startAudio();
   bool res = await _startPage();
   runApp(MyApp(res: res));
 }
