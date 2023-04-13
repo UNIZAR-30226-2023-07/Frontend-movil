@@ -137,6 +137,7 @@ class _BoardPageState extends State<BoardPage>{
                         borderRadius: BorderRadius.circular(10)
                       ),
                       child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
                         onTap: () {
                           if (modo == 1 && descarte != null) {
                             PlayingCard temp = PlayingCard(
@@ -167,14 +168,14 @@ class _BoardPageState extends State<BoardPage>{
                             }
                           }
                         },
-                        child: descarte == null ? SizedBox(
+                        child: descarte == null ? Container(
                           height: 100,
                           width: 70,
                         )
                             : PlayingCardView(
-                          card: descarte!, style: setStyle(),),
+                          card: descarte!, style: setStyle(),
+                        ),
                       ),
-
                     ),
                     Column(
                       children: [
