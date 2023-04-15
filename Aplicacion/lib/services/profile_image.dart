@@ -17,4 +17,9 @@ class ProfileImage {
   static void changeImage(int option) {
     image = urls[option]!;
   }
+
+  static int getIndex(){
+    int index = urls.values.toList().indexOf(image);
+    return index;
+  }
 }

@@ -5,6 +5,7 @@ import '../dialogs/create_game_dialog.dart';
 import '../services/http_petitions.dart';
 import '../widgets/circular_border_picture.dart';
 import '../services/open_dialog.dart';
+import '../services/profile_image.dart';
 
 class MainPage extends StatefulWidget {
   final Map<String, dynamic>? user;
@@ -56,7 +57,7 @@ class _MainPageState extends State<MainPage> {
               child: TabBarView(
                 children: [
                   TournamentTab(codigo: user!["codigo"]),
-                  RankingTab(),
+                  RankingTab(codigo: user!["codigo"]),
                 ],
               ),
             ),
@@ -73,6 +74,7 @@ class TopSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ProfileImage.changeImage(user["foto"]%6);
     return SizedBox(
       height: 220,
       child: Stack(
@@ -107,9 +109,9 @@ class TopSection extends StatelessWidget {
                     width: 3.0,
                   ),
                 ),
-                child: const CircleAvatar(
+                child: CircleAvatar(
                   backgroundImage: ResizeImage(
-                    AssetImage('images/pepoclown.jpg'),
+                    AssetImage(ProfileImage.image),
                     width: 140,
                     height: 140,
                   ),
@@ -222,73 +224,114 @@ class _TournamentTabState extends State<TournamentTab> {
           },
         );
       },
+
       separatorBuilder: (context, index) => const Divider(),
     );
   }
 }
 
-class RankingTab extends StatelessWidget {
-  const RankingTab({super.key});
+class RankingTab extends StatefulWidget {
+  final String codigo;
+
+  const RankingTab({Key? key, required this.codigo}) : super(key: key);
+
+  @override
+  _RankingTabState createState() => _RankingTabState();
+}
+
+class _RankingTabState extends State<RankingTab> {
+
+  Map<String, dynamic>? amigos;
+  bool _load = false;
+  late List<dynamic> lista_amigos;
+  @override
+  void initState() {
+    super.initState();
+    _getAmistades();
+  }
+
+  Future<void> _getAmistades() async {
+    if(widget.codigo == "#admin"){
+      _load = true;
+      lista_amigos = [      [{'Nombre': 'Amigo falso', 'Descp': 'Hola', 'Foto': '2'}]
+      ];
+    }
+    amigos = await getAmistades(widget.codigo);
+    lista_amigos = amigos!.values.toList();
+    _load = true;
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      itemCount: 101,
-      itemBuilder: (context, index) {
-        return ListTile(
-          contentPadding: const EdgeInsets.all(10),
-          leading: SizedBox(
-            width: 120,
-            child: Row(
+    if(_load){
+    if (lista_amigos[0] != null) {
+      return ListView.separated(
+        itemCount: lista_amigos[0].length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            contentPadding: const EdgeInsets.all(10),
+            leading: SizedBox(
+              width: 120,
+              child: Row(
+                children: [
+                  (index == 0)
+                      ? const Icon(
+                    Icons.wine_bar,
+                    color: Colors.amber,
+                    size: 35,
+                  )
+                      : (index == 1)
+                      ? const Icon(
+                    Icons.wine_bar,
+                    color: Colors.grey,
+                    size: 35,
+                  )
+                      : (index == 2)
+                      ? const Icon(
+                    Icons.wine_bar,
+                    color: Colors.deepOrangeAccent,
+                    size: 35,
+                  )
+                      : Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Text(
+                      '$index',
+                      style: const TextStyle(
+                          fontSize: 25, color: Colors.indigoAccent),
+                    ),
+                  ),
+                  const Spacer(),
+                  CircularBorderPicture(image: ProfileImage
+                      .urls[(lista_amigos[0][index])["Foto"] % 6]!,),
+                ],
+              ),
+            ),
+            title: Row(
               children: [
-                (index == 0)
-                    ? const Icon(
-                        Icons.wine_bar,
-                        color: Colors.amber,
-                        size: 35,
-                      )
-                    : (index == 1)
-                        ? const Icon(
-                            Icons.wine_bar,
-                            color: Colors.grey,
-                            size: 35,
-                          )
-                        : (index == 2)
-                            ? const Icon(
-                                Icons.wine_bar,
-                                color: Colors.deepOrangeAccent,
-                                size: 35,
-                              )
-                            : Padding(
-                                padding: const EdgeInsets.only(left: 8.0),
-                                child: Text(
-                                  '$index',
-                                  style: const TextStyle(
-                                      fontSize: 25, color: Colors.indigoAccent),
-                                ),
-                              ),
-                const Spacer(),
-                const CircularBorderPicture(),
+                Text(
+                  (lista_amigos[0][index])["Nombre"],
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ],
             ),
-          ),
-          title: Row(
-            children: const [
-              Text(
-                'Amigo falso',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          trailing: const Points(value: 8000),
-          onTap: () {},
-        );
-      },
-      separatorBuilder: (context, index) => const Divider(),
-    );
+            trailing: Points(value: ((lista_amigos[0][index])["Puntos"])),
+            onTap: () {},
+          );
+        },
+        separatorBuilder: (context, index) => const Divider(),
+      );
+    }
+    else{
+      return Container();
+    }
+    }
+    else{
+      return Center(child: CircularProgressIndicator());
+    }
   }
 }
 

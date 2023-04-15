@@ -137,7 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() { });
   }
 
-  static List<Widget> getWidgetOptions(Map<String, dynamic> user, String email) {
+  List<Widget> getWidgetOptions(Map<String, dynamic> user, String email) {
     return [
       MainPage(user: user),
       FriendsPage(codigo: user["codigo"]),
@@ -146,6 +146,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void onItemTapped(int index) {
+    _getUser();
     setState(() {
       _selectedIndex = index;
     });
@@ -155,7 +156,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('App medio mierdosa'),
+        title: const Text('Rabino 7 reinas'),
         actions: [
           PopupMenuButton(
             itemBuilder: (context) {

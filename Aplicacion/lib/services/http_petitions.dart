@@ -11,9 +11,12 @@ const String _registerURL = 'http://$_IP:$_PUERTO/api/auth/register';
 const String _getUserURL = 'http://$_IP:$_PUERTO/api/jugador/get/';
 const String _getPartidasPendientesURL = 'http://$_IP:$_PUERTO/api/partidas/pendientes/get/';
 const String _getAmistadesURL = 'http://$_IP:$_PUERTO/api/amistad/get/';
+const String _getSolicitudesURL = 'http://$_IP:$_PUERTO/api/amistad/get/pendientes/';
 const String _nuevoAmigoURL = 'http://$_IP:$_PUERTO/api/amistad/add';
 const String _editProfileURL = 'http://$_IP:$_PUERTO/api/jugador/mod';
 const String _changePasswordURL = 'http://$_IP:$_PUERTO/api/auth/mod-login';
+const String _aceptarAmigoURL = 'http://$_IP:$_PUERTO/api/amistad/accept';
+const String _denegarAmigoURL = 'http://$_IP:$_PUERTO/api/amistad/remove';
 
 class User {
   final String nickname;
@@ -77,7 +80,7 @@ Future<bool> login(String email, String password) async {
 
 Future<bool> register(String nickname, String email, String password) async {
   String encryptedPassword = encryptPassword(password);
-  final json = '{"nombre": $nickname, "email": $email, "contra": $encryptedPassword}';
+  final json = '{"nombre": "$nickname", "email": "$email", "contra": "$encryptedPassword"}';
 
   final response = await http.post(Uri.parse(_registerURL), body: json);
 
@@ -146,8 +149,24 @@ Future <Map<String, dynamic>?> getAmistades(String codigo) async {
   return datos;
 }
 
+Future <Map<String, dynamic>?> getSolicitudes(String codigo) async {
+  String uri = "$_getSolicitudesURL$codigo";
+
+  final response = await http.get(Uri.parse(uri));
+
+  //print(response.statusCode);
+
+  Map<String, dynamic>? datos = null;
+  if (response.statusCode == 200 || response.statusCode == 202) {
+    datos = jsonDecode(response.body);
+  } else {
+    print('Error al hacer la solicitud: ${response.statusCode}');
+  }
+  return datos;
+}
+
 Future<bool> nuevoAmigo(String codigo1, String codigo2) async {
-  final json = '{"emisor": $codigo1, "receptor": $codigo2}';
+  final json = '{"emisor": "$codigo1", "receptor": "$codigo2"}';
 
   final response = await http.post(Uri.parse(_nuevoAmigoURL), body: json);
 
@@ -156,8 +175,8 @@ Future<bool> nuevoAmigo(String codigo1, String codigo2) async {
   return response.statusCode == 200 || response.statusCode == 202;
 }
 
-Future<bool> editProfile(String email, String nombre, String desc, String foto) async {
-  final json = '{"email": $email, "nombre": $nombre, "foto": $foto, "descripcion": $desc}';
+Future<bool> editProfile(String email, String nombre, String desc, int foto) async {
+  final json = '{"email": "$email", "nombre": "$nombre", "foto": $foto, "descp": "$desc"}';
 
   final response = await http.post(Uri.parse(_editProfileURL), body: json);
 
@@ -171,6 +190,28 @@ Future<bool> changePassword(String email, String password) async {
   final json = '{"email": "$email", "contra": "$encryptedPassword"}';
 
   final response = await http.post(Uri.parse(_changePasswordURL), body: json);
+
+  //print(response.statusCode);
+  //print(response.body);
+
+  return response.statusCode == 200 || response.statusCode == 202 ;
+}
+
+Future<bool> aceptarAmigo(String codigoEm, String codigoRec) async {
+  final json = '{"emisor": "$codigoEm", "receptor": "$codigoRec"}';
+
+  final response = await http.post(Uri.parse(_aceptarAmigoURL), body: json);
+
+  //print(response.statusCode);
+  //print(response.body);
+
+  return response.statusCode == 200 || response.statusCode == 202 ;
+}
+
+Future<bool> denegarAmigo(String codigoEm, String codigoRec) async {
+  final json = '{"emisor": "$codigoRec", "receptor": "$codigoEm"}';
+
+  final response = await http.post(Uri.parse(_denegarAmigoURL), body: json);
 
   //print(response.statusCode);
   //print(response.body);

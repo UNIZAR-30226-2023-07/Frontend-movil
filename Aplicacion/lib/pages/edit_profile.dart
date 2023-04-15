@@ -8,13 +8,14 @@ import '../services/image_picker.dart';
 import '../widgets/custom_filled_button.dart';
 
 class EditProfilePage extends StatefulWidget {
-  final String nombre, desc, email;
+  final String nombre, desc, email, codigo;
   final int foto;
   EditProfilePage(
       {required this.nombre,
       required this.foto,
       required this.desc,
-      required this.email});
+      required this.email,
+      required this.codigo});
 
   @override
   State<EditProfilePage> createState() => _EditProfilePageState();
@@ -43,7 +44,7 @@ class _EditProfilePageState extends State<EditProfilePage>{
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => ProfilePicture(email: widget.email)),
+                    builder: (context) => ProfilePicture(email: widget.email, nombre: widget.nombre, desc: widget.desc, codigo: widget.codigo)),
               );
             },
             icon: Hero(
@@ -63,7 +64,7 @@ class _EditProfilePageState extends State<EditProfilePage>{
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              widget.nombre,
+              widget.codigo,
               style: const TextStyle(
                 color: Colors.indigoAccent,
                 fontSize: 25,
@@ -89,8 +90,8 @@ class _EditProfilePageState extends State<EditProfilePage>{
 }
 
 class ProfilePicture extends StatefulWidget {
-  final String email;
-  const ProfilePicture({required this.email});
+  final String email, nombre, desc, codigo;
+  const ProfilePicture({required this.email,required this.nombre,required this.desc, required this.codigo});
 
   @override
   State<ProfilePicture> createState() => _ProfilePictureState();
@@ -246,10 +247,11 @@ class _ProfilePictureState extends State<ProfilePicture> {
                   openDialog(
                       context,
                       SaveChangesDialog(
-                          nombre: _nombre.text,
-                          desc: _descripcion.text,
-                          foto: "foto",
-                          email: widget.email));
+                          nombre: _nombre.text == "" ? widget.nombre : _nombre.text,
+                          desc: _descripcion.text == "" ? widget.desc : _descripcion.text,
+                          foto: ProfileImage.getIndex(),
+                          email: widget.email,
+                          codigo: widget.codigo));
                 },
               ),
             ],

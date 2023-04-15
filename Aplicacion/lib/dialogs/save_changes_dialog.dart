@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:untitled/main.dart';
+import 'package:untitled/pages/main_page.dart';
+import '../pages/profile_page.dart';
 import '../services/http_petitions.dart';
 import '../services/open_snack_bar.dart';
 
 class SaveChangesDialog extends StatelessWidget {
-  final String nombre, foto, desc, email;
-  const SaveChangesDialog({super.key, required this.nombre, required this.foto, required this.desc, required this.email});
+  final String nombre, desc, email, codigo;
+  final int foto;
+  const SaveChangesDialog({super.key, required this.nombre, required this.foto, required this.desc, required this.email, required this.codigo});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +26,10 @@ class SaveChangesDialog extends StatelessWidget {
                 } else {
                   openSnackBar(context, const Text('Cambios guardados'));
                 }
-                Navigator.pop(context);
+                Navigator.push(context,
+                  MaterialPageRoute(builder: (
+                      context) => MyHomePage(email: email)),
+                );
               }
             },
           child: const Text('Sí'),

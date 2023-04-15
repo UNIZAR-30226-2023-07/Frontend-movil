@@ -2,32 +2,17 @@ import 'package:flutter/material.dart';
 import '../services/http_petitions.dart';
 import '../services/open_snack_bar.dart';
 
-class AcceptFriendDialog extends StatelessWidget {
-  const AcceptFriendDialog({super.key, this.nombre = "Amigo falso",required this.codigoEm,required this.codigoRec});
+class RemoveFriendDialog extends StatelessWidget {
+  const RemoveFriendDialog({super.key, this.nombre = "Amigo falso",required this.codigoEm,required this.codigoRec});
 
   final String nombre, codigoEm, codigoRec;
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Aceptar solicitud de amistad de \'$nombre\''),
+      title: Text('Eliminar amigo \'$nombre\''),
       scrollable: true,
       actionsAlignment: MainAxisAlignment.spaceAround,
       actions: [
-        FilledButton(
-          onPressed: () async {
-            bool res = await aceptarAmigo(codigoEm, codigoRec);
-            if (context.mounted) {
-              if (!res) {
-                openSnackBar(context, const Text('No se ha podido enviar la petición'));
-              } else {
-                openSnackBar(context, const Text('Petición enviada'));
-              }
-            }
-            else openSnackBar(context, const Text('Amigo añadido'));
-            Navigator.pop(context);
-          },
-          child: const Text('Sí'),
-        ),
         FilledButton(
           onPressed: () async {
             bool res = await denegarAmigo(codigoEm, codigoRec);
@@ -35,10 +20,16 @@ class AcceptFriendDialog extends StatelessWidget {
               if (!res) {
                 openSnackBar(context, const Text('No se ha podido enviar la petición'));
               } else {
-                openSnackBar(context, const Text('Petición enviada'));
+                openSnackBar(context, const Text('Amigo eliminado'));
               }
             }
-            else openSnackBar(context, const Text('Solicitud denegada'));
+            else openSnackBar(context, const Text('Amigo eliminado'));
+            Navigator.pop(context);
+          },
+          child: const Text('Sí'),
+        ),
+        FilledButton(
+          onPressed: () async {
             Navigator.pop(context);
           },
           child: const Text('No'),
