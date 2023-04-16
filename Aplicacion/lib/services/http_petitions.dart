@@ -9,6 +9,7 @@ const String _PUERTO = '3001';
 const String _loginURL = 'http://$_IP:$_PUERTO/api/auth/login';
 const String _registerURL = 'http://$_IP:$_PUERTO/api/auth/register';
 const String _getUserURL = 'http://$_IP:$_PUERTO/api/jugador/get/';
+const String _getUserCodeURL = 'http://$_IP:$_PUERTO/api/jugador/get2/';
 const String _getPartidasPendientesURL = 'http://$_IP:$_PUERTO/api/partidas/pendientes/get/';
 const String _getAmistadesURL = 'http://$_IP:$_PUERTO/api/amistad/get/';
 const String _getSolicitudesURL = 'http://$_IP:$_PUERTO/api/amistad/get/pendientes/';
@@ -17,6 +18,8 @@ const String _editProfileURL = 'http://$_IP:$_PUERTO/api/jugador/mod';
 const String _changePasswordURL = 'http://$_IP:$_PUERTO/api/auth/mod-login';
 const String _aceptarAmigoURL = 'http://$_IP:$_PUERTO/api/amistad/accept';
 const String _denegarAmigoURL = 'http://$_IP:$_PUERTO/api/amistad/remove';
+const String _getMensajesURL = 'http://$_IP:$_PUERTO/api/msg/get/';
+const String _leerMensajesURL = 'http://$_IP:$_PUERTO/api/msg/leer/';
 
 class User {
   final String nickname;
@@ -112,6 +115,23 @@ Future<Map<String, dynamic>?> getUser(String email) async {
       "foto": 0,
       "descrp": "hola"
     };
+  }
+  //datos!['0'] = 'ismaber';
+  return datos;
+}
+
+Future<Map<String, dynamic>?> getUserCode(String codigo) async {
+  String uri = "$_getUserCodeURL$codigo";
+
+  final response = await http.get(Uri.parse(uri));
+
+  //print(response.statusCode);
+
+  Map<String, dynamic>? datos;
+  if (response.statusCode == 200 || response.statusCode == 202) {
+    datos = jsonDecode(response.body);
+  } else {
+    print('Error al hacer la solicitud: ${response.statusCode}');
   }
   //datos!['0'] = 'ismaber';
   return datos;
@@ -217,4 +237,30 @@ Future<bool> denegarAmigo(String codigoEm, String codigoRec) async {
   //print(response.body);
 
   return response.statusCode == 200 || response.statusCode == 202 ;
+}
+
+Future <Map<String, dynamic>?> getMensajes(String codigo) async {
+  String uri = "$_getMensajesURL$codigo";
+
+  final response = await http.get(Uri.parse(uri));
+
+  //print(response.statusCode);
+
+  Map<String, dynamic>? datos = null;
+  if (response.statusCode == 200 || response.statusCode == 202) {
+    datos = jsonDecode(response.body);
+  } else {
+    print('Error al hacer la solicitud: ${response.statusCode}');
+  }
+  return datos;
+}
+
+Future<bool> leerMensajes(String codigo1, String codigo2) async {
+  final json = '{"emisor": "$codigo1", "receptor": "$codigo2"}';
+
+  final response = await http.post(Uri.parse(_leerMensajesURL), body: json);
+
+  //print(response.statusCode);
+
+  return response.statusCode == 200 || response.statusCode == 202;
 }

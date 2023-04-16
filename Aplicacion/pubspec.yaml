@@ -36,6 +36,9 @@ dependencies:
   audioplayers: ^0.20.1
   http: ^0.13.5
   crypto: ^3.0.2
+  #socket_io: ^1.0.1
+  web_socket_channel: ^2.1.0
+  socket_io_client: ^2.0.1
   # flutter_app_badger: ^1.5.0
 
   # The following adds the Cupertino Icons font to your application.

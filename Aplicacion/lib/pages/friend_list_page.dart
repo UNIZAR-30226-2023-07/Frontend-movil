@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:untitled/dialogs/accept_friend_dialog.dart';
 import 'package:untitled/services/profile_image.dart';
 import '../dialogs/add_friend_dialog.dart';
+import '../dialogs/deny_friend_dialog.dart';
 import '../dialogs/remove_friend_dialog.dart';
 import '../services/http_petitions.dart';
 import '../services/open_dialog.dart';
@@ -22,35 +23,50 @@ class _FriendsPageState extends State<FriendsPage> {
   // 2 - descripcion
   Map<String, dynamic>? amigos;
   Map<String, dynamic>? solicitudes;
+  Map<String, dynamic>? mensajes;
   bool _load = false;
   late List<dynamic> lista_amigos;
   late List<dynamic> lista_solicitudes;
+  late List<dynamic> lista_mensajes;
   @override
   void initState() {
     super.initState();
     _getAmistades();
+    _getMensajes();
     _getSolicitudes();
   }
 
   Future<void> _getAmistades() async {
     if(widget.codigo == "#admin"){
-      lista_amigos = [      [{'Nombre': 'Amigo falso', 'Descp': 'Hola', 'Foto': '2'}]
+      lista_amigos = [      [{'Nombre': 'Amigo falso', 'Descp': 'Hola', 'Foto': 2, 'Codigo': '1'}]
       ];
+    } else {
+      amigos = await getAmistades(widget.codigo);
+      lista_amigos = amigos!.values.toList();
     }
-    amigos = await getAmistades(widget.codigo);
-    lista_amigos = amigos!.values.toList();
   }
 
   Future<void> _getSolicitudes() async {
     if(widget.codigo == "#admin"){
       _load = true;
-      lista_solicitudes = [      [{'Nombre': 'Amigo falso', 'Foto': '2'}]
+      lista_solicitudes = [      [{'Nombre': 'Amigo falso', 'Foto': 2, 'Codigo':'1'}]
       ];
+    } else {
+      solicitudes = await getSolicitudes(widget.codigo);
+      lista_solicitudes = solicitudes!.values.toList();
     }
-    solicitudes = await getSolicitudes(widget.codigo);
-    lista_solicitudes = solicitudes!.values.toList();
     _load = true;
     setState(() {});
+  }
+
+  Future<void> _getMensajes() async {
+    if(widget.codigo == "#admin"){
+      lista_mensajes = [      [{'Emisor': '1', 'Receptor': '#admin', 'Contenido': 'Hola', 'Leido': 0}]
+      ];
+    } else {
+      mensajes = await getMensajes(widget.codigo);
+      lista_mensajes = mensajes!.values.toList();
+    }
   }
 
   void showOptions(BuildContext context, Offset position, Map<String, dynamic> amigo) async {
@@ -78,16 +94,29 @@ class _FriendsPageState extends State<FriendsPage> {
     if (result == 'Eliminar') {
       await openDialog(context, RemoveFriendDialog(nombre: amigo["Nombre"],codigoEm: widget.codigo, codigoRec: amigo["Codigo"]));
       await _getAmistades();
+      await _getMensajes();
       await _getSolicitudes();
       setState(() {});
       build(context);
     } else if (result == 'Chat') {
       Navigator.push(context,
         MaterialPageRoute(builder: (
-            context) => const ChatPage()),
+            context) => ChatPage(MiCodigo: widget.codigo, codigo2: amigo["Codigo"], amistad: true)),
       );
       build(context);
     }
+  }
+
+  String contarMsgPendientes(String emisor) {
+    int n = 0;
+    if(lista_mensajes[0] != null) {
+      for (int i = 0; i < lista_mensajes[0].length; i++) {
+        if ((lista_mensajes[0][i])["Emisor"] == emisor && (lista_mensajes[0][i])["Receptor"] == widget.codigo){
+          n++;
+        }
+      }
+    }
+    return n.toString();
   }
 
   @override
@@ -111,17 +140,25 @@ class _FriendsPageState extends State<FriendsPage> {
               scrollDirection: Axis.horizontal,
               itemCount: lista_solicitudes[0].length,
               itemBuilder: (context, index) {
-                if ((lista_solicitudes[0][index])["Estado"] == "pendiente") {
+
                   return GestureDetector(
                       onTap: () async {
-                        await openDialog(context, AcceptFriendDialog(
+                          if ((lista_solicitudes[0][index])["Estado"] == "pendiente") {
+                            await openDialog(context, AcceptFriendDialog(
                             nombre: (lista_solicitudes[0][index])["Nombre"],
                             codigoEm: (lista_solicitudes[0][index])["Codigo"],
                             codigoRec: widget.codigo));
-                        await _getAmistades();
-                        await _getSolicitudes();
-                        setState(() {});
-                        build(context);
+                          } else {
+                            await openDialog(context, DenyFriendDialog(
+                            nombre: (lista_solicitudes[0][index])["Nombre"],
+                            codigoEm: (lista_solicitudes[0][index])["Codigo"],
+                            codigoRec: widget.codigo));
+                          }
+                          await _getAmistades();
+                          await _getMensajes();
+                          await _getSolicitudes();
+                          setState(() {});
+                          build(context);
                       },
                       child: Padding(
                         padding: EdgeInsets.all(5),
@@ -130,7 +167,6 @@ class _FriendsPageState extends State<FriendsPage> {
                       )
                   );
                 }
-              },
             ),
           ),
           Padding(
@@ -162,7 +198,7 @@ class _FriendsPageState extends State<FriendsPage> {
                   ),
                   subtitle: Text((lista_amigos[0][index])["Descp"]),
                   trailing: Badge(
-                    label: Text('1'), //Text((amigos![index])[1])
+                    label: Text(contarMsgPendientes((lista_amigos[0][index])["Codigo"])), //Text((amigos![index])[1])
                   ),
 
                 ),
@@ -179,6 +215,7 @@ class _FriendsPageState extends State<FriendsPage> {
         onPressed: () async {
            await openDialog(context, AddFriendDialog(codigo: widget.codigo));
           await _getAmistades();
+          await _getMensajes();
           await _getSolicitudes();
           setState(() {});
           build(context);
