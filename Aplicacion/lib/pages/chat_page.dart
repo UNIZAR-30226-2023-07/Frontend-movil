@@ -89,27 +89,35 @@ class _ShowMessagesState extends State<ShowMessages> {
         final esMio = widget.len[index]["Emisor"] == widget.MiCodigo;
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-               Padding(
-                padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                child: CircularBorderPicture(width: 52, height: 52, image: ProfileImage.urls[fotos[index] % 6]!),
-              ),
-              Expanded(
-                child: Container(
-                  alignment: Alignment.centerLeft,
-                  margin: const EdgeInsets.only(right: 10),
-                  padding: const EdgeInsets.all(15.0),
-                  decoration: BoxDecoration(
-                    color: !esMio ? Theme.of(context).colorScheme.secondaryContainer :
-                    Colors.indigoAccent[100],
-                    borderRadius: BorderRadius.circular(30.0),
+          child: Container(
+            margin: esMio
+                ? const EdgeInsets.fromLTRB(80, 5, 10, 5)
+                : const EdgeInsets.fromLTRB(10, 5, 80, 5),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                  child: CircularBorderPicture(
+                      width: 52,
+                      height: 52,
+                      image: ProfileImage.urls[fotos[index] % 6]!
                   ),
-                  child: Text(widget.len[index]["Contenido"]),
                 ),
-              ),
-            ],
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.all(15.0),
+                    decoration: BoxDecoration(
+                      color: !esMio
+                          ? Theme.of(context).colorScheme.secondaryContainer
+                          : Colors.indigoAccent[100],
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    child: Text(widget.len[index]["Contenido"]),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -146,6 +154,12 @@ class _ChatPage extends State<ChatPage> {
 
       wb_amistad.stream.listen((message) {
         print('Received: $message');
+        Map<String, dynamic> datos = jsonDecode(message);
+        if(datos["emisor"] == widget.codigo2){
+          _load = false;
+          _getMensajes();
+          build(context);
+        }
       });
 
       // wb_amistad.stream.listen((event) {
@@ -241,8 +255,6 @@ class _ChatPage extends State<ChatPage> {
                       _textController.clear();
                       if(widget.amistad) {
                         _getMensajes();
-                        lista_mensajes = separarMensajesCodigo(
-                            widget.MiCodigo, widget.codigo2);
                       }
                       _load = false;
                       setState(() {});
