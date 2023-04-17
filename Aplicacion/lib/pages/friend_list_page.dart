@@ -36,6 +36,15 @@ class _FriendsPageState extends State<FriendsPage> {
     _getSolicitudes();
   }
 
+  @override
+  void didUpdateWidget(FriendsPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _load = false;
+    _getAmistades();
+    _getMensajes();
+    _getSolicitudes();
+  }
+
   Future<void> _getAmistades() async {
     if(widget.codigo == "#admin"){
       lista_amigos = [      [{'Nombre': 'Amigo falso', 'Descp': 'Hola', 'Foto': 2, 'Codigo': '1'}]
@@ -111,7 +120,8 @@ class _FriendsPageState extends State<FriendsPage> {
     int n = 0;
     if(lista_mensajes[0] != null) {
       for (int i = 0; i < lista_mensajes[0].length; i++) {
-        if ((lista_mensajes[0][i])["Emisor"] == emisor && (lista_mensajes[0][i])["Receptor"] == widget.codigo){
+        if ((lista_mensajes[0][i])["Emisor"] == emisor && (lista_mensajes[0][i])["Receptor"] == widget.codigo
+        && (lista_mensajes[0][i])["Leido"] == 0){
           n++;
         }
       }

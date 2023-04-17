@@ -19,7 +19,7 @@ const String _changePasswordURL = 'http://$_IP:$_PUERTO/api/auth/mod-login';
 const String _aceptarAmigoURL = 'http://$_IP:$_PUERTO/api/amistad/accept';
 const String _denegarAmigoURL = 'http://$_IP:$_PUERTO/api/amistad/remove';
 const String _getMensajesURL = 'http://$_IP:$_PUERTO/api/msg/get/';
-const String _leerMensajesURL = 'http://$_IP:$_PUERTO/api/msg/leer/';
+const String _leerMensajesURL = 'http://$_IP:$_PUERTO/api/msg/leer';
 
 class User {
   final String nickname;

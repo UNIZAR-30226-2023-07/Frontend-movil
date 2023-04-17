@@ -144,13 +144,17 @@ class _ChatPage extends State<ChatPage> {
         print('Error: $error');
       });
 
-      wb_amistad.stream.listen((event) {
-        if (wb_amistad?.closeCode == null && wb_amistad?.closeReason == null) {
-          if (wb_amistad?.readyState == WebSocket.open) {
-            print("Conectado");
-          }
-        }
+      wb_amistad.stream.listen((message) {
+        print('Received: $message');
       });
+
+      // wb_amistad.stream.listen((event) {
+      //   if (wb_amistad?.closeCode == null && wb_amistad?.closeReason == null) {
+      //     if (wb_amistad?.readyState == WebSocket.open) {
+      //       print("Conectado");
+      //     }
+      //   }
+      // });
     }
   }
 
