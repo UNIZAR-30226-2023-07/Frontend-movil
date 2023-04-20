@@ -26,6 +26,8 @@ class AddFriendDialog extends StatelessWidget {
           validator: (value) {
             if (value == null || value.isEmpty) {
               return 'El campo es obligatorio';
+            } else if (value == codigo) {
+              return 'No te puedes añadir a ti mismo';
             }
             return null;
           },

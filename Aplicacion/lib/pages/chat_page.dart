@@ -77,13 +77,39 @@ class _ShowMessagesState extends State<ShowMessages> {
           padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
           child: Container(
             margin: esMio
-                ? const EdgeInsets.fromLTRB(80, 5, 10, 5)
-                : const EdgeInsets.fromLTRB(10, 5, 80, 5),
-            child: Row(
+                ? const EdgeInsets.fromLTRB(80, 0, 5, 0)
+                : const EdgeInsets.fromLTRB(5, 0, 80, 0),
+            child: esMio
+              ? Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.all(15.0),
+                    decoration: BoxDecoration(
+                      color: !esMio
+                          ? Theme.of(context).colorScheme.secondaryContainer
+                          : Colors.indigoAccent[100],
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    child: Text(widget.len[index]["Contenido"]),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 0, horizontal: 5),
+                  child: CircularBorderPicture(
+                      width: 52,
+                      height: 52,
+                      image: ProfileImage.urls[fotos[index] % 6]!
+                  ),
+                ),
+              ],
+            )
+            : Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                  padding: EdgeInsets.symmetric(vertical: 0, horizontal: 5),
                   child: CircularBorderPicture(
                       width: 52,
                       height: 52,

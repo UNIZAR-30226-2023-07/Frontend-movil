@@ -12,7 +12,7 @@ import 'profile_page.dart';
 
 class FriendsPage extends StatefulWidget {
   final String codigo;
-  FriendsPage({required this.codigo});
+  const FriendsPage({super.key, required this.codigo});
   @override
   State<FriendsPage> createState() => _FriendsPageState();
 }
@@ -90,29 +90,35 @@ class _FriendsPageState extends State<FriendsPage> {
       position: positionPopup,
       items: <PopupMenuEntry>[
         const PopupMenuItem(
-          child: Text('Eliminar amigo'),
           value: 'Eliminar',
+          child: Text('Eliminar amigo'),
         ),
         const PopupMenuItem(
-          child: Text('Abrir chat'),
           value: 'Chat',
+          child: Text('Abrir chat'),
         ),
       ],
     );
 
-    if (result == 'Eliminar') {
-      await openDialog(context, RemoveFriendDialog(nombre: amigo["Nombre"],codigoEm: widget.codigo, codigoRec: amigo["Codigo"]));
-      await _getAmistades();
-      await _getMensajes();
-      await _getSolicitudes();
-      setState(() {});
-      build(context);
-    } else if (result == 'Chat') {
-      Navigator.push(context,
-        MaterialPageRoute(builder: (
-            context) => ChatPage(MiCodigo: widget.codigo, codigo2: amigo["Codigo"], amistad: true)),
-      );
-      build(context);
+    if (context.mounted) {
+      if (result == 'Eliminar') {
+        await openDialog(context, RemoveFriendDialog(nombre: amigo["Nombre"],
+            codigoEm: widget.codigo,
+            codigoRec: amigo["Codigo"]));
+        await _getAmistades();
+        await _getMensajes();
+        await _getSolicitudes();
+        setState(() {});
+        build(context);
+      } else if (result == 'Chat') {
+        Navigator.push(context,
+          MaterialPageRoute(builder: (context) =>
+              ChatPage(MiCodigo: widget.codigo,
+                  codigo2: amigo["Codigo"],
+                  amistad: true)),
+        );
+        build(context);
+      }
     }
   }
 
@@ -138,47 +144,49 @@ class _FriendsPageState extends State<FriendsPage> {
           : Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Text('Solicitudes de amistad',
-              style: Theme.of(context).textTheme.headlineSmall),
-          ),
-          SizedBox(
-            height: 70,
-            child: lista_solicitudes[0] == null
-            ? Container() : ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: lista_solicitudes[0].length,
-              itemBuilder: (context, index) {
-
+          lista_solicitudes[0] == null
+            ? const SizedBox()
+            : Padding(
+              padding: const EdgeInsets.all(10),
+              child: Text('Solicitudes de amistad',
+                style: Theme.of(context).textTheme.headlineSmall),
+            ),
+          lista_solicitudes[0] == null
+            ? const SizedBox()
+            : SizedBox(
+              height: 70,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: lista_solicitudes[0].length,
+                itemBuilder: (context, index) {
                   return GestureDetector(
-                      onTap: () async {
-                          if ((lista_solicitudes[0][index])["Estado"] == "pendiente") {
-                            await openDialog(context, AcceptFriendDialog(
-                            nombre: (lista_solicitudes[0][index])["Nombre"],
-                            codigoEm: (lista_solicitudes[0][index])["Codigo"],
-                            codigoRec: widget.codigo));
-                          } else {
-                            await openDialog(context, DenyFriendDialog(
-                            nombre: (lista_solicitudes[0][index])["Nombre"],
-                            codigoEm: (lista_solicitudes[0][index])["Codigo"],
-                            codigoRec: widget.codigo));
-                          }
-                          await _getAmistades();
-                          await _getMensajes();
-                          await _getSolicitudes();
-                          setState(() {});
-                          build(context);
-                      },
-                      child: Padding(
-                        padding: EdgeInsets.all(5),
-                        child: CircularBorderPicture(image: ProfileImage
-                            .urls[(lista_solicitudes[0][index])["Foto"] % 6]!),
-                      )
+                    onTap: () async {
+                        if ((lista_solicitudes[0][index])["Estado"] == "pendiente") {
+                          await openDialog(context, AcceptFriendDialog(
+                          nombre: (lista_solicitudes[0][index])["Nombre"],
+                          codigoEm: (lista_solicitudes[0][index])["Codigo"],
+                          codigoRec: widget.codigo));
+                        } else {
+                          await openDialog(context, DenyFriendDialog(
+                          nombre: (lista_solicitudes[0][index])["Nombre"],
+                          codigoEm: (lista_solicitudes[0][index])["Codigo"],
+                          codigoRec: widget.codigo));
+                        }
+                        await _getAmistades();
+                        await _getMensajes();
+                        await _getSolicitudes();
+                        setState(() {});
+                        build(context);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(5),
+                      child: CircularBorderPicture(image: ProfileImage
+                          .urls[(lista_solicitudes[0][index])["Foto"] % 6]!),
+                    )
                   );
                 }
+              ),
             ),
-          ),
           Padding(
             padding: const EdgeInsets.all(10),
             child: Text('Amigos',
@@ -194,24 +202,34 @@ class _FriendsPageState extends State<FriendsPage> {
                   onLongPressStart: (LongPressStartDetails details) {
                     showOptions(context, details.globalPosition,(lista_amigos[0][index]));
                   },
-
-                child: ListTile(
-                  leading: CircularBorderPicture(image: ProfileImage.urls[(lista_amigos[0][index])["Foto"]%6]!),
-                  title: Row(
-                    children:  [
-                      Text(
-                        (lista_amigos[0][index])["Nombre"],
-                        style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                  onTap: () async {
+                    Map<String, dynamic>? user = await getUserCode((lista_amigos[0][index])["Codigo"]);
+                    setState(() { });
+                    if (context.mounted) {
+                      Navigator.push(context,
+                        MaterialPageRoute(builder: (
+                            context) => ProfilePage(email: '', user: user)),
+                      );
+                    }
+                  },
+                  child: ListTile(
+                    leading: CircularBorderPicture(image: ProfileImage.urls[(lista_amigos[0][index])["Foto"]%6]!),
+                    title: Row(
+                      children:  [
+                        Text(
+                          (lista_amigos[0][index])["Nombre"],
+                          style: const TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    subtitle: Text((lista_amigos[0][index])["Descp"]),
+                    trailing: contarMsgPendientes((lista_amigos[0][index])["Codigo"]) == '0'
+                      ? const SizedBox()
+                      : Badge(
+                        label: Text(contarMsgPendientes((lista_amigos[0][index])["Codigo"])), //Text((amigos![index])[1])
                       ),
-                    ],
                   ),
-                  subtitle: Text((lista_amigos[0][index])["Descp"]),
-                  trailing: Badge(
-                    label: Text(contarMsgPendientes((lista_amigos[0][index])["Codigo"])), //Text((amigos![index])[1])
-                  ),
-
-                ),
                 );
               },
               separatorBuilder: (context, index) => const Divider(),
@@ -220,10 +238,9 @@ class _FriendsPageState extends State<FriendsPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.indigo,
         tooltip: 'Añadir amigo',
         onPressed: () async {
-           await openDialog(context, AddFriendDialog(codigo: widget.codigo));
+          await openDialog(context, AddFriendDialog(codigo: widget.codigo));
           await _getAmistades();
           await _getMensajes();
           await _getSolicitudes();

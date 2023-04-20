@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:clipboard/clipboard.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:untitled/dialogs/save_changes_dialog.dart';
 import 'package:untitled/services/open_dialog.dart';
 import 'package:untitled/services/profile_image.dart';
@@ -10,8 +12,9 @@ import '../widgets/custom_filled_button.dart';
 class EditProfilePage extends StatefulWidget {
   final String nombre, desc, email, codigo;
   final int foto;
-  EditProfilePage(
-      {required this.nombre,
+  const EditProfilePage(
+      {super.key,
+      required this.nombre,
       required this.foto,
       required this.desc,
       required this.email,
@@ -25,66 +28,115 @@ class _EditProfilePageState extends State<EditProfilePage>{
   @override
   Widget build(BuildContext context) {
     String descrp = widget.desc.length > 20 ? widget.desc.substring(0, 20) + '...' : widget.desc;
-    return Row(
-      children: [
-        Container(
-          margin: const EdgeInsets.all(10),
-          height: 100,
-          width: 100,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: Colors.indigoAccent,
-              width: 3.0,
-            ),
-          ),
-          child: IconButton(
-            padding: const EdgeInsets.all(0),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => ProfilePicture(email: widget.email, nombre: widget.nombre, desc: widget.desc, codigo: widget.codigo)),
-              );
-            },
-            icon: Hero(
-              tag: 'foto',
-              child: CircleAvatar(
-                backgroundImage: ResizeImage(
-                  AssetImage(ProfileImage.image),
-                  width: 200,
-                  height: 200,
+    return SizedBox(
+      width: double.infinity,
+      child: Column(
+        children: [
+          Stack(
+            children: [
+              Container(
+                height: 60,
+                color: Theme.of(context).colorScheme.secondaryContainer,
+              ),
+              Center(
+                child: Container(
+                  height: 120,
+                  width: 120,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.secondaryContainer,
+                    shape: BoxShape.circle
+                  ),
                 ),
-                radius: 50,
               ),
+              Center(
+                child: Container(
+                  margin: const EdgeInsets.all(10),
+                  height: 100,
+                  width: 100,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.indigoAccent,
+                      width: 3.0,
+                    ),
+                  ),
+                  child: IconButton(
+                    padding: const EdgeInsets.all(0),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ProfilePicture(email: widget.email, nombre: widget.nombre, desc: widget.desc, codigo: widget.codigo)),
+                      );
+                    },
+                    icon: Hero(
+                      tag: 'foto',
+                      child: CircleAvatar(
+                        backgroundImage: ResizeImage(
+                          AssetImage(ProfileImage.image),
+                          width: 200,
+                          height: 200,
+                        ),
+                        radius: 50,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              RichText(
+                text: TextSpan(
+                  text: widget.nombre,
+                  style: const TextStyle(
+                    color: Colors.indigoAccent,
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: '#${widget.codigo}',
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              /*
+              IconButton(
+                  onPressed: () {
+                    FlutterClipboard.copy(widget.codigo);
+                  },
+                  icon: const Icon(Icons.copy)
+              ),
+              */
+              IconButton(
+                onPressed: () {
+                  Share.share(widget.codigo);
+                },
+                icon: const Icon(Icons.share)
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 5,
+          ),
+          Text(
+            descrp,
+            style: const TextStyle(
+              color: Colors.blueGrey,
+              fontSize: 18,
+              fontWeight: FontWeight.w300,
             ),
           ),
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              widget.codigo,
-              style: const TextStyle(
-                color: Colors.indigoAccent,
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Text(
-              descrp,
-              style: const TextStyle(
-                color: Colors.blueGrey,
-                fontSize: 18,
-                fontWeight: FontWeight.w300,
-              ),
-            ),
-          ],
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -101,8 +153,22 @@ class _ProfilePictureState extends State<ProfilePicture> {
   File? _image;
   String _urlImage = ProfileImage.image;
   bool _tipo = true;
-  final TextEditingController _nombre = TextEditingController();
-  final TextEditingController _descripcion = TextEditingController();
+  late TextEditingController _nombre;
+  late TextEditingController _descripcion;
+
+  @override
+  void initState() {
+    super.initState();
+    _nombre = TextEditingController(text: widget.nombre);
+    _descripcion = TextEditingController(text: widget.desc);
+  }
+
+  @override
+  void dispose() {
+    _nombre.dispose();
+    _descripcion.dispose();
+    super.dispose();
+  }
 
   pickFromCamera(BuildContext context) async {
     File? aux;
@@ -131,32 +197,32 @@ class _ProfilePictureState extends State<ProfilePicture> {
         AlertDialog(
           scrollable: true,
           content: SizedBox(
-              height: 200,
-              width: 350,
-              child: GridView.count(
-                crossAxisCount: 3, // especifica 3 columnas en cada fila
-                children: List.generate(ProfileImage.urls.length, (index) {
-                  return GestureDetector(
-                      onTap: () {
-                        ProfileImage.changeImage(index);
-                        setState(() {
-                          _tipo = false;
-                          _urlImage = ProfileImage.urls[index]!;
-                        });
-                        Navigator.pop(context);
-                        Navigator.pop(context);
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.all(5.0),
-                        child: Center(
-                            child: CircularBorderPicture(
-                          image: ProfileImage.urls[index]!,
-                          width: 100,
-                          height: 100,
-                        )),
-                      ));
-                }),
-              )),
+            height: 200,
+            width: 350,
+            child: GridView.count(
+              crossAxisCount: 3, // especifica 3 columnas en cada fila
+              children: List.generate(ProfileImage.urls.length, (index) {
+                return GestureDetector(
+                  onTap: () {
+                    ProfileImage.changeImage(index);
+                    setState(() {
+                      _tipo = false;
+                      _urlImage = ProfileImage.urls[index]!;
+                    });
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.all(5.0),
+                    child: Center(
+                        child: CircularBorderPicture(
+                      image: ProfileImage.urls[index]!,
+                      width: 100,
+                      height: 100,
+                    )),
+                  ));
+              }),
+            )),
         ));
   }
 
@@ -183,13 +249,13 @@ class _ProfilePictureState extends State<ProfilePicture> {
                   icon: Hero(
                     tag: 'foto',
                     child: (_tipo && _image != null)
-                        ? CircleAvatar(
-                            backgroundImage: FileImage(_image!), radius: 100)
-                        : CircleAvatar(
-                            backgroundImage: ResizeImage(AssetImage(_urlImage),
-                                width: 250, height: 250),
-                            radius: 100,
-                          ),
+                      ? CircleAvatar(
+                          backgroundImage: FileImage(_image!), radius: 100)
+                      : CircleAvatar(
+                          backgroundImage: ResizeImage(AssetImage(_urlImage),
+                              width: 250, height: 250),
+                          radius: 100,
+                        ),
                   ),
                 ),
               ),

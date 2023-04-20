@@ -24,7 +24,7 @@ class _ProfilePageState extends State<ProfilePage> {
       _load = true;
       setState(() {});
     }
-    widget.user = await getUser(widget.email);
+    widget.user = await getUserCode(widget.user!["codigo"]);
     _load = true;
     setState(() { });
   }
@@ -32,7 +32,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: !_load
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
       :SingleChildScrollView(
         child: Column(
           children: [
