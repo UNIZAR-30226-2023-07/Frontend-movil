@@ -22,21 +22,7 @@ class ShowMessages extends StatefulWidget {
 }
 
 class _ShowMessagesState extends State<ShowMessages> {
-  ///final ScrollController _scrollController = ScrollController();
-
-  /*
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: Duration(milliseconds: 500),
-        curve: Curves.easeOut,
-      );
-    });
-  }
-  */
+  //final ScrollController _scrollController = ScrollController();
   late List<int> fotos = <int>[];
   bool _load = false;
 
@@ -161,14 +147,6 @@ class _ChatPage extends State<ChatPage> {
           build(context);
         }
       });
-
-      // wb_amistad.stream.listen((event) {
-      //   if (wb_amistad?.closeCode == null && wb_amistad?.closeReason == null) {
-      //     if (wb_amistad?.readyState == WebSocket.open) {
-      //       print("Conectado");
-      //     }
-      //   }
-      // });
     }
   }
 
