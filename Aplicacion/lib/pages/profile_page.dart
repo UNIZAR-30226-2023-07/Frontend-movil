@@ -6,7 +6,7 @@ class ProfilePage extends StatefulWidget {
   final String email;
   Map<String, dynamic>? user;
 
-  ProfilePage({required this.email, required this.user});
+  ProfilePage({super.key, required this.email, required this.user});
   @override
   State<ProfilePage> createState() => _ProfilePageState();
 }
@@ -32,8 +32,8 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: !_load
-          ? const Center(child: CircularProgressIndicator())
-      :SingleChildScrollView(
+      ? const Center(child: CircularProgressIndicator())
+      : SingleChildScrollView(
         child: Column(
           children: [
             EditProfilePage(nombre: widget.user!["nombre"], foto: widget.user!["foto"], desc: widget.user!["descrp"], email: widget.email, codigo: widget.user!["codigo"]),
@@ -52,7 +52,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       Text(
                         '${widget.user!["pjugadas"]}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.blueGrey,
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -102,7 +102,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       Text(
                         '${widget.user!["puntos"]}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.blueGrey,
                           fontSize: 20,
                           fontWeight: FontWeight.bold,

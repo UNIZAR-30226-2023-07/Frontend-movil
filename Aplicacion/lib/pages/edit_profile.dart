@@ -27,11 +27,15 @@ class EditProfilePage extends StatefulWidget {
 class _EditProfilePageState extends State<EditProfilePage>{
   @override
   Widget build(BuildContext context) {
-    String descrp = widget.desc.length > 20 ? widget.desc.substring(0, 20) + '...' : widget.desc;
+    String descrp = widget.desc;
     return SizedBox(
       width: double.infinity,
       child: Column(
         children: [
+          Container(
+            height: 20,
+            color: Theme.of(context).colorScheme.secondaryContainer,
+          ),
           Stack(
             children: [
               Container(
@@ -43,7 +47,7 @@ class _EditProfilePageState extends State<EditProfilePage>{
                   height: 120,
                   width: 120,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.secondaryContainer,
+                    color: Theme.of(context).colorScheme.background,
                     shape: BoxShape.circle
                   ),
                 ),
@@ -124,15 +128,15 @@ class _EditProfilePageState extends State<EditProfilePage>{
               ),
             ],
           ),
-          const SizedBox(
-            height: 5,
-          ),
-          Text(
-            descrp,
-            style: const TextStyle(
-              color: Colors.blueGrey,
-              fontSize: 18,
-              fontWeight: FontWeight.w300,
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 30),
+            child: Text(
+              descrp,
+              style: const TextStyle(
+                color: Colors.blueGrey,
+                fontSize: 18,
+                fontWeight: FontWeight.w300,
+              ),
             ),
           ),
         ],
@@ -269,9 +273,11 @@ class _ProfilePictureState extends State<ProfilePicture> {
                     TextField(
                       controller: _nombre,
                       keyboardType: TextInputType.text,
+                      maxLength: 20,
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                         hintText: 'apodo',
+                        counterText: ""
                       ),
                     ),
                     const SizedBox(

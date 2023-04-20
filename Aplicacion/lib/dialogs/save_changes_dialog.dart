@@ -26,7 +26,9 @@ class SaveChangesDialog extends StatelessWidget {
                 } else {
                   openSnackBar(context, const Text('Cambios guardados'));
                 }
-                Navigator.push(context,
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (
                       context) => MyHomePage(email: email)),
                 );

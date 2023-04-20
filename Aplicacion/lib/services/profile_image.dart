@@ -19,7 +19,6 @@ class ProfileImage {
   }
 
   static int getIndex(){
-    int index = urls.values.toList().indexOf(image);
-    return index;
+    return urls.values.toList().indexOf(image);
   }
 }

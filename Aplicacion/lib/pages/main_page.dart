@@ -10,7 +10,7 @@ import '../services/profile_image.dart';
 class MainPage extends StatefulWidget {
   final Map<String, dynamic>? user;
 
-  MainPage({required this.user});
+  MainPage({super.key, required this.user});
 
   @override
   State<MainPage> createState() => _MainPageState(user!);

@@ -90,18 +90,18 @@ class _FriendsPageState extends State<FriendsPage> {
       position: positionPopup,
       items: <PopupMenuEntry>[
         const PopupMenuItem(
-          value: 'Eliminar',
+          value: 0,
           child: Text('Eliminar amigo'),
         ),
         const PopupMenuItem(
-          value: 'Chat',
+          value: 1,
           child: Text('Abrir chat'),
         ),
       ],
     );
 
     if (context.mounted) {
-      if (result == 'Eliminar') {
+      if (result == 0) {
         await openDialog(context, RemoveFriendDialog(nombre: amigo["Nombre"],
             codigoEm: widget.codigo,
             codigoRec: amigo["Codigo"]));
@@ -110,7 +110,7 @@ class _FriendsPageState extends State<FriendsPage> {
         await _getSolicitudes();
         setState(() {});
         build(context);
-      } else if (result == 'Chat') {
+      } else if (result == 1) {
         Navigator.push(context,
           MaterialPageRoute(builder: (context) =>
               ChatPage(MiCodigo: widget.codigo,

@@ -156,7 +156,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Rabino 7 reinas'),
+        title: const Text('Rabino 7 Reinas'),
         actions: [
           PopupMenuButton(
             itemBuilder: (context) {
@@ -187,8 +187,8 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: !_load
-          ? Center(child: CircularProgressIndicator())
-          :Center(
+        ? const Center(child: CircularProgressIndicator())
+        : Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(

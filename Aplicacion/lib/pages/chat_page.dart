@@ -66,73 +66,77 @@ class _ShowMessagesState extends State<ShowMessages> {
   @override
   Widget build(BuildContext context) {
     return !_load
-        ? const Center(child: CircularProgressIndicator())
-        : ListView.builder(
-      ///controller: _scrollController,
-      itemCount: widget.len.length,
-      addAutomaticKeepAlives: true,
-      itemBuilder: (context, index){
-        final esMio = widget.len[index]["Emisor"] == widget.MiCodigo;
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
-          child: Container(
-            margin: esMio
-                ? const EdgeInsets.fromLTRB(80, 0, 5, 0)
-                : const EdgeInsets.fromLTRB(5, 0, 80, 0),
-            child: esMio
+    ? const Center(child: CircularProgressIndicator())
+    : Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+      child: ListView.builder(
+        ///controller: _scrollController,
+        itemCount: widget.len.length,
+        addAutomaticKeepAlives: true,
+        itemBuilder: (context, index){
+          final esMio = widget.len[index]["Emisor"] == widget.MiCodigo;
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Container(
+              child: esMio
               ? Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(15.0),
-                    decoration: BoxDecoration(
-                      color: !esMio
-                          ? Theme.of(context).colorScheme.secondaryContainer
-                          : Colors.indigoAccent[100],
-                      borderRadius: BorderRadius.circular(30.0),
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.60),
+                    child: Container(
+                      padding: const EdgeInsets.all(15.0),
+                      decoration: BoxDecoration(
+                        color: !esMio
+                            ? Theme.of(context).colorScheme.secondaryContainer
+                            : Colors.indigoAccent[100],
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      child: Text(widget.len[index]["Contenido"]),
                     ),
-                    child: Text(widget.len[index]["Contenido"]),
                   ),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 0, horizontal: 5),
-                  child: CircularBorderPicture(
-                      width: 52,
-                      height: 52,
-                      image: ProfileImage.urls[fotos[index] % 6]!
-                  ),
-                ),
-              ],
-            )
-            : Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 0, horizontal: 5),
-                  child: CircularBorderPicture(
-                      width: 52,
-                      height: 52,
-                      image: ProfileImage.urls[fotos[index] % 6]!
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(15.0),
-                    decoration: BoxDecoration(
-                      color: !esMio
-                          ? Theme.of(context).colorScheme.secondaryContainer
-                          : Colors.indigoAccent[100],
-                      borderRadius: BorderRadius.circular(30.0),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 5),
+                    child: CircularBorderPicture(
+                        width: 52,
+                        height: 52,
+                        image: ProfileImage.urls[fotos[index] % 6]!
                     ),
-                    child: Text(widget.len[index]["Contenido"]),
                   ),
-                ),
-              ],
+                ],
+              )
+              : Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 5),
+                    child: CircularBorderPicture(
+                        width: 52,
+                        height: 52,
+                        image: ProfileImage.urls[fotos[index] % 6]!
+                    ),
+                  ),
+                  ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.6),
+                    child: Container(
+                      padding: const EdgeInsets.all(15.0),
+                      decoration: BoxDecoration(
+                        color: !esMio
+                            ? Theme.of(context).colorScheme.secondaryContainer
+                            : Colors.indigoAccent[100],
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      child: Text(widget.len[index]["Contenido"]),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }

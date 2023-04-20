@@ -169,7 +169,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                     child: FilledButton(
                                       onPressed: () async {
                                         if(_passwordKey.currentState!.validate()) {
-                                          print(_email.text);
                                           bool res = await changePassword(_email.text, _password.text);
                                           if (!res) {
                                             if (context.mounted) {
