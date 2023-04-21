@@ -20,6 +20,9 @@ const String _aceptarAmigoURL = 'http://$_IP:$_PUERTO/api/amistad/accept';
 const String _denegarAmigoURL = 'http://$_IP:$_PUERTO/api/amistad/remove';
 const String _getMensajesURL = 'http://$_IP:$_PUERTO/api/msg/get/';
 const String _leerMensajesURL = 'http://$_IP:$_PUERTO/api/msg/leer';
+const String _crearPartidaURL = 'http://$_IP:$_PUERTO/api/partida/crear';
+const String _unirPartidaURL = 'http://$_IP:$_PUERTO/api/partida/join';
+const String _iniciarPartidaURL = 'http://$_IP:$_PUERTO/api/partida/iniciar/';
 
 class User {
   final String nickname;
@@ -259,6 +262,42 @@ Future<bool> leerMensajes(String codigo1, String codigo2) async {
   final json = '{"emisor": "$codigo1", "receptor": "$codigo2"}';
 
   final response = await http.post(Uri.parse(_leerMensajesURL), body: json);
+
+  //print(response.statusCode);
+
+  return response.statusCode == 200 || response.statusCode == 202;
+}
+
+Future <Map<String, dynamic>?> crearPartida(String codigo, String tipo) async {
+  final json = '{"tipo": "$tipo", "anfitrion": "$codigo"}';
+
+  final response = await http.post(Uri.parse(_crearPartidaURL), body: json);
+
+  //print(response.statusCode);
+
+  Map<String, dynamic>? datos = null;
+  if (response.statusCode == 200 || response.statusCode == 202) {
+    datos = jsonDecode(response.body);
+  } else {
+    print('Error al hacer la solicitud: ${response.statusCode}');
+  }
+  return datos;
+}
+
+Future<bool> unirPartida(String codigo, String partida) async {
+  final json = '{"codigo": "$codigo", "clave": "$partida"}';
+
+  final response = await http.post(Uri.parse(_unirPartidaURL), body: json);
+
+  //print(response.statusCode);
+
+  return response.statusCode == 200 || response.statusCode == 202;
+}
+
+Future<bool> iniciarPartida(String partida) async {
+  String uri = "$_iniciarPartidaURL$partida";
+
+  final response = await http.get(Uri.parse(uri));
 
   //print(response.statusCode);
 

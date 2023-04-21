@@ -149,7 +149,7 @@ class TopSection extends StatelessWidget {
                       onPressed: () {
                         showDialog(
                             context: context,
-                            builder: (context) => const JoinGameDialog());
+                            builder: (context) => JoinGameDialog(codigo: user["codigo"]));
                       },
                       child: Text('Unirse a partida'),
                     ),
@@ -160,7 +160,7 @@ class TopSection extends StatelessWidget {
                     padding: const EdgeInsets.all(10),
                     child: FilledButton(
                       onPressed: () {
-                        openDialog(context, const CreateGameDialog());
+                        openDialog(context, CreateGameDialog(codigo: user["codigo"]));
                       },
                       child: const Text('Crear partida'),
                     ),
