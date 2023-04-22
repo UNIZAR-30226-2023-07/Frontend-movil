@@ -7,6 +7,8 @@ import '../widgets/circular_border_picture.dart';
 
 List<int> CSelecion= [];
 
+List<List<Carta>> Cartas_abrir = [];
+
 List<Carta> cartMano= [
   Carta(1,1),
   Carta(2,1),
@@ -59,6 +61,7 @@ class Carta {
 
 int modo = 1; // 0 - no turno, 1 - encarte, 2 - colocar/descarte
 PlayingCard? descarte;
+int abrir = 0; //0 - tiene que abrir, 1 - esta abriendo, 2 - no tiene que abrir
 
 class BoardPage extends StatefulWidget {
   const BoardPage({Key? key}) : super(key: key);
@@ -78,6 +81,28 @@ class _BoardPageState extends State<BoardPage>{
   void dispose() {
     AudioManager.toggleBGM(false);
     super.dispose();
+  }
+
+  bool compararCombinaciones(List<Carta> comb1, List<Carta> comb2){
+    if(comb1.length != comb2.length){
+      return false;
+    }
+    bool iguales = true;
+    for(int i = 0; i < comb1.length; i++) {
+      Carta c1 = comb1.elementAt(i);
+      Carta c2 = comb2.elementAt(i);
+      if (c1.numero == c2.numero && c1.palo == c2.palo) {
+         iguales = true;
+      } else {
+        if (c1.numero == c2.numero && c1.numero == 0) {
+          iguales = true;
+        }
+        else {
+          return false;
+        }
+      }
+    }
+    return iguales;
   }
 
   @override
@@ -129,7 +154,36 @@ class _BoardPageState extends State<BoardPage>{
                         ),
                       ),
                     ),
-                    Container(
+                    abrir == 1 ?
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          if (modo == 2) {
+                              //mandar peticion a logica de que quiero cerrar
+                              for (List<Carta> comb in Cartas_abrir){
+                                for(int i = 0; i < t.length; i++){
+                                  List<Carta> tablero = t.elementAt(i);
+                                  if (compararCombinaciones(tablero,comb)){
+                                    t.removeAt(i);
+                                  }
+                                }
+                                for(Carta cart in comb){
+                                  cartMano.add(cart);
+                                }
+                              }
+                              Cartas_abrir.clear();
+                              abrir = 2;
+                              Navigator.pop(context);
+                              Navigator.push(context,
+                                MaterialPageRoute(
+                                    builder: (context) => const BoardPage()),
+                              );
+                          }
+                        });
+                      },
+                      child: const Text('Fin Abrir'),
+                    )
+                        : Container(
                       height: 100,
                       width: 70,
                       decoration: BoxDecoration(
@@ -190,23 +244,37 @@ class _BoardPageState extends State<BoardPage>{
                         ElevatedButton(
                           onPressed: () {
                             setState(() {
-                              if (CSelecion.isNotEmpty) {
-                                t.insert(0, []);
-                                for (int i in CSelecion) {
-                                  t[0].add(cartMano[i]);
+                              if(modo == 2 && abrir == 0){
+                                //madar peticion abrir
+                                abrir = 1;
+                              }
+                              else {
+                                if (CSelecion.isNotEmpty) {
+                                  t.insert(0, []);
+                                  for (int i in CSelecion) {
+                                    t[0].add(cartMano[i]);
+                                  }
+                                  if (abrir == 1) {
+                                    List<Carta> temp = [];
+                                    for (int i in CSelecion) {
+                                      temp.add(cartMano[i]);
+                                    }
+                                    Cartas_abrir.add(temp);
+                                  }
+                                  CSelecion.sort((a, b) => b.compareTo(a));
+                                  for (int i in CSelecion) {
+                                    cartMano.removeAt(i);
+                                  }
+                                  CSelecion.clear();
+                                  Navigator.pushReplacement(context,
+                                    MaterialPageRoute(
+                                        builder: (
+                                            context) => const BoardPage()),);
                                 }
-                                CSelecion.sort((a, b) => b.compareTo(a));
-                                for (int i in CSelecion) {
-                                  cartMano.removeAt(i);
-                                }
-                                CSelecion.clear();
-                                Navigator.pushReplacement(context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const BoardPage()),);
                               }
                             });
                           },
-                          child: const Text('Añadir Combinación'),
+                          child: abrir == 0 ? const Text('Abrir') : const Text('Añadir Combinación'),
                         ),
                       ],
                     )
@@ -506,7 +574,7 @@ class _CardViewState extends State<CardView> {
                         } else {
                           CSelecion.remove(index);
                         }
-                      } else {
+                      } else if (abrir == 2) {
                         int i = t.indexOf(c);
                         for (int j in CSelecion) {
                           setState(() {
