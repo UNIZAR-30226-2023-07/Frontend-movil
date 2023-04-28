@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/io.dart';
+import 'package:share_plus/share_plus.dart';
 import '../services/http_petitions.dart';
 import '../services/open_snack_bar.dart';
 import '../services/profile_image.dart';
@@ -94,6 +95,7 @@ class _LobbyPage extends State<LobbyPage> {
             const SizedBox(height: 10,),
             Container(
               decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.secondaryContainer,
                 border: Border.all(color: Colors.indigoAccent),
                 borderRadius: BorderRadius.circular(30),
               ),
@@ -122,23 +124,34 @@ class _LobbyPage extends State<LobbyPage> {
                 separatorBuilder: (context, index) => const Divider(),
               ),
             ),
-            const SizedBox(height: 20,),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                    'Código: ${widget.idPartida}',
+                    style: Theme.of(context).textTheme.headlineMedium
+                ),
+                IconButton(
+                    onPressed: () {
+                      Share.share(widget.idPartida);
+                    },
+                    icon: const Icon(Icons.share)
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
             CustomFilledButton(
               content: const Text('Empezar partida'),
               onPressed: () async {
                 bool res = await iniciarPartida(widget.MiCodigo,widget.idPartida);
                 if (context.mounted) {
-                  if (res == null) {
+                  if (res == false) {
                     openSnackBar(context, const Text('No se ha podido enviar la petición'));
                     Navigator.pop(context);
                   }
                 }
               }
-            ),
-            const SizedBox(height: 20,),
-            Align(
-              alignment: Alignment.center,
-              child: Text('Código: ${widget.idPartida}', style: Theme.of(context).textTheme.headlineMedium),
             ),
           ],
         ),

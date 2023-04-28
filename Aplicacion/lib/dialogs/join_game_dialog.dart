@@ -21,7 +21,7 @@ class JoinGameDialog extends StatelessWidget {
           autofocus: true,
           keyboardType: TextInputType.text,
           decoration: const InputDecoration(
-            hintText: '45tg34g435',
+            hintText: '4541',
             border: UnderlineInputBorder(),
           ),
           validator: (value) {

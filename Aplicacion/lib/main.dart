@@ -96,7 +96,7 @@ class _MyAppState extends State<MyApp> {
 class MyHomePage extends StatefulWidget {
   final String email;
 
-  MyHomePage({required this.email});
+  const MyHomePage({super.key, required this.email});
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
@@ -187,8 +187,8 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: !_load
-        ? const Center(child: CircularProgressIndicator())
-        : Center(
+      ? const Center(child: CircularProgressIndicator())
+      : Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -210,42 +210,10 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
         iconSize: 30,
+        landscapeLayout: BottomNavigationBarLandscapeLayout.linear,
         onTap: onItemTapped,
         currentIndex: _selectedIndex,
       ),
-      /*
-      drawer: Drawer(
-        width: 80,
-        child: NavigationRail(
-          leading: FloatingActionButton(
-            shape: const CircleBorder(
-              side: BorderSide.none,
-            ),
-            onPressed: (){},
-            child: const Icon(Icons.add),
-          ),
-          selectedIndex: _selectedIndex,
-          onDestinationSelected: onItemTapped,
-          destinations: const [
-            NavigationRailDestination(
-              icon: Icon(Icons.games_outlined),
-              selectedIcon: Icon(Icons.games_rounded),
-              label: Text('Juegos'),
-            ),
-            NavigationRailDestination(
-              icon: Icon(Icons.people_alt_outlined),
-              selectedIcon: Icon(Icons.people_alt),
-              label: Text('Amigos'),
-            ),
-            NavigationRailDestination(
-              icon: Icon(Icons.account_circle_outlined),
-              selectedIcon: Icon(Icons.account_circle),
-              label: Text('Perfil'),
-            ),
-          ],
-        ),
-      ),
-      */
     );
   }
 }

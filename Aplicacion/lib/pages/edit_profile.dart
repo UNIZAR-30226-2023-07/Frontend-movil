@@ -147,7 +147,7 @@ class _EditProfilePageState extends State<EditProfilePage>{
 
 class ProfilePicture extends StatefulWidget {
   final String email, nombre, desc, codigo;
-  const ProfilePicture({required this.email,required this.nombre,required this.desc, required this.codigo});
+  const ProfilePicture({super.key, required this.email,required this.nombre,required this.desc, required this.codigo});
 
   @override
   State<ProfilePicture> createState() => _ProfilePictureState();
@@ -244,22 +244,27 @@ class _ProfilePictureState extends State<ProfilePicture> {
               SizedBox(
                 height: 250,
                 width: double.infinity,
-                child: IconButton(
-                  padding: const EdgeInsets.all(0),
-                  onPressed: () {
+                child: GestureDetector(
+                  onTap: () {
                     _openBottomSheet();
                   },
-                  iconSize: 300,
-                  icon: Hero(
-                    tag: 'foto',
-                    child: (_tipo && _image != null)
-                      ? CircleAvatar(
-                          backgroundImage: FileImage(_image!), radius: 100)
-                      : CircleAvatar(
+                  child: Padding(
+                    padding: const EdgeInsets.all(25),
+                    child: FittedBox(
+                      child: Hero(
+                        tag: 'foto',
+                        child: (_tipo && _image != null)
+                            ? CircleAvatar(
+                          backgroundImage: FileImage(_image!),
+                          radius: 100,
+                        )
+                            : CircleAvatar(
                           backgroundImage: ResizeImage(AssetImage(_urlImage),
                               width: 250, height: 250),
                           radius: 100,
                         ),
+                      ),
+                    ),
                   ),
                 ),
               ),

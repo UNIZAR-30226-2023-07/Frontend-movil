@@ -10,15 +10,13 @@ import '../services/profile_image.dart';
 class MainPage extends StatefulWidget {
   final Map<String, dynamic>? user;
 
-  MainPage({super.key, required this.user});
+  const MainPage({super.key, required this.user});
 
   @override
-  State<MainPage> createState() => _MainPageState(user!);
+  State<MainPage> createState() => _MainPageState();
 }
 
 class _MainPageState extends State<MainPage> {
-  late final Map<String, dynamic> user;
-  _MainPageState(this.user);
 
   @override
   Widget build(BuildContext context) {
@@ -27,27 +25,15 @@ class _MainPageState extends State<MainPage> {
       child: Scaffold(
         body: Column(
           children: [
-            TopSection(user),
+            TopSection(user: widget.user!),
             const Material(
               color: Colors.indigo,
               child: TabBar(
                 tabs: [
                   Tab(
-                    /*
-                    icon: Icon(
-                      Icons.wine_bar,
-                      size: 30,
-                    ),
-                    */
                     text: 'TORNEOS',
                   ),
                   Tab(
-                    /*
-                    icon: Icon(
-                      Icons.bar_chart_outlined,
-                      size: 30,
-                    ),
-                    */
                     text: 'RANKING',
                   ),
                 ],
@@ -56,8 +42,8 @@ class _MainPageState extends State<MainPage> {
             Expanded(
               child: TabBarView(
                 children: [
-                  TournamentTab(codigo: user!["codigo"]),
-                  RankingTab(codigo: user!["codigo"]),
+                  TournamentTab(codigo: widget.user!["codigo"]),
+                  RankingTab(codigo: widget.user!["codigo"]),
                 ],
               ),
             ),
@@ -70,7 +56,7 @@ class _MainPageState extends State<MainPage> {
 
 class TopSection extends StatelessWidget {
   final Map<String, dynamic> user;
-  TopSection(this.user);
+  const TopSection({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -80,20 +66,13 @@ class TopSection extends StatelessWidget {
       child: Stack(
         alignment: Alignment.bottomCenter,
         children: [
-          Image.network(
-            "https://crehana-blog.imgix.net/media/filer_public/8c/a4/8ca49656-e762-45fc-81e0-948f1e7bc9c3/as-poker.jpeg?auto=format&q=50",
-          ),
           Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              gradient: LinearGradient(
-                begin: FractionalOffset.topCenter,
-                end: FractionalOffset.bottomCenter,
-                colors: [
-                  Colors.black.withOpacity(0.4),
-                  Colors.black,
-                ],
-              ),
+            color: Theme.of(context).colorScheme.secondaryContainer,
+          ),
+          Center(
+            child: Image.asset(
+              'images/logo.png',
+              height: 200,
             ),
           ),
           Column(
@@ -151,7 +130,7 @@ class TopSection extends StatelessWidget {
                             context: context,
                             builder: (context) => JoinGameDialog(codigo: user["codigo"]));
                       },
-                      child: Text('Unirse a partida'),
+                      child: const Text('Unirse a partida'),
                     ),
                   ),
                 ),
@@ -181,7 +160,7 @@ class TournamentTab extends StatefulWidget {
   const TournamentTab({Key? key, required this.codigo}) : super(key: key);
 
   @override
-  _TournamentTabState createState() => _TournamentTabState();
+  State<TournamentTab> createState() => _TournamentTabState();
 }
 
 class _TournamentTabState extends State<TournamentTab> {
@@ -189,6 +168,7 @@ class _TournamentTabState extends State<TournamentTab> {
   // 1 - creador;
   List<Map<String, dynamic>>? pendientes;
 
+  @override
   void initState() {
     super.initState();
     _getPartidasPendientes();
@@ -236,7 +216,7 @@ class RankingTab extends StatefulWidget {
   const RankingTab({Key? key, required this.codigo}) : super(key: key);
 
   @override
-  _RankingTabState createState() => _RankingTabState();
+  State<RankingTab> createState() => _RankingTabState();
 }
 
 class _RankingTabState extends State<RankingTab> {
@@ -244,6 +224,7 @@ class _RankingTabState extends State<RankingTab> {
   Map<String, dynamic>? amigos;
   bool _load = false;
   late List<dynamic> lista_amigos;
+
   @override
   void initState() {
     super.initState();
@@ -265,72 +246,72 @@ class _RankingTabState extends State<RankingTab> {
   @override
   Widget build(BuildContext context) {
     if(_load){
-    if (lista_amigos[0] != null) {
-      return ListView.separated(
-        itemCount: lista_amigos[0].length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            contentPadding: const EdgeInsets.all(10),
-            leading: SizedBox(
-              width: 120,
-              child: Row(
+      if (lista_amigos[0] != null) {
+        return ListView.separated(
+          itemCount: lista_amigos[0].length,
+          itemBuilder: (context, index) {
+            return ListTile(
+              contentPadding: const EdgeInsets.all(10),
+              leading: SizedBox(
+                width: 120,
+                child: Row(
+                  children: [
+                    (index == 0)
+                    ? const Icon(
+                      Icons.wine_bar,
+                      color: Colors.amber,
+                      size: 35,
+                    )
+                    : (index == 1)
+                    ? const Icon(
+                      Icons.wine_bar,
+                      color: Colors.grey,
+                      size: 35,
+                    )
+                    : (index == 2)
+                    ? const Icon(
+                      Icons.wine_bar,
+                      color: Colors.deepOrangeAccent,
+                      size: 35,
+                    )
+                    : Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: Text(
+                        '$index',
+                        style: const TextStyle(
+                            fontSize: 25, color: Colors.indigoAccent),
+                      ),
+                    ),
+                    const Spacer(),
+                    CircularBorderPicture(image: ProfileImage
+                        .urls[(lista_amigos[0][index])["Foto"] % 6]!,),
+                  ],
+                ),
+              ),
+              title: Row(
                 children: [
-                  (index == 0)
-                      ? const Icon(
-                    Icons.wine_bar,
-                    color: Colors.amber,
-                    size: 35,
-                  )
-                      : (index == 1)
-                      ? const Icon(
-                    Icons.wine_bar,
-                    color: Colors.grey,
-                    size: 35,
-                  )
-                      : (index == 2)
-                      ? const Icon(
-                    Icons.wine_bar,
-                    color: Colors.deepOrangeAccent,
-                    size: 35,
-                  )
-                      : Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: Text(
-                      '$index',
-                      style: const TextStyle(
-                          fontSize: 25, color: Colors.indigoAccent),
+                  Text(
+                    (lista_amigos[0][index])["Nombre"],
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const Spacer(),
-                  CircularBorderPicture(image: ProfileImage
-                      .urls[(lista_amigos[0][index])["Foto"] % 6]!,),
                 ],
               ),
-            ),
-            title: Row(
-              children: [
-                Text(
-                  (lista_amigos[0][index])["Nombre"],
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            trailing: Points(value: ((lista_amigos[0][index])["Puntos"])),
-            onTap: () {},
-          );
-        },
-        separatorBuilder: (context, index) => const Divider(),
-      );
+              trailing: Points(value: ((lista_amigos[0][index])["Puntos"])),
+              onTap: () {},
+            );
+          },
+          separatorBuilder: (context, index) => const Divider(),
+        );
+      }
+      else{
+        return Container();
+      }
     }
     else{
-      return Container();
-    }
-    }
-    else{
-      return Center(child: CircularProgressIndicator());
+      return const Center(child: CircularProgressIndicator());
     }
   }
 }

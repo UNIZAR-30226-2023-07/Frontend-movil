@@ -20,7 +20,7 @@ class AddFriendDialog extends StatelessWidget {
           autofocus: true,
           keyboardType: TextInputType.text,
           decoration: const InputDecoration(
-            hintText: '#1234',
+            hintText: 'amigo_123',
             border: UnderlineInputBorder(),
           ),
           validator: (value) {

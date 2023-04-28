@@ -73,6 +73,7 @@ class _ShowMessagesState extends State<ShowMessages> {
       child: ListView.builder(
         ///controller: _scrollController,
         itemCount: widget.len.length,
+        reverse: true,
         addAutomaticKeepAlives: true,
         itemBuilder: (context, index){
           final esMio = widget.len[index]["Emisor"] == widget.MiCodigo;
@@ -89,9 +90,7 @@ class _ShowMessagesState extends State<ShowMessages> {
                     child: Container(
                       padding: const EdgeInsets.all(15.0),
                       decoration: BoxDecoration(
-                        color: !esMio
-                            ? Theme.of(context).colorScheme.secondaryContainer
-                            : Colors.indigoAccent[100],
+                        color: Colors.indigoAccent[100],
                         borderRadius: BorderRadius.circular(30.0),
                       ),
                       child: Text(widget.len[index]["Contenido"]),
@@ -100,9 +99,9 @@ class _ShowMessagesState extends State<ShowMessages> {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 5),
                     child: CircularBorderPicture(
-                        width: 52,
-                        height: 52,
-                        image: ProfileImage.urls[fotos[index] % 6]!
+                      width: 52,
+                      height: 52,
+                      image: ProfileImage.urls[fotos[index] % 6]!
                     ),
                   ),
                 ],
@@ -114,9 +113,9 @@ class _ShowMessagesState extends State<ShowMessages> {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 5),
                     child: CircularBorderPicture(
-                        width: 52,
-                        height: 52,
-                        image: ProfileImage.urls[fotos[index] % 6]!
+                      width: 52,
+                      height: 52,
+                      image: ProfileImage.urls[fotos[index] % 6]!
                     ),
                   ),
                   ConstrainedBox(
@@ -124,9 +123,7 @@ class _ShowMessagesState extends State<ShowMessages> {
                     child: Container(
                       padding: const EdgeInsets.all(15.0),
                       decoration: BoxDecoration(
-                        color: !esMio
-                            ? Theme.of(context).colorScheme.secondaryContainer
-                            : Colors.indigoAccent[100],
+                        color: Theme.of(context).colorScheme.secondaryContainer,
                         borderRadius: BorderRadius.circular(30.0),
                       ),
                       child: Text(widget.len[index]["Contenido"]),
@@ -231,57 +228,57 @@ class _ChatPage extends State<ChatPage> {
         title: const Text('Chat'),
       ),
       body: !_load
-    ? const Center(child: CircularProgressIndicator())
-    :Column(
-        children: [
-          Expanded(child: ShowMessages(len: lista_mensajes, MiCodigo: widget.MiCodigo, amistad: widget.amistad),),
-          Row(
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                  child: TextField(
-                    controller: _textController,
-                    decoration: InputDecoration(
-                      contentPadding: const EdgeInsets.all(15),
-                      hintText: "Introduce tu mensaje aquí",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
+      ? const Center(child: CircularProgressIndicator())
+      :Column(
+          children: [
+            Expanded(child: ShowMessages(len: lista_mensajes, MiCodigo: widget.MiCodigo, amistad: widget.amistad),),
+            Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+                    child: TextField(
+                      controller: _textController,
+                      decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.all(15),
+                        hintText: "Mensaje",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
                       ),
+                      keyboardType: TextInputType.multiline,
+                      maxLines: null,
                     ),
-                    keyboardType: TextInputType.multiline,
-                    maxLines: null,
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 0, top: 5, right: 10, bottom: 5),
-                child: FloatingActionButton(
-                  elevation: 0,
-                  tooltip: 'Enviar mensaje',
-                  onPressed: () {
-                    if (_textController.text.isNotEmpty) {
-                      final data = '{"emisor": "${widget.MiCodigo}","receptor": "${widget.codigo2}", "contenido": "${_textController.text}"}';
-                      //msgs.add(_textController.text);
-                      ///msg.add(_textController.text);
-                      _textController.clear();
-                      if(widget.amistad) {
-                        wb_amistad.sink.add(data);
-                        _getMensajes();
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 10, 10),
+                  child: FloatingActionButton(
+                    elevation: 0,
+                    tooltip: 'Enviar mensaje',
+                    onPressed: () {
+                      if (_textController.text.isNotEmpty) {
+                        final data = '{"emisor": "${widget.MiCodigo}","receptor": "${widget.codigo2}", "contenido": "${_textController.text}"}';
+                        //msgs.add(_textController.text);
+                        ///msg.add(_textController.text);
+                        _textController.clear();
+                        if(widget.amistad) {
+                          wb_amistad.sink.add(data);
+                          _getMensajes();
+                        }
+                        _load = false;
+                        setState(() {});
+                        build(context);
                       }
-                      _load = false;
-                      setState(() {});
-                      build(context);
-                    }
-                  },
-                  child: const Icon(Icons.send),
+                    },
+                    child: const Icon(Icons.send),
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
-    ),
-  );
+    );
   }
 }
