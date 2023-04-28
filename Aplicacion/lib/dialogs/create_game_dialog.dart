@@ -26,7 +26,7 @@ class CreateGameDialog extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => LobbyPage(ranked: false, idPartida: res["clave"],)),
+                  MaterialPageRoute(builder: (context) => LobbyPage(ranked: false, idPartida: res["clave"], MiCodigo: codigo,)),
                 );
               }
             }
@@ -38,7 +38,7 @@ class CreateGameDialog extends StatelessWidget {
             Navigator.pop(context);
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const LobbyPage(ranked: true, idPartida: "0",)),
+              MaterialPageRoute(builder: (context) => LobbyPage(ranked: true, idPartida: "0", MiCodigo: codigo,)),
             );
           },
           child: const Text('Partida clasificatoria'),

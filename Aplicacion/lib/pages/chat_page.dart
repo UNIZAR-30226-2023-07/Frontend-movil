@@ -12,10 +12,11 @@ const String _IP = '52.174.124.24';
 const String _PUERTO = '3001';
 
 class ShowMessages extends StatefulWidget {
-  const ShowMessages({super.key, required this.len, required this.MiCodigo});
+  const ShowMessages({super.key, required this.len, required this.MiCodigo, required this.amistad});
 
   final List<dynamic> len;
   final String MiCodigo;
+  final bool amistad;
 
   @override
   State<ShowMessages> createState() => _ShowMessagesState();
@@ -177,6 +178,11 @@ class _ChatPage extends State<ChatPage> {
           build(context);
         }
       });
+    } else{
+      _load = true;
+      setState(() {
+
+      });
     }
   }
 
@@ -217,7 +223,7 @@ class _ChatPage extends State<ChatPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        wb_amistad.sink.close();
+        if(widget.amistad){wb_amistad.sink.close();}
         return true;
       },
     child: Scaffold(
@@ -228,7 +234,7 @@ class _ChatPage extends State<ChatPage> {
     ? const Center(child: CircularProgressIndicator())
     :Column(
         children: [
-          Expanded(child: ShowMessages(len: lista_mensajes, MiCodigo: widget.MiCodigo),),
+          Expanded(child: ShowMessages(len: lista_mensajes, MiCodigo: widget.MiCodigo, amistad: widget.amistad),),
           Row(
             children: [
               Expanded(
@@ -256,12 +262,11 @@ class _ChatPage extends State<ChatPage> {
                   onPressed: () {
                     if (_textController.text.isNotEmpty) {
                       final data = '{"emisor": "${widget.MiCodigo}","receptor": "${widget.codigo2}", "contenido": "${_textController.text}"}';
-                      final jsonString = jsonEncode(data);
-                      wb_amistad.sink.add(data);
                       //msgs.add(_textController.text);
                       ///msg.add(_textController.text);
                       _textController.clear();
                       if(widget.amistad) {
+                        wb_amistad.sink.add(data);
                         _getMensajes();
                       }
                       _load = false;

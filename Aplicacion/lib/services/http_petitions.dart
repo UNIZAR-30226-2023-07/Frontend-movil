@@ -22,7 +22,7 @@ const String _getMensajesURL = 'http://$_IP:$_PUERTO/api/msg/get/';
 const String _leerMensajesURL = 'http://$_IP:$_PUERTO/api/msg/leer';
 const String _crearPartidaURL = 'http://$_IP:$_PUERTO/api/partida/crear';
 const String _unirPartidaURL = 'http://$_IP:$_PUERTO/api/partida/join';
-const String _iniciarPartidaURL = 'http://$_IP:$_PUERTO/api/partida/iniciar/';
+const String _iniciarPartidaURL = 'http://$_IP:$_PUERTO/api/partida/iniciar';
 
 class User {
   final String nickname;
@@ -294,12 +294,13 @@ Future<bool> unirPartida(String codigo, String partida) async {
   return response.statusCode == 200 || response.statusCode == 202;
 }
 
-Future<bool> iniciarPartida(String partida) async {
-  String uri = "$_iniciarPartidaURL$partida";
+Future<bool> iniciarPartida(String jugador, String codigo) async {
+  final json = '{"codigo": "$jugador", "clave": "$codigo"}';
 
-  final response = await http.get(Uri.parse(uri));
+  final response = await http.post(Uri.parse(_iniciarPartidaURL), body: json);
 
-  //print(response.statusCode);
+  print(response.statusCode);
+  print(response.body);
 
   return response.statusCode == 200 || response.statusCode == 202;
 }

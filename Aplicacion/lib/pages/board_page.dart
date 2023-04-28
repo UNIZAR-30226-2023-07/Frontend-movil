@@ -1,55 +1,50 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:playing_cards/playing_cards.dart';
 import 'package:untitled/dialogs/pause_game_dialog.dart';
 import 'package:untitled/services/audio_manager.dart';
+import 'package:web_socket_channel/io.dart';
 import '../pages/chat_page.dart';
 import '../widgets/circular_border_picture.dart';
+
+const String _IP = '52.174.124.24';
+const String _PUERTO = '3001';
 
 List<int> CSelecion= [];
 
 List<List<Carta>> Cartas_abrir = [];
 
-List<Carta> cartMano= [
-  Carta(1,1),
-  Carta(2,1),
-  Carta(7,2),
-  Carta(11,2),
-  Carta(12,3),
-  Carta(13,3),
-  Carta(10,3),
-  Carta(3,4),
-  Carta(9,4),
-  Carta(0,2),
-];
+List<Carta> cartMano= [];
 List<List<Carta>> t = [
-  [Carta(2,2),
-    Carta(3,2),
-    Carta(4,2),
-    Carta(4,2),
-    Carta(4,2),
-    Carta(4,2),Carta(4,2),
-    Carta(4,2),
-    Carta(4,2),
-    Carta(4,2),
-  ],
-  [Carta(5,1),
-    Carta(5,3),
-    Carta(5,4),],
-  [Carta(12,4),
-    Carta(13,4),
-    Carta(1,4),],
-  [Carta(4,1),
-    Carta(4,4),
-    Carta(0,2),],
-  [Carta(1,3),
-    Carta(2,3),
-    Carta(3,3),],
-  [Carta(1,3),
-    Carta(2,3),
-    Carta(3,3),],
-  [Carta(1,3),
-    Carta(2,3),
-    Carta(3,3),],
+  // [Carta(2,2),
+  //   Carta(3,2),
+  //   Carta(4,2),
+  //   Carta(4,2),
+  //   Carta(4,2),
+  //   Carta(4,2),Carta(4,2),
+  //   Carta(4,2),
+  //   Carta(4,2),
+  //   Carta(4,2),
+  // ],
+  // [Carta(5,1),
+  //   Carta(5,3),
+  //   Carta(5,4),],
+  // [Carta(12,4),
+  //   Carta(13,4),
+  //   Carta(1,4),],
+  // [Carta(4,1),
+  //   Carta(4,4),
+  //   Carta(0,2),],
+  // [Carta(1,3),
+  //   Carta(2,3),
+  //   Carta(3,3),],
+  // [Carta(1,3),
+  //   Carta(2,3),
+  //   Carta(3,3),],
+  // [Carta(1,3),
+  //   Carta(2,3),
+  //   Carta(3,3),],
 ];
 
 class Carta {
@@ -64,17 +59,64 @@ PlayingCard? descarte;
 int abrir = 0; //0 - tiene que abrir, 1 - esta abriendo, 2 - no tiene que abrir
 
 class BoardPage extends StatefulWidget {
-  const BoardPage({Key? key}) : super(key: key);
+  BoardPage({Key? key, required this.idPartida,required this.MiCodigo}) : super(key: key);
+  String idPartida;
+  //final ws_partida;
+  String MiCodigo;
   @override
   State<BoardPage> createState() => _BoardPageState();
 }
 
 class _BoardPageState extends State<BoardPage>{
-
+  late final ws_chat;
+  late final ws_partida;
+  bool nuevos_msg = false;
+  bool _load = false;
   @override
   void initState() {
     super.initState();
     AudioManager.toggleBGM(true);
+    nuevos_msg = false;
+    cartMano.clear();
+    ws_chat= IOWebSocketChannel.connect('ws://$_IP:$_PUERTO/api/ws/chat/lobby/${widget.idPartida}');
+    ws_chat.stream.handleError((error) {
+      print('Error: $error');
+    });
+
+    ws_chat.stream.listen((message) {
+      setState(() {
+        nuevos_msg = true;
+      });
+    });
+
+    ws_partida = IOWebSocketChannel.connect('ws://$_IP:$_PUERTO/api/ws/partida/${widget.idPartida}');
+    ws_partida.stream.handleError((error) {
+      print('Error: $error');
+    });
+
+    ws_partida.stream.listen((message) {
+      Map<String, dynamic> datos = jsonDecode(message);
+      if(datos["tipo"] == "Mostrar_mano" && datos["receptor"] == widget.MiCodigo) {
+        _load = false;
+        print('mostar_mano');
+        List<dynamic> cartas = datos["cartas"];
+        cartMano.clear();
+        List<Carta> temp = [];
+        for(String i in cartas){
+          List<String> listaNumeros = i.split(",");
+          int valor = int.parse(listaNumeros[0]);
+          int palo = int.parse(listaNumeros[1]);
+          temp.add(Carta(valor,palo));
+        }
+        setState(() {
+          cartMano = temp;
+          _load = true;
+        });
+      }
+    });
+
+    String data = '{"emisor": "${widget.MiCodigo}","tipo": "Mostrar_mano"}';
+    ws_partida.sink.add(data);
   }
 
   @override
@@ -116,7 +158,9 @@ class _BoardPageState extends State<BoardPage>{
       return true;
     },
     child: Scaffold(
-      body: Container(
+      body: !_load
+          ? const Center(child: CircularProgressIndicator())
+      :Container(
         color: Colors.green.shade900,
         child: Column(
             children: [
@@ -144,7 +188,7 @@ class _BoardPageState extends State<BoardPage>{
                             Navigator.pop(context);
                             Navigator.push(context,
                               MaterialPageRoute(
-                                  builder: (context) => const BoardPage()),);
+                                  builder: (context) => BoardPage(idPartida: widget.idPartida,MiCodigo:  widget.MiCodigo,)),);
                           }
                         },
                         child: PlayingCardView(
@@ -173,11 +217,11 @@ class _BoardPageState extends State<BoardPage>{
                               }
                               Cartas_abrir.clear();
                               abrir = 2;
-                              Navigator.pop(context);
-                              Navigator.push(context,
-                                MaterialPageRoute(
-                                    builder: (context) => const BoardPage()),
-                              );
+                              // Navigator.pop(context);
+                              // Navigator.push(context,
+                              //   MaterialPageRoute(
+                              //       builder: (context) => BoardPage(idPartida: widget.idPartida, MiCodigo: widget.MiCodigo,)),
+                              //);
                           }
                         });
                       },
@@ -201,11 +245,11 @@ class _BoardPageState extends State<BoardPage>{
                             cartMano.insert(0, t2);
                             descarte = null;
                             modo = 2;
-                            Navigator.pop(context);
-                            Navigator.push(context,
-                              MaterialPageRoute(builder: (
-                                  context) => const BoardPage()),
-                            );
+                            // Navigator.pop(context);
+                            // Navigator.push(context,
+                            //   MaterialPageRoute(builder: (
+                            //       context) => BoardPage(idPartida: widget.idPartida, MiCodigo: widget.MiCodigo,)),
+                            //);
                           } else if (modo == 2) {
                             if (CSelecion.length == 1) {
                               descarte = PlayingCard(PaloToSuit(
@@ -214,11 +258,11 @@ class _BoardPageState extends State<BoardPage>{
                               modo = 1;
                               cartMano.removeAt(CSelecion[0]);
                               CSelecion.clear();
-                              Navigator.pop(context);
-                              Navigator.push(context,
-                                MaterialPageRoute(
-                                    builder: (context) => const BoardPage()),
-                              );
+                              // Navigator.pop(context);
+                              // Navigator.push(context,
+                              //   MaterialPageRoute(
+                              //       builder: (context) => BoardPage(idPartida: widget.idPartida, MiCodigo: widget.MiCodigo,)),
+                              // );
                             }
                           }
                         },
@@ -233,13 +277,30 @@ class _BoardPageState extends State<BoardPage>{
                     ),
                     Column(
                       children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(context,
-                              MaterialPageRoute(builder: (
-                                  context) => const ChatPage()),);
-                          },
-                          child: const Text('Mostrar chat'),
+                        Stack(
+                          children:[
+                            ElevatedButton(
+                              onPressed: () {
+                                nuevos_msg = false;
+                                Navigator.push(context,
+                                  MaterialPageRoute(builder: (
+                                      context) => const ChatPage()),);
+                              },
+                              child: const Text('Mostrar chat'),
+                            ),
+                            if (nuevos_msg)
+                              Positioned(
+                                right: 0,
+                                child: Container(
+                                  width: 10,
+                                  height: 10,
+                                  decoration: BoxDecoration(
+                                    color: Colors.red,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
                         ElevatedButton(
                           onPressed: () {
@@ -266,10 +327,10 @@ class _BoardPageState extends State<BoardPage>{
                                     cartMano.removeAt(i);
                                   }
                                   CSelecion.clear();
-                                  Navigator.pushReplacement(context,
-                                    MaterialPageRoute(
-                                        builder: (
-                                            context) => const BoardPage()),);
+                                  // Navigator.pushReplacement(context,
+                                  //   MaterialPageRoute(
+                                  //       builder: (
+                                  //           context) => BoardPage(idPartida: widget.idPartida, MiCodigo: widget.MiCodigo,)),);
                                 }
                               }
                             });
@@ -290,7 +351,7 @@ class _BoardPageState extends State<BoardPage>{
                     children: t.map((e) =>
                       Column(
                         children: [
-                          CardView(e, false),
+                          CardView(c: e, mano: false,idPartida: widget.idPartida,MiCodigo: widget.MiCodigo),
                           const Divider(color: Colors.white,),
                         ],
                       )).toList(),
@@ -311,7 +372,7 @@ class _BoardPageState extends State<BoardPage>{
                   ),
                 ),
 
-                child: CardView(cartMano, true),
+                child: CardView(c: cartMano,mano: true,idPartida: widget.idPartida,MiCodigo: widget.MiCodigo),
               )
             ]),
       ),
@@ -362,9 +423,11 @@ class _BoardPageState extends State<BoardPage>{
 class CardView extends StatefulWidget {
   final List<Carta> c;
   final bool mano;
-  const CardView(this.c, this.mano,{Key? key}) : super(key: key);
+  final String idPartida;
+  final String MiCodigo;
+  const CardView({Key? key, required this.c,required this.mano, required this.idPartida,required this.MiCodigo,} ) : super(key: key);
   @override
-  State<CardView> createState() => _CardViewState(c,mano);
+  State<CardView> createState() => _CardViewState();
 }
 
 
@@ -508,18 +571,14 @@ PlayingCardViewStyle setStyle(){
 class _CardViewState extends State<CardView> {
   Suit suit = Suit.spades;
   CardValue value = CardValue.ace;
-  final List<Carta> c;
   List<bool> selected = [];
-  final bool mano;
-  _CardViewState(this.c, this.mano);
-
   PlayingCardViewStyle myCardStyles = setStyle();
   List<PlayingCard>? deck;
 
   @override
   void initState() {
     super.initState();
-    deck = _createDeck(c);
+    deck = _createDeck(widget.c);
     for (int i = 0 ; i < deck!.length; i++) {
       selected.add(false);
     }
@@ -567,7 +626,7 @@ class _CardViewState extends State<CardView> {
                 onTap: () {
                   setState(() {
                     if (modo == 2) {
-                      if (mano) {
+                      if (widget.mano) {
                         selected[index] = !selected[index];
                         if (selected[index]) {
                           CSelecion.add(index);
@@ -575,7 +634,7 @@ class _CardViewState extends State<CardView> {
                           CSelecion.remove(index);
                         }
                       } else if (abrir == 2) {
-                        int i = t.indexOf(c);
+                        int i = t.indexOf(widget.c);
                         for (int j in CSelecion) {
                           setState(() {
                             t[i].add(cartMano[j]);
@@ -586,10 +645,10 @@ class _CardViewState extends State<CardView> {
                           cartMano.removeAt(j);
                         }
                         CSelecion.clear();
-                        Navigator.pop(context);
-                        Navigator.push(context,
-                          MaterialPageRoute(
-                              builder: (context) => const BoardPage()),);
+                        // Navigator.pop(context);
+                        // Navigator.push(context,
+                        //   MaterialPageRoute(
+                        //       builder: (context) => BoardPage(idPartida: idPartida, MiCodigo: MiCodigo,)),);
                       }
                     }
                   });
