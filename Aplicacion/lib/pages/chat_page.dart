@@ -12,10 +12,11 @@ const String _IP = '52.174.124.24';
 const String _PUERTO = '3001';
 
 class ShowMessages extends StatefulWidget {
-  const ShowMessages({super.key, required this.len, required this.MiCodigo, required this.amistad});
+  const ShowMessages({super.key, required this.len, required this.MiCodigo, required this.codigo2, required this.amistad});
 
   final List<dynamic> len;
   final String MiCodigo;
+  final String codigo2;
   final bool amistad;
 
   @override
@@ -66,9 +67,12 @@ class _ShowMessagesState extends State<ShowMessages> {
 
   void procesarMensajes() async{
     fotos.clear();
+    Map<String, dynamic>? user1 = await getUserCode(widget.MiCodigo);
+    Map<String, dynamic>? user2 = await getUserCode(widget.codigo2);
+
     for(int i = 0; i < widget.len.length; i++){
-      Map<String, dynamic>? user = await getUserCode(widget.len[i]["Emisor"]);
-      fotos.add(user!["foto"]);
+      int foto = (widget.len[i]["Emisor"] == user1!["codigo"])? user1["foto"] : user2!["foto"];
+      fotos.add(foto);
       if(widget.len[i]["Receptor"] == widget.MiCodigo) {
         bool res = await leerMensajes(
             widget.len[i]["Emisor"], widget.len[i]["Receptor"]);
@@ -100,7 +104,7 @@ class _ShowMessagesState extends State<ShowMessages> {
             itemBuilder: (context, index){
               final esMio = widget.len[index]["Emisor"] == widget.MiCodigo;
               return Padding(
-                padding: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.only(bottom: 5),
                 child: Container(
                   child: esMio
                   ? Row(
@@ -121,9 +125,9 @@ class _ShowMessagesState extends State<ShowMessages> {
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 5),
                         child: CircularBorderPicture(
-                            width: 52,
-                            height: 52,
-                            image: ProfileImage.urls[fotos[index] % 6]!
+                          width: 52,
+                          height: 52,
+                          image: ProfileImage.urls[fotos[index] % 6]!
                         ),
                       ),
                     ],
@@ -238,15 +242,13 @@ class _ChatPage extends State<ChatPage> {
 
 
   List<dynamic> separarMensajesCodigo(String codigo1, String codigo2) {
-    int j = 0;
     List<dynamic>? lista_mensajes_amistad = <dynamic>[];
     if(lista_mensajes[0] != null) {
       for (int i = 0; i < lista_mensajes[0].length; i++) {
-        if ((lista_mensajes[0][i])["Emisor"] == codigo1 && (lista_mensajes[0][i])["Receptor"] == codigo2
-            || (lista_mensajes[0][i])["Emisor"] == codigo2 && (lista_mensajes[0][i])["Receptor"] == codigo1){
-          lista_mensajes_amistad.add(lista_mensajes[0][i]);
-          j++;
-        }
+        //if ((lista_mensajes[0][i])["Emisor"] == codigo1 && (lista_mensajes[0][i])["Receptor"] == codigo2
+          //  || (lista_mensajes[0][i])["Emisor"] == codigo2 && (lista_mensajes[0][i])["Receptor"] == codigo1){
+        lista_mensajes_amistad.add(lista_mensajes[0][i]);
+        //}
       }
     }
     return lista_mensajes_amistad!;
@@ -269,7 +271,7 @@ class _ChatPage extends State<ChatPage> {
       ? const Center(child: CircularProgressIndicator())
       :Column(
           children: [
-            Expanded(child: ShowMessages(len: lista_mensajes, MiCodigo: widget.MiCodigo, amistad: widget.amistad),),
+            Expanded(child: ShowMessages(len: lista_mensajes, MiCodigo: widget.MiCodigo, codigo2: widget.codigo2, amistad: widget.amistad),),
             Row(
               children: [
                 Expanded(

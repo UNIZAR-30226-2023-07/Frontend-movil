@@ -2,13 +2,16 @@ import 'package:audioplayers/audioplayers.dart';
 import 'local_storage.dart';
 
 class AudioManager {
-  static final _BGMPlayer = AudioPlayer();
+  static AudioCache _BGMCache = AudioCache(prefix: 'music/');
+  static AudioPlayer _BGMPlayer = AudioPlayer();
   static bool _BGMplay = false;
+  static late Uri _url;
 
-  static final _SFXPlayer = AudioPlayer();
+  static AudioCache _SFXCache = AudioCache(prefix: 'music/');
+  static AudioPlayer _SFXPlayer = AudioPlayer();
   static bool _SFXPlay = false;
 
-  static void startAudio() {
+  static void startAudio() async {
     if(LocalStorage.prefs.getBool('musicOn') != null) {
       _BGMplay = LocalStorage.prefs.getBool('musicOn') as bool;
     }
@@ -23,6 +26,9 @@ class AudioManager {
       double soundEffectsValue = LocalStorage.prefs.getDouble('soundEffectsValue') as double;
       _SFXPlayer.setVolume(soundEffectsValue);
     }
+    await _BGMPlayer.setReleaseMode(ReleaseMode.LOOP);
+    _url = await _BGMCache.load('musiquita2.mp3');
+    await _SFXCache.load('sonido_carta.mp3');
   }
 
   static Future<void> playBGM(bool value) async {
@@ -32,10 +38,7 @@ class AudioManager {
   static Future<void> toggleBGM(bool value) async {
     if(_BGMplay) {
       if (value) {
-        _BGMPlayer.setReleaseMode(ReleaseMode.LOOP);
-        final player = AudioCache(prefix: 'music/');
-        final url = await player.load('musiquita2.mp3');
-        await _BGMPlayer.play(url.path, isLocal: true);
+        await _BGMPlayer.play(_url.path, isLocal: true);
       } else {
         await _BGMPlayer.release();
       }
@@ -65,10 +68,7 @@ class AudioManager {
   static Future<void> toggleSFX(bool value) async {
     if (_SFXPlay) {
       if (value) {
-        _SFXPlayer.setReleaseMode(ReleaseMode.LOOP);
-        final player = AudioCache(prefix: 'music/');
-        final url = await player.load('musiquita.mp3');
-        await _SFXPlayer.play(url.path, isLocal: true);
+        _SFXPlayer = await _SFXCache.play('sonido_carta.mp3');
       } else {
         await _SFXPlayer.release();
       }

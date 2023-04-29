@@ -624,6 +624,7 @@ class _CardViewState extends State<CardView> {
                       : null, // No shape border when not selected
                 ),
                 onTap: () {
+                  AudioManager.toggleSFX(true);
                   setState(() {
                     if (modo == 2) {
                       if (widget.mano) {

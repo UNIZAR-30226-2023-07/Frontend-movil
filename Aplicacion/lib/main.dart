@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:untitled/pages/board_page.dart';
 import 'package:untitled/services/audio_manager.dart';
 import 'package:untitled/services/http_petitions.dart';
+import 'package:untitled/services/profile_image.dart';
 import 'dialogs/close_session_dialog.dart';
 import 'package:untitled/services/open_dialog.dart';
 import 'pages/main_page.dart';
@@ -45,6 +46,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await LocalStorage.configurePrefs();
   AudioManager.startAudio();
+  ProfileImage.prepImages();
   bool res = await _startPage();
   runApp(MyApp(res: res));
 }

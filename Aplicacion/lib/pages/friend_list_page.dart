@@ -200,6 +200,7 @@ class _FriendsPageState extends State<FriendsPage> {
                             MaterialPageRoute(builder: (
                               context) => ProfilePage(email: '', user: user, editActive: false,)),
                           );
+                          print(user);
                         }
                       },
                       child: CircularBorderPicture(image: ProfileImage.urls[(lista_amigos[0][index])["Foto"]%6]!),
@@ -213,7 +214,7 @@ class _FriendsPageState extends State<FriendsPage> {
                         ),
                       ],
                     ),
-                    subtitle: Text((lista_amigos[0][index])["Descp"]),
+                    subtitle: Text((lista_amigos[0][index])["Descp"], maxLines: 1, overflow: TextOverflow.ellipsis),
                     trailing: contarMsgPendientes((lista_amigos[0][index])["Codigo"]) == '0'
                     ? const SizedBox()
                     : Badge(
