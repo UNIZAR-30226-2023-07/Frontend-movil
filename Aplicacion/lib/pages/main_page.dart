@@ -60,7 +60,7 @@ class TopSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //ProfileImage.changeImage(user["foto"]%6);
+    ProfileImage.changeImage(user["foto"]%6);
     return SizedBox(
       height: 220,
       child: Stack(
@@ -90,7 +90,7 @@ class TopSection extends StatelessWidget {
                 ),
                 child: CircleAvatar(
                   backgroundImage: ResizeImage(
-                    AssetImage(ProfileImage.getImage(user["foto"])),
+                    AssetImage(ProfileImage.image),
                     width: 140,
                     height: 140,
                   ),

@@ -83,7 +83,7 @@ class _EditProfilePageState extends State<EditProfilePage>{
                       tag: 'foto',
                       child: CircleAvatar(
                         backgroundImage: ResizeImage(
-                          AssetImage(ProfileImage.getImage(widget.foto)),
+                          AssetImage(ProfileImage.image),
                           width: 200,
                           height: 200,
                         ),
