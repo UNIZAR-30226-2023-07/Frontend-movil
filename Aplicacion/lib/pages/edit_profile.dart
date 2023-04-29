@@ -12,13 +12,16 @@ import '../widgets/custom_filled_button.dart';
 class EditProfilePage extends StatefulWidget {
   final String nombre, desc, email, codigo;
   final int foto;
+  final bool editActive;
+
   const EditProfilePage(
       {super.key,
       required this.nombre,
       required this.foto,
       required this.desc,
       required this.email,
-      required this.codigo});
+      required this.codigo,
+      required this.editActive});
 
   @override
   State<EditProfilePage> createState() => _EditProfilePageState();
@@ -66,18 +69,21 @@ class _EditProfilePageState extends State<EditProfilePage>{
                   ),
                   child: IconButton(
                     padding: const EdgeInsets.all(0),
+                    enableFeedback: widget.editActive,
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ProfilePicture(email: widget.email, nombre: widget.nombre, desc: widget.desc, codigo: widget.codigo)),
-                      );
+                      if (widget.editActive) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ProfilePicture(email: widget.email, nombre: widget.nombre, desc: widget.desc, codigo: widget.codigo)),
+                        );
+                      }
                     },
                     icon: Hero(
                       tag: 'foto',
                       child: CircleAvatar(
                         backgroundImage: ResizeImage(
-                          AssetImage(ProfileImage.image),
+                          AssetImage(ProfileImage.getImage(widget.foto)),
                           width: 200,
                           height: 200,
                         ),

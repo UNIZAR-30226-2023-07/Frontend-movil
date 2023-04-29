@@ -21,4 +21,8 @@ class ProfileImage {
   static int getIndex(){
     return urls.values.toList().indexOf(image);
   }
+
+  static String getImage(int index){
+    return urls[index]!;
+  }
 }

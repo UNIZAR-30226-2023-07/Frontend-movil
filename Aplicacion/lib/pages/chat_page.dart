@@ -23,7 +23,7 @@ class ShowMessages extends StatefulWidget {
 }
 
 class _ShowMessagesState extends State<ShowMessages> {
-  //final ScrollController _scrollController = ScrollController();
+  late ScrollController _scrollController;
   late List<int> fotos = <int>[];
   bool _load = false;
 
@@ -33,6 +33,19 @@ class _ShowMessagesState extends State<ShowMessages> {
     _load = false;
     fotos = <int>[];
     procesarMensajes();
+    _scrollController = ScrollController();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollToBottom();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -41,6 +54,14 @@ class _ShowMessagesState extends State<ShowMessages> {
     _load = false;
     fotos = <int>[];
     procesarMensajes();
+  }
+
+  void _scrollToBottom() {
+    _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeInOut,
+    );
   }
 
   void procesarMensajes() async{
@@ -70,70 +91,87 @@ class _ShowMessagesState extends State<ShowMessages> {
     ? const Center(child: CircularProgressIndicator())
     : Padding(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-      child: ListView.builder(
-        ///controller: _scrollController,
-        itemCount: widget.len.length,
-        reverse: true,
-        addAutomaticKeepAlives: true,
-        itemBuilder: (context, index){
-          final esMio = widget.len[index]["Emisor"] == widget.MiCodigo;
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: Container(
-              child: esMio
-              ? Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.60),
-                    child: Container(
-                      padding: const EdgeInsets.all(15.0),
-                      decoration: BoxDecoration(
-                        color: Colors.indigoAccent[100],
-                        borderRadius: BorderRadius.circular(30.0),
+      child: Stack(
+        children: [
+          ListView.builder(
+            controller: _scrollController,
+            itemCount: widget.len.length,
+            addAutomaticKeepAlives: true,
+            itemBuilder: (context, index){
+              final esMio = widget.len[index]["Emisor"] == widget.MiCodigo;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Container(
+                  child: esMio
+                  ? Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.60),
+                        child: Container(
+                          padding: const EdgeInsets.all(15.0),
+                          decoration: BoxDecoration(
+                            color: Colors.indigoAccent[100],
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                          child: Text(widget.len[index]["Contenido"]),
+                        ),
                       ),
-                      child: Text(widget.len[index]["Contenido"]),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 5),
-                    child: CircularBorderPicture(
-                      width: 52,
-                      height: 52,
-                      image: ProfileImage.urls[fotos[index] % 6]!
-                    ),
-                  ),
-                ],
-              )
-              : Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 5),
-                    child: CircularBorderPicture(
-                      width: 52,
-                      height: 52,
-                      image: ProfileImage.urls[fotos[index] % 6]!
-                    ),
-                  ),
-                  ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.6),
-                    child: Container(
-                      padding: const EdgeInsets.all(15.0),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.secondaryContainer,
-                        borderRadius: BorderRadius.circular(30.0),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 5),
+                        child: CircularBorderPicture(
+                            width: 52,
+                            height: 52,
+                            image: ProfileImage.urls[fotos[index] % 6]!
+                        ),
                       ),
-                      child: Text(widget.len[index]["Contenido"]),
-                    ),
+                    ],
+                  )
+                  : Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 5),
+                        child: CircularBorderPicture(
+                            width: 52,
+                            height: 52,
+                            image: ProfileImage.urls[fotos[index] % 6]!
+                        ),
+                      ),
+                      ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.6),
+                        child: Container(
+                          padding: const EdgeInsets.all(15.0),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.secondaryContainer,
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                          child: Text(widget.len[index]["Contenido"]),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
+              );
+            },
+          ),
+          Positioned(
+            bottom: 10,
+            right: 5,
+            child: SizedBox(
+              height: 40,
+              child: FloatingActionButton(
+                onPressed: _scrollToBottom,
+                elevation: 0,
+                backgroundColor: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.7),
+                tooltip: 'Mover hacia el final',
+                child: const Icon(Icons.arrow_downward_rounded),
               ),
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
@@ -252,7 +290,7 @@ class _ChatPage extends State<ChatPage> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 10, 10),
+                  padding: const EdgeInsets.fromLTRB(0, 0,10, 10),
                   child: FloatingActionButton(
                     elevation: 0,
                     tooltip: 'Enviar mensaje',

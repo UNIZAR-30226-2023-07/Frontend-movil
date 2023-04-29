@@ -141,7 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return [
       MainPage(user: user),
       FriendsPage(codigo: user["codigo"]),
-      ProfilePage(user: user, email: email),
+      ProfilePage(user: user, email: email, editActive: true,),
     ];
   }
 

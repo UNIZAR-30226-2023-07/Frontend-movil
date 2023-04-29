@@ -93,10 +93,6 @@ class _FriendsPageState extends State<FriendsPage> {
           value: 0,
           child: Text('Eliminar amigo'),
         ),
-        const PopupMenuItem(
-          value: 1,
-          child: Text('Abrir chat'),
-        ),
       ],
     );
 
@@ -109,14 +105,6 @@ class _FriendsPageState extends State<FriendsPage> {
         await _getMensajes();
         await _getSolicitudes();
         setState(() {});
-        build(context);
-      } else if (result == 1) {
-        Navigator.push(context,
-          MaterialPageRoute(builder: (context) =>
-              ChatPage(MiCodigo: widget.codigo,
-                  codigo2: amigo["Codigo"],
-                  amistad: true)),
-        );
         build(context);
       }
     }
@@ -202,18 +190,20 @@ class _FriendsPageState extends State<FriendsPage> {
                   onLongPressStart: (LongPressStartDetails details) {
                     showOptions(context, details.globalPosition,(lista_amigos[0][index]));
                   },
-                  onTap: () async {
-                    Map<String, dynamic>? user = await getUserCode((lista_amigos[0][index])["Codigo"]);
-                    setState(() { });
-                    if (context.mounted) {
-                      Navigator.push(context,
-                        MaterialPageRoute(builder: (
-                            context) => ProfilePage(email: '', user: user)),
-                      );
-                    }
-                  },
                   child: ListTile(
-                    leading: CircularBorderPicture(image: ProfileImage.urls[(lista_amigos[0][index])["Foto"]%6]!),
+                    leading: GestureDetector(
+                      onTap: () async {
+                        Map<String, dynamic>? user = await getUserCode((lista_amigos[0][index])["Codigo"]);
+                        setState(() { });
+                        if (context.mounted) {
+                          Navigator.push(context,
+                            MaterialPageRoute(builder: (
+                              context) => ProfilePage(email: '', user: user, editActive: false,)),
+                          );
+                        }
+                      },
+                      child: CircularBorderPicture(image: ProfileImage.urls[(lista_amigos[0][index])["Foto"]%6]!),
+                    ),
                     title: Row(
                       children:  [
                         Text(
@@ -225,10 +215,22 @@ class _FriendsPageState extends State<FriendsPage> {
                     ),
                     subtitle: Text((lista_amigos[0][index])["Descp"]),
                     trailing: contarMsgPendientes((lista_amigos[0][index])["Codigo"]) == '0'
-                      ? const SizedBox()
-                      : Badge(
-                        label: Text(contarMsgPendientes((lista_amigos[0][index])["Codigo"])), //Text((amigos![index])[1])
-                      ),
+                    ? const SizedBox()
+                    : Badge(
+                      label: Text(contarMsgPendientes((lista_amigos[0][index])["Codigo"])), //Text((amigos![index])[1])
+                    ),
+                    onTap: () async {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ChatPage(
+                            MiCodigo: widget.codigo,
+                            codigo2: lista_amigos[0][index]["Codigo"],
+                            amistad: true,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 );
               },
