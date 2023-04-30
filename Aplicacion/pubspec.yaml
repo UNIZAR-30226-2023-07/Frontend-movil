@@ -31,7 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
   image_picker: ^0.8.6+1
-  shared_preferences: any
+  shared_preferences: ^2.1.0
   playing_cards: ^0.3.1+9
   audioplayers: ^0.20.1
   http: ^0.13.5

@@ -17,13 +17,23 @@ const String _PUERTO = '3001';
 List<Map<String, dynamic>> jugadores = [];
 
 class LobbyPage extends StatefulWidget {
-  const LobbyPage({Key? key,required this.email, this.creador = false, required this.ranked, required this.idPartida, required this.MiCodigo, this.jug = const []}) : super(key: key);
+
   final bool ranked;
   final String idPartida;
   final String MiCodigo;
   final bool creador;
   final String email;
   final List<dynamic> jug;
+
+  const LobbyPage({
+    super.key,
+    required this.email,
+    required this.creador,
+    required this.ranked,
+    required this.idPartida,
+    required this.MiCodigo,
+    this.jug = const []});
+
   @override
   State<LobbyPage> createState() => _LobbyPage();
 }
@@ -160,24 +170,30 @@ class _LobbyPage extends State<LobbyPage> {
               ],
             ),
             const SizedBox(height: 20),
-            CustomFilledButton(
+            (widget.creador)
+            ? CustomFilledButton(
               content: const Text('Empezar partida'),
               onPressed: () async {
-                bool res = await iniciarPartida(widget.MiCodigo,widget.idPartida);
-                if (context.mounted) {
-                  if (res == false) {
-                    if(widget.ranked && widget.ranked){
-                      openSnackBar(context, const Text('No estan todos los jugadores'));
-                    } else if(!widget.creador){
-                      openSnackBar(context, const Text('Solo el creador puede comenzar la partida'));
-                    } else{
-                      openSnackBar(context, const Text('No se ha podido enviar la petición'));
+                if (jugadores.length >= 2) {
+                  bool res = await iniciarPartida(widget.MiCodigo,widget.idPartida);
+                  if (context.mounted) {
+                    if (res == false) {
+                      if(widget.ranked && widget.ranked){
+                        openSnackBar(context, const Text('No estan todos los jugadores'));
+                      } else if(!widget.creador){
+                        openSnackBar(context, const Text('Solo el creador puede comenzar la partida'));
+                      } else{
+                        openSnackBar(context, const Text('No se ha podido enviar la petición'));
+                      }
+                      Navigator.pop(context);
                     }
-                    Navigator.pop(context);
                   }
+                } else {
+                  openSnackBar(context, const Text('Se necesitan al menos 2 jugadores para empezar la partida'));
                 }
               }
-            ),
+            )
+            : const SizedBox(),
           ],
         ),
       ),

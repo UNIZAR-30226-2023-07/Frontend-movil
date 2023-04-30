@@ -9,7 +9,6 @@ ThemeData lightTheme = ThemeData(
   //colorSchemeSeed: Colors.indigo,
   appBarTheme:  const AppBarTheme(
     color: Colors.indigo,
-    centerTitle: true,
     titleTextStyle: TextStyle(
       color: Colors.white,
       fontSize: 25

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import '../services/encrypt_password.dart';
 
@@ -320,3 +321,30 @@ Future<bool> pausarPartida(String codigo, String partida) async {
 
   return response.statusCode == 200 || response.statusCode == 202;
 }
+
+/*
+Future getImage(File image) async {
+  List<int> imageBytes = image.readAsBytesSync();
+  String base64Image = base64Encode(imageBytes);
+
+  http.post(Uri.parse(_unirPartidaURL), body: {
+    "image": base64Image,
+  });
+}
+
+// En Gin, debes importar la librería 'net/http' para poder procesar peticiones HTTP.
+import "net/http"
+
+// Luego, debes definir una función que maneje la ruta '/upload-image'
+func handleUploadImage(c *gin.Context) {
+  // Primero, debes obtener la imagen enviada en la petición HTTP.
+  imageBase64 := c.PostForm("image")
+
+  // Luego, debes decodificar la imagen en formato base64.
+  imageBytes, _ := base64.StdEncoding.DecodeString(imageBase64)
+
+  // Finalmente, puedes guardar la imagen en algún lugar, como por ejemplo en disco,
+  // o en una base de datos.
+  ioutil.WriteFile("/path/to/your/image.jpeg", imageBytes, 0644)
+}
+*/

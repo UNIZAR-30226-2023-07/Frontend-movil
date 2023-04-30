@@ -49,7 +49,7 @@ class JoinGameDialog extends StatelessWidget {
                   Navigator.pop(context);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => LobbyPage(ranked: false, idPartida: idPartida.text,
+                    MaterialPageRoute(builder: (context) => LobbyPage(creador: false, ranked: false, idPartida: idPartida.text,
                       MiCodigo: codigo, jug: res["jugadores"], email:email)),
                   );
                 }
@@ -71,7 +71,7 @@ class JoinGameDialog extends StatelessWidget {
                   Navigator.pop(context);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => LobbyPage(ranked: true, idPartida: idPartida.text,
+                    MaterialPageRoute(builder: (context) => LobbyPage(creador: false, ranked: true, idPartida: idPartida.text,
                       MiCodigo: codigo, jug: res["jugadores"],email:email)),
                   );
                 }
