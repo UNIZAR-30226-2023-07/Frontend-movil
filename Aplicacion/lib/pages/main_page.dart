@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:untitled/pages/lobby_page.dart';
 import '../dialogs/join_game_dialog.dart';
 import '../pages/tournament_page.dart';
 import '../dialogs/create_game_dialog.dart';
@@ -44,7 +45,7 @@ class _MainPageState extends State<MainPage> {
             Expanded(
               child: TabBarView(
                 children: [
-                  TournamentTab(codigo: widget.user!["codigo"]),
+                  TournamentTab(codigo: widget.user!["codigo"], email: widget.email),
                   RankingTab(codigo: widget.user!["codigo"]),
                 ],
               ),
@@ -159,8 +160,9 @@ class TopSection extends StatelessWidget {
 
 class TournamentTab extends StatefulWidget {
   final String codigo;
+  final String email;
 
-  const TournamentTab({Key? key, required this.codigo}) : super(key: key);
+  const TournamentTab({Key? key, required this.codigo, required this.email}) : super(key: key);
 
   @override
   State<TournamentTab> createState() => _TournamentTabState();
@@ -210,10 +212,19 @@ class _TournamentTabState extends State<TournamentTab> {
           subtitle:
               Text("Código: ${(lista_pendientes[0][index])["Clave"]}"), //Text('Codigo: ' + (pendientes![index])[0]),
           onTap: () {
+            bool torneo = true;
+            if((lista_pendientes[0][index])["Tipo"] == "amistosa"){
+              torneo = false;
+            }
             Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => TournamentPage(id: index)));
+              context,
+              MaterialPageRoute(builder: (context) =>
+                  LobbyPage(ranked: torneo,
+                      idPartida: (lista_pendientes[0][index])["Clave"],
+                      MiCodigo: widget.codigo,
+                      creador: (lista_pendientes[0][index])["Creador"] == widget.codigo,
+                      email: widget.email)),
+            );
           },
         );
       },

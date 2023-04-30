@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:untitled/main.dart';
 import '../pages/lobby_page.dart';
+import '../services/http_petitions.dart';
+import '../services/open_snack_bar.dart';
 
 class PauseGameDialog extends StatelessWidget {
-  const PauseGameDialog({super.key});
+  const PauseGameDialog({super.key, required this.codigo, required this.idPartida});
+  final String codigo;
+  final String idPartida;
 
   @override
   Widget build(BuildContext context) {
@@ -13,10 +17,15 @@ class PauseGameDialog extends StatelessWidget {
       actionsAlignment: MainAxisAlignment.center,
       actions: [
         FilledButton(
-          onPressed: () {
-            Navigator.pop(context);
-            Navigator.pop(context);
-            Navigator.pop(context);
+          onPressed: () async {
+            bool res = await pausarPartida(codigo,idPartida);
+            if (context.mounted) {
+              if (res == false) {
+                openSnackBar(context, const Text('No se ha podido enviar la petición'));
+                Navigator.pop(context);
+              }
+            }
+
           },
           child: const Text('Guardar y Salir'),
         ),

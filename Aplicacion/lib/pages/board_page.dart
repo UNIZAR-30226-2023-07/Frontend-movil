@@ -340,6 +340,12 @@ class _BoardPageState extends State<BoardPage>{
                 builder: (context) => WinnerDialog(ganador: jugador, ranked: widget.ranked, email: widget.email,));
           }
         }
+        else if (datos["tipo"] == "Partida_Pausada") {
+          openSnackBar(context, const Text('Partida Pausada'));
+          Navigator.pop(context);
+          Navigator.pop(context);
+          Navigator.pop(context);
+        }
       }
       else if((datos["tipo"] == "Colocar_carta" || datos["tipo"] == "Colocar_combinacion") && datos["info"] is int){
         int ganador = datos["ganador"];
@@ -404,10 +410,14 @@ class _BoardPageState extends State<BoardPage>{
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: () async {
-          showDialog(
-              context: context,
-              builder: (context) => const PauseGameDialog()
-          );
+          if(widget.creador) {
+            showDialog(
+                context: context,
+                builder: (context) =>  PauseGameDialog(codigo: widget.MiCodigo, idPartida: widget.idPartida,)
+            );
+          } else{
+            openSnackBar(context, Text("Solo puede parar una partida su creador"));
+          }
       return true;
     },
     child: Scaffold(

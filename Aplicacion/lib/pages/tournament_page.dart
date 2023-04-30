@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 
 class TournamentPage extends StatelessWidget {
-  const TournamentPage({super.key, required this.id});
+  const TournamentPage({super.key, required this.id, required this.idPartida});
   final int id;
+  final String idPartida;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Torneo'),
+        title: const Text('Partida Pausada'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),

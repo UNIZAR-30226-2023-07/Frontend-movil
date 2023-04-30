@@ -310,3 +310,13 @@ Future<bool> iniciarPartida(String jugador, String codigo) async {
 
   return response.statusCode == 200 || response.statusCode == 202;
 }
+
+Future<bool> pausarPartida(String codigo, String partida) async {
+  final json = '{"codigo": "$codigo", "clave": "$partida"}';
+
+  final response = await http.post(Uri.parse(_unirPartidaURL), body: json);
+
+  //print(response.statusCode);
+
+  return response.statusCode == 200 || response.statusCode == 202;
+}

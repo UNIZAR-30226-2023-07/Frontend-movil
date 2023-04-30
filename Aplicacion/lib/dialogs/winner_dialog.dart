@@ -29,7 +29,7 @@ class WinnerDialog extends StatelessWidget {
             }
             //volver al inicio o seguir torneo
           },
-          child: const Text('Finalizar'),
+          child: const Text('Aceptar'),
         ),
       ],
     );
