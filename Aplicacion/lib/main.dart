@@ -141,7 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<Widget> getWidgetOptions(Map<String, dynamic> user, String email) {
     return [
-      MainPage(user: user),
+      MainPage(user: user, email: email),
       FriendsPage(codigo: user["codigo"]),
       ProfilePage(user: user, email: email, editActive: true,),
     ];

@@ -4,8 +4,9 @@ import '../pages/lobby_page.dart';
 import '../services/open_snack_bar.dart';
 
 class CreateGameDialog extends StatelessWidget {
-  const CreateGameDialog({super.key, required this.codigo});
+  const CreateGameDialog({super.key, required this.codigo, required this.email});
   final String codigo;
+  final String email;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +27,8 @@ class CreateGameDialog extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => LobbyPage(creador: true,ranked: false, idPartida: res["clave"], MiCodigo: codigo,)),
+                  MaterialPageRoute(builder: (context) => LobbyPage(email: email, creador: true,ranked: false,
+                    idPartida: res["clave"], MiCodigo: codigo,)),
                 );
               }
             }
@@ -47,7 +49,8 @@ class CreateGameDialog extends StatelessWidget {
                   MaterialPageRoute(builder: (context) =>
                       LobbyPage(ranked: true,
                         idPartida: res["clave"],
-                        MiCodigo: codigo, creador: true,)),
+                        MiCodigo: codigo, creador: true,
+                        email: email)),
                 );
               }
             }

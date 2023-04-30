@@ -10,8 +10,9 @@ import '../services/profile_image.dart';
 
 class MainPage extends StatefulWidget {
   final Map<String, dynamic>? user;
+  final String email;
 
-  const MainPage({super.key, required this.user});
+  const MainPage({super.key, required this.user, required this.email});
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -26,7 +27,7 @@ class _MainPageState extends State<MainPage> {
       child: Scaffold(
         body: Column(
           children: [
-            TopSection(user: widget.user!),
+            TopSection(user: widget.user!, email: widget.email),
             const Material(
               color: Colors.indigo,
               child: TabBar(
@@ -57,7 +58,8 @@ class _MainPageState extends State<MainPage> {
 
 class TopSection extends StatelessWidget {
   final Map<String, dynamic> user;
-  const TopSection({super.key, required this.user});
+  final String email;
+  const TopSection({super.key, required this.user, required this.email});
 
   @override
   Widget build(BuildContext context) {
@@ -129,7 +131,7 @@ class TopSection extends StatelessWidget {
                       onPressed: () {
                         showDialog(
                             context: context,
-                            builder: (context) => JoinGameDialog(codigo: user["codigo"]));
+                            builder: (context) => JoinGameDialog(codigo: user["codigo"], email: email));
                       },
                       child: const Text('Unirse a partida'),
                     ),
@@ -140,7 +142,7 @@ class TopSection extends StatelessWidget {
                     padding: const EdgeInsets.all(10),
                     child: FilledButton(
                       onPressed: () {
-                        openDialog(context, CreateGameDialog(codigo: user["codigo"]));
+                        openDialog(context, CreateGameDialog(codigo: user["codigo"], email: email));
                       },
                       child: const Text('Crear partida'),
                     ),

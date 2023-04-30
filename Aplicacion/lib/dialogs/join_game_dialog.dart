@@ -6,8 +6,9 @@ import '../services/open_snack_bar.dart';
 final joinGameFormKey = GlobalKey<FormState>();
 
 class JoinGameDialog extends StatelessWidget {
-  JoinGameDialog({super.key, required this.codigo});
+  JoinGameDialog({super.key, required this.codigo, required this.email});
   final String codigo;
+  final String email;
   final TextEditingController idPartida = TextEditingController();
 
   @override
@@ -48,7 +49,8 @@ class JoinGameDialog extends StatelessWidget {
                   Navigator.pop(context);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => LobbyPage(ranked: false, idPartida: idPartida.text, MiCodigo: codigo, jug: res["jugadores"],)),
+                    MaterialPageRoute(builder: (context) => LobbyPage(ranked: false, idPartida: idPartida.text,
+                      MiCodigo: codigo, jug: res["jugadores"], email:email)),
                   );
                 }
               }
@@ -69,7 +71,8 @@ class JoinGameDialog extends StatelessWidget {
                   Navigator.pop(context);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => LobbyPage(ranked: true, idPartida: idPartida.text, MiCodigo: codigo, jug: res["jugadores"],)),
+                    MaterialPageRoute(builder: (context) => LobbyPage(ranked: true, idPartida: idPartida.text,
+                      MiCodigo: codigo, jug: res["jugadores"],email:email)),
                   );
                 }
               }

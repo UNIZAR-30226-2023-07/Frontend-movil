@@ -17,11 +17,12 @@ const String _PUERTO = '3001';
 List<Map<String, dynamic>> jugadores = [];
 
 class LobbyPage extends StatefulWidget {
-  const LobbyPage({Key? key, this.creador = false, required this.ranked, required this.idPartida, required this.MiCodigo, this.jug = const []}) : super(key: key);
+  const LobbyPage({Key? key,required this.email, this.creador = false, required this.ranked, required this.idPartida, required this.MiCodigo, this.jug = const []}) : super(key: key);
   final bool ranked;
   final String idPartida;
   final String MiCodigo;
   final bool creador;
+  final String email;
   final List<dynamic> jug;
   @override
   State<LobbyPage> createState() => _LobbyPage();
@@ -68,7 +69,8 @@ class _LobbyPage extends State<LobbyPage> {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) =>  BoardPage(init: true, idPartida: widget.idPartida,
-              MiCodigo: widget.MiCodigo, turnos: turnos, ranked: widget.ranked, creador: widget.creador, ws_partida: ws_partida)),
+              MiCodigo: widget.MiCodigo, turnos: turnos, ranked: widget.ranked, creador: widget.creador,
+                email: widget.email, ws_partida: ws_partida)),
           );
         } else if(tipo == "Nuevo_Jugador"){
           String N_codigo = indice >= 0 ? datos["tipo"].substring(indice + 2) : "";
