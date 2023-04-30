@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -8,12 +9,13 @@ import 'package:web_socket_channel/io.dart';
 import '../pages/chat_page.dart';
 import '../widgets/circular_border_picture.dart';
 
-const String _IP = '52.174.124.24';
+const String _IP = '52.166.36.105';
 const String _PUERTO = '3001';
 
 List<int> CSelecion= [];
 
 List<List<Carta>> Cartas_abrir = [];
+List<List<int>> Indices_abrir = [];
 
 List<Carta> cartMano= [];
 
@@ -60,13 +62,15 @@ class Carta {
 int modo = 1; // 0 - no turno, 1 - encarte, 2 - colocar/descarte
 PlayingCard? descarte;
 int abrir = 0; //0 - tiene que abrir, 1 - esta abriendo, 2 - no tiene que abrir
+String t_actual = "";
 
 class BoardPage extends StatefulWidget {
-  BoardPage({Key? key, required this.idPartida,required this.MiCodigo, required this.turnos, required this.ranked, this.creador = false}) : super(key: key);
+  BoardPage({Key? key,required this.ws_partida, this.init = false, required this.idPartida,required this.MiCodigo, required this.turnos, required this.ranked, this.creador = false}) : super(key: key);
   String idPartida;
-  //final ws_partida;
+  IOWebSocketChannel ws_partida;
   String MiCodigo;
   bool creador;
+  bool init;
   bool ranked;
   Map<String, String> turnos;
   @override
@@ -75,24 +79,34 @@ class BoardPage extends StatefulWidget {
 
 class _BoardPageState extends State<BoardPage>{
   late final ws_chat;
-  late final ws_partida;
   bool nuevos_msg = false;
   bool _load = false;
+  late StreamSubscription subscription_p, subscription_c;
+
   @override
   void initState() {
     super.initState();
     AudioManager.toggleBGM(true);
-    msg.clear();
-    setState(() {
-    nuevos_msg = false;
-    });
-    cartMano.clear();
+    if(widget.init) {
+      msg.clear();
+      setState(() {
+        nuevos_msg = false;
+      });
+      cartMano.clear();
+      t_actual = widget.turnos["0"]!;
+      if (t_actual == widget.MiCodigo) {
+        modo = 1;
+      } else {
+        modo = 0;
+      }
+    }
+    widget.ws_partida.sink.close();
     ws_chat= IOWebSocketChannel.connect('ws://$_IP:$_PUERTO/api/ws/chat/lobby/${widget.idPartida}');
     ws_chat.stream.handleError((error) {
       print('Error: $error');
     });
 
-    ws_chat.stream.listen((message) {
+    subscription_c = ws_chat.stream.listen((message) {
       setState(() {
         nuevos_msg = true;
       });
@@ -111,47 +125,226 @@ class _BoardPageState extends State<BoardPage>{
     });
 
     if(!widget.ranked) {
-      ws_partida = IOWebSocketChannel.connect(
+      widget.ws_partida = IOWebSocketChannel.connect(
           'ws://$_IP:$_PUERTO/api/ws/partida/${widget.idPartida}');
     } else{
-      ws_partida = IOWebSocketChannel.connect(
+      widget.ws_partida = IOWebSocketChannel.connect(
           'ws://$_IP:$_PUERTO/api/ws/torneo/${widget.idPartida}');
     }
-    ws_partida.stream.handleError((error) {
+    widget.ws_partida.stream.handleError((error) {
       print('Error: $error');
     });
 
-    ws_partida.stream.listen((message) {
+    subscription_p = widget.ws_partida.stream.listen((message) {
       Map<String, dynamic> datos = jsonDecode(message);
-      if(datos["tipo"] == "Mostrar_manos") {
-        _load = false;
-        print('mostar_manos');
-        for(int j = 0; j < widget.turnos.length; j++) {
-          if(widget.turnos[j.toString()] == widget.MiCodigo) {
-            List<dynamic> cartas = datos["manos"][j];
-            cartMano.clear();
+      if(datos["receptor"] == widget.MiCodigo || datos["receptor"] == "todos") {
+        if (datos["tipo"] == "Mostrar_manos") {
+          if (widget.init || t_actual == widget.MiCodigo) {
+            _load = false;
+            print('mostar_manos');
+            for (int j = 0; j < widget.turnos.length; j++) {
+              if (widget.turnos[j.toString()] == widget.MiCodigo) {
+                List<dynamic> cartas = datos["manos"][j];
+                cartMano.clear();
+                List<Carta> temp = [];
+                for (String i in cartas) {
+                  List<String> listaNumeros = i.split(",");
+                  int valor = int.parse(listaNumeros[0]);
+                  int palo = int.parse(listaNumeros[1]);
+                  temp.add(Carta(valor, palo));
+                }
+                setState(() {
+                  cartMano = temp;
+                  _load = true;
+                });
+              }
+            }
+          }
+        } else if (datos["tipo"] == "Robar_carta") {
+          print('robar_carta');
+          if (datos["receptor"] == widget.MiCodigo) {
+            modo = 2;
+            Navigator.pop(context);
+            Navigator.push(context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      BoardPage(ws_partida: widget.ws_partida,
+                          idPartida: widget.idPartida,
+                          MiCodigo: widget.MiCodigo,
+                          turnos: widget.turnos,
+                          ranked: widget.ranked,
+                          creador: widget.creador)),);
+          }
+        }
+        else if (datos["tipo"] == "Mostrar_tablero") {
+          print('mostrar_tablero');
+          if (datos["descartes"] != null) {
+            String d = datos["descartes"][0];
+            List<String> listaNumeros = d.split(",");
+            int valor = int.parse(listaNumeros[0]);
+            int palo = int.parse(listaNumeros[1]);
+            descarte = PlayingCard(PaloToSuit(palo), NumToValue(valor));
+          }
+          t.clear();
+          for (List<dynamic> comb in datos["combinaciones"]) {
             List<Carta> temp = [];
-            for (String i in cartas) {
-              List<String> listaNumeros = i.split(",");
+            for (String c in comb) {
+              List<String> listaNumeros = c.split(",");
               int valor = int.parse(listaNumeros[0]);
               int palo = int.parse(listaNumeros[1]);
               temp.add(Carta(valor, palo));
             }
-            setState(() {
-              cartMano = temp;
-              _load = true;
-            });
+            t.add(temp);
+          }
+        } else if (datos["tipo"] == "Colocar_combinacion") {
+          print('colocar_combinacion');
+          if (datos["info"] == "Ok") {
+            CSelecion.clear();
+            Navigator.pop(context);
+            Navigator.push(context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      BoardPage(ws_partida: widget.ws_partida,
+                          idPartida: widget.idPartida,
+                          MiCodigo: widget.MiCodigo,
+                          turnos: widget.turnos,
+                          ranked: widget.ranked,
+                          creador: widget.creador)),);
+          } else
+          if (datos["info"] == "Combinacion no valida, intentelo de nuevo") {
+            //mostrar mensaje error
+          } else {
+            String data = '{"emisor": "${widget.MiCodigo}","tipo": "Fin_partida"}';
+            widget.ws_partida.sink.add(data);
+          }
+        }
+        else if (datos["tipo"] == "Abrir") {
+          print('abrir');
+          if (datos["info"] == "Ok") {
+            CSelecion.clear();
+            Indices_abrir.clear();
+            Cartas_abrir.clear();
+            abrir = 2;
+            Navigator.pop(context);
+            Navigator.push(context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      BoardPage(ws_partida: widget.ws_partida,
+                          idPartida: widget.idPartida,
+                          MiCodigo: widget.MiCodigo,
+                          turnos: widget.turnos,
+                          ranked: widget.ranked,
+                          creador: widget.creador)),);
+          } else {
+            for (List<Carta> comb in Cartas_abrir) {
+              for (int i = 0; i < t.length; i++) {
+                List<Carta> tablero = t.elementAt(i);
+                if (compararCombinaciones(tablero, comb)) {
+                  t.removeAt(i);
+                }
+              }
+              for (Carta cart in comb) {
+                cartMano.add(cart);
+              }
+            }
+            Cartas_abrir.clear();
+            Indices_abrir.clear();
+            //mostrar mensaje de error
+          }
+        } else if (datos["tipo"] == "Robar_carta_descartes") {
+          print('robar_carta_descartes');
+          if (datos["info"] != null) {
+            modo = 2;
+            Navigator.pop(context);
+            Navigator.push(context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      BoardPage(ws_partida: widget.ws_partida,
+                          idPartida: widget.idPartida,
+                          MiCodigo: widget.MiCodigo,
+                          turnos: widget.turnos,
+                          ranked: widget.ranked,
+                          creador: widget.creador)),);
+          }
+        } else if (datos["tipo"] == "Colocar_carta") {
+          print('colocar_carta');
+          if (datos["info"] == "Ok") {
+            CSelecion.clear();
+            Navigator.pop(context);
+            Navigator.push(context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      BoardPage(ws_partida: widget.ws_partida,
+                          idPartida: widget.idPartida,
+                          MiCodigo: widget.MiCodigo,
+                          turnos: widget.turnos,
+                          ranked: widget.ranked,
+                          creador: widget.creador)),);
+          } else if (datos["info"] == "No puedes colocar una carta porque no has abierto"){
+            //mostrar error
+          } else if(datos["info"] is int){
+            int ganador = datos["ganador"];
+            String jugador = widget.turnos["$ganador"]!;
+            // pasar a pantalla emergente con mensaje de quien ha ganado la partida y un boton cerrar
+            // que me mande a la pantalla principal o si es torneo a la siguiente partida.
+          }
+        }
+        else if (datos["tipo"] == "Descarte") {
+          print('descarte');
+          if(datos["ganador"] == null) {
+            t_actual = widget.turnos[datos["turno"]]!;
+            if (t_actual == widget.MiCodigo) {
+              modo = 1;
+              if (datos["abrir"] == "si") {
+                abrir = 2;
+              } else {
+                abrir = 0;
+              }
+            } else {
+              modo = 0;
+            }
+            Navigator.pop(context);
+            Navigator.push(context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      BoardPage(ws_partida: widget.ws_partida,
+                          idPartida: widget.idPartida,
+                          MiCodigo: widget.MiCodigo,
+                          turnos: widget.turnos,
+                          ranked: widget.ranked,
+                          creador: widget.creador)),);
+          } else{
+            int ganador = datos["ganador"];
+            String jugador = widget.turnos["$ganador"]!;
+            // pasar a pantalla emergente con mensaje de quien ha ganado la partida y un boton cerrar
+            // que me mande a la pantalla principal o si es torneo a la siguiente partida.
           }
         }
       }
+      else if((datos["tipo"] == "Colocar_carta" || datos["tipo"] == "Colocar_combinacion") && datos["info"] is int){
+        int ganador = datos["ganador"];
+        String jugador = widget.turnos["$ganador"]!;
+        // pasar a pantalla emergente con mensaje de quien ha ganado la partida y un boton cerrar
+        // que me mande a la pantalla principal o si es torneo a la siguiente partida.
+      }
     });
 
-      String data = '{"emisor": "${widget.MiCodigo}","tipo": "Mostrar_manos"}';
-      ws_partida.sink.add(data);
+
+      String data = '{"emisor": "${widget
+          .MiCodigo}","tipo": "Mostrar_tablero"}';
+      widget.ws_partida.sink.add(data);
+
+      data = '{"emisor": "${widget.MiCodigo}","tipo": "Mostrar_manos"}';
+      widget.ws_partida.sink.add(data);
+
   }
 
   @override
   void dispose() {
+    subscription_p.cancel();
+    subscription_c.cancel();
+    widget.ws_partida.sink.close();
+    ws_chat.sink.close();
     AudioManager.toggleBGM(false);
     super.dispose();
   }
@@ -218,16 +411,12 @@ class _BoardPageState extends State<BoardPage>{
                       child: GestureDetector(
                         onTap: () {
                           if (modo == 1) {
-                            PlayingCard temp = PlayingCard(
-                                Suit.hearts, CardValue.two);
-                            Carta t2 = Carta(
-                                ValueToNum(temp.value), SuitToPalo(temp.suit));
-                            cartMano.insert(0, t2);
-                            modo = 2;
-                            Navigator.pop(context);
-                            Navigator.push(context,
-                              MaterialPageRoute(
-                                  builder: (context) => BoardPage(idPartida: widget.idPartida,MiCodigo:  widget.MiCodigo,turnos: widget.turnos, ranked: widget.ranked)),);
+                            String data = '{"emisor": "${widget.MiCodigo}","tipo": "Robar_carta"}';
+                            widget.ws_partida.sink.add(data);
+                          } else if(modo == 0){
+                            // mensaje de que no le toca turno
+                          } else {
+                            // mensaje que ahora no puede robar
                           }
                         },
                         child: PlayingCardView(
@@ -242,25 +431,18 @@ class _BoardPageState extends State<BoardPage>{
                       onPressed: () {
                         setState(() {
                           if (modo == 2) {
-                              //mandar peticion a logica de que quiero cerrar
-                              for (List<Carta> comb in Cartas_abrir){
-                                for(int i = 0; i < t.length; i++){
-                                  List<Carta> tablero = t.elementAt(i);
-                                  if (compararCombinaciones(tablero,comb)){
-                                    t.removeAt(i);
-                                  }
-                                }
-                                for(Carta cart in comb){
-                                  cartMano.add(cart);
-                                }
+                            List<String> cartas = [];
+                            for(List<int> i in Indices_abrir){
+                              String _cartas = i[0].toString();
+                              for (int j = 1; j < i.length; j++) {
+                                _cartas = _cartas + "," +
+                                    CSelecion[j].toString();
                               }
-                              Cartas_abrir.clear();
-                              abrir = 2;
-                              // Navigator.pop(context);
-                              // Navigator.push(context,
-                              //   MaterialPageRoute(
-                              //       builder: (context) => BoardPage(idPartida: widget.idPartida, MiCodigo: widget.MiCodigo,)),
-                              //);
+                              cartas.add(_cartas);
+                            }
+                            String data = '{"emisor": "${widget.MiCodigo}","tipo": "Abrir", "cartas": $cartas}';
+                            widget.ws_partida.sink.add(data);
+                              //mandar peticion a logica de que quiero cerrar
                           }
                         });
                       },
@@ -277,31 +459,13 @@ class _BoardPageState extends State<BoardPage>{
                         behavior: HitTestBehavior.opaque,
                         onTap: () {
                           if (modo == 1 && descarte != null) {
-                            PlayingCard temp = PlayingCard(
-                                descarte!.suit, descarte!.value);
-                            Carta t2 = Carta(ValueToNum(temp.value), SuitToPalo(
-                                temp.suit));
-                            cartMano.insert(0, t2);
-                            descarte = null;
-                            modo = 2;
-                            // Navigator.pop(context);
-                            // Navigator.push(context,
-                            //   MaterialPageRoute(builder: (
-                            //       context) => BoardPage(idPartida: widget.idPartida, MiCodigo: widget.MiCodigo,)),
-                            //);
+                            String data = '{"emisor": "${widget.MiCodigo}","tipo": "Robar_carta_descartes"}';
+                            widget.ws_partida.sink.add(data);
                           } else if (modo == 2) {
                             if (CSelecion.length == 1) {
-                              descarte = PlayingCard(PaloToSuit(
-                                  cartMano[CSelecion[0]].palo),
-                                  NumToValue(cartMano[CSelecion[0]].numero));
-                              modo = 1;
-                              cartMano.removeAt(CSelecion[0]);
+                              String data = '{"emisor": "${widget.MiCodigo}","tipo": "Descarte", "info": ${CSelecion[0]}}';
                               CSelecion.clear();
-                              // Navigator.pop(context);
-                              // Navigator.push(context,
-                              //   MaterialPageRoute(
-                              //       builder: (context) => BoardPage(idPartida: widget.idPartida, MiCodigo: widget.MiCodigo,)),
-                              // );
+                              widget.ws_partida.sink.add(data);
                             }
                           }
                         },
@@ -347,31 +511,50 @@ class _BoardPageState extends State<BoardPage>{
                           onPressed: () {
                             setState(() {
                               if(modo == 2 && abrir == 0){
-                                //madar peticion abrir
                                 abrir = 1;
                               }
                               else {
                                 if (CSelecion.isNotEmpty) {
-                                  t.insert(0, []);
-                                  for (int i in CSelecion) {
-                                    t[0].add(cartMano[i]);
-                                  }
                                   if (abrir == 1) {
+                                    t.insert(0, []);
+                                    List<int> temp_i = [];
+                                    for (int i in CSelecion) {
+                                      t[0].add(cartMano[i]);
+                                      temp_i.add(i);
+                                    }
+                                    Indices_abrir.add(temp_i);
+
                                     List<Carta> temp = [];
                                     for (int i in CSelecion) {
                                       temp.add(cartMano[i]);
                                     }
                                     Cartas_abrir.add(temp);
+
+                                    CSelecion.sort((a, b) => b.compareTo(a));
+                                    for (int i in CSelecion) {
+                                      cartMano.removeAt(i);
+                                    }
+                                    CSelecion.clear();
+                                    Navigator.pushReplacement(context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              BoardPage(
+                                                ws_partida: widget.ws_partida,
+                                                idPartida: widget.idPartida,
+                                                MiCodigo: widget.MiCodigo,
+                                                turnos: widget.turnos,
+                                                ranked: widget.ranked,)),);
                                   }
-                                  CSelecion.sort((a, b) => b.compareTo(a));
-                                  for (int i in CSelecion) {
-                                    cartMano.removeAt(i);
+                                  else if (abrir == 2) {
+                                    String cartas = CSelecion[0].toString();
+                                    for (int i = 1; i < CSelecion.length; i++) {
+                                      cartas = cartas + "," +
+                                          CSelecion[i].toString();
+                                    }
+                                    String data = '{"emisor": "${widget
+                                        .MiCodigo}","tipo": "Colocar_combinacion", "cartas": $cartas}';
+                                    widget.ws_partida.sink.add(data);
                                   }
-                                  CSelecion.clear();
-                                  // Navigator.pushReplacement(context,
-                                  //   MaterialPageRoute(
-                                  //       builder: (
-                                  //           context) => BoardPage(idPartida: widget.idPartida, MiCodigo: widget.MiCodigo,)),);
                                 }
                               }
                             });
@@ -392,7 +575,7 @@ class _BoardPageState extends State<BoardPage>{
                     children: t.map((e) =>
                       Column(
                         children: [
-                          CardView(c: e, mano: false,idPartida: widget.idPartida,MiCodigo: widget.MiCodigo),
+                          CardView(ws_partida: widget.ws_partida, c: e, mano: false,idPartida: widget.idPartida,MiCodigo: widget.MiCodigo),
                           const Divider(color: Colors.white,),
                         ],
                       )).toList(),
@@ -413,15 +596,19 @@ class _BoardPageState extends State<BoardPage>{
                   ),
                 ),
 
-                child: CardView(c: cartMano,mano: true,idPartida: widget.idPartida,MiCodigo: widget.MiCodigo),
+                child: CardView(ws_partida: widget.ws_partida,c: cartMano,mano: true,idPartida: widget.idPartida,MiCodigo: widget.MiCodigo),
               )
             ]),
       ),
       appBar: AppBar(
-        title: const Text('Turno de: '),
+        title: Text('Turno de: $t_actual'),
         actions: [
           IconButton(
-            onPressed: _openBottomSheet,
+            onPressed: () {
+              String data = '{"emisor": "${widget
+                  .MiCodigo}","tipo": "Colocar_combinacion"}';
+              widget.ws_partida.sink.add(data);
+            },
             icon: const Icon(Icons.person),
           ),
         ],
@@ -466,7 +653,8 @@ class CardView extends StatefulWidget {
   final bool mano;
   final String idPartida;
   final String MiCodigo;
-  const CardView({Key? key, required this.c,required this.mano, required this.idPartida,required this.MiCodigo,} ) : super(key: key);
+  final ws_partida;
+  const CardView({Key? key,required this.ws_partida, required this.c,required this.mano, required this.idPartida,required this.MiCodigo,} ) : super(key: key);
   @override
   State<CardView> createState() => _CardViewState();
 }
@@ -676,22 +864,14 @@ class _CardViewState extends State<CardView> {
                           CSelecion.remove(index);
                         }
                       } else if (abrir == 2) {
+                        if(CSelecion.length > 1){
+                          //mesaje de que las cartas solo las puede añadir de 1 en 1
+                        }
                         int i = t.indexOf(widget.c);
-                        for (int j in CSelecion) {
-                          setState(() {
-                            t[i].add(cartMano[j]);
-                          });
+                        String inf = "${i.toString()},${CSelecion[0]}";
+                        String data = '{"emisor": "${widget.MiCodigo}","tipo": "Colocar_carta", "info": $inf}';
+                        widget.ws_partida.sink.add(data);
                         }
-                        CSelecion.sort((a, b) => b.compareTo(a));
-                        for (int j in CSelecion) {
-                          cartMano.removeAt(j);
-                        }
-                        CSelecion.clear();
-                        // Navigator.pop(context);
-                        // Navigator.push(context,
-                        //   MaterialPageRoute(
-                        //       builder: (context) => BoardPage(idPartida: idPartida, MiCodigo: MiCodigo,)),);
-                      }
                     }
                   });
                 },

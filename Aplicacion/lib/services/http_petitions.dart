@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../services/encrypt_password.dart';
 
-const String _IP = '52.174.124.24';
+const String _IP = '52.166.36.105';
 const String _PUERTO = '3001';
 
 const String _loginURL = 'http://$_IP:$_PUERTO/api/auth/login';

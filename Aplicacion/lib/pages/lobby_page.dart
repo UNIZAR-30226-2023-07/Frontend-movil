@@ -11,7 +11,7 @@ import 'board_page.dart';
 import '../widgets/custom_filled_button.dart';
 import '../widgets/circular_border_picture.dart';
 
-const String _IP = '52.174.124.24';
+const String _IP = '52.166.36.105';
 const String _PUERTO = '3001';
 
 List<Map<String, dynamic>> jugadores = [];
@@ -67,8 +67,8 @@ class _LobbyPage extends State<LobbyPage> {
 
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) =>  BoardPage(idPartida: widget.idPartida,
-              MiCodigo: widget.MiCodigo, turnos: turnos, ranked: widget.ranked, creador: widget.creador,)),
+            MaterialPageRoute(builder: (context) =>  BoardPage(init: true, idPartida: widget.idPartida,
+              MiCodigo: widget.MiCodigo, turnos: turnos, ranked: widget.ranked, creador: widget.creador, ws_partida: ws_partida)),
           );
         } else if(tipo == "Nuevo_Jugador"){
           String N_codigo = indice >= 0 ? datos["tipo"].substring(indice + 2) : "";
