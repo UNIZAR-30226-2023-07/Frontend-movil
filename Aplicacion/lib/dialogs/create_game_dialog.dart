@@ -26,7 +26,7 @@ class CreateGameDialog extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => LobbyPage(ranked: false, idPartida: res["clave"], MiCodigo: codigo,)),
+                  MaterialPageRoute(builder: (context) => LobbyPage(creador: true,ranked: false, idPartida: res["clave"], MiCodigo: codigo,)),
                 );
               }
             }
@@ -34,12 +34,23 @@ class CreateGameDialog extends StatelessWidget {
           child: const Text('Partida normal'),
         ),
         FilledButton(
-          onPressed: () {
-            Navigator.pop(context);
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => LobbyPage(ranked: true, idPartida: "0", MiCodigo: codigo,)),
-            );
+          onPressed: () async {
+            Map<String, dynamic>? res = await crearPartida(codigo,"torneo");
+            if (context.mounted) {
+              if (res == null) {
+                openSnackBar(context, const Text('No se ha podido enviar la petición'));
+                Navigator.pop(context);
+              } else {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) =>
+                      LobbyPage(ranked: true,
+                        idPartida: res["clave"],
+                        MiCodigo: codigo, creador: true,)),
+                );
+              }
+            }
           },
           child: const Text('Partida clasificatoria'),
         ),

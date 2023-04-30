@@ -38,9 +38,9 @@ class JoinGameDialog extends StatelessWidget {
         FilledButton(
           onPressed: () async {
             if(joinGameFormKey.currentState!.validate()) {
-              bool res = await unirPartida(codigo, idPartida.text);
+              Map<String, dynamic>? res = await unirPartida(codigo, idPartida.text);
               if (context.mounted) {
-                if (!res) {
+                if (res == null) {
                   openSnackBar(context, const Text('No se ha podido enviar la petición'));
                   Navigator.pop(context);
                 } else {
@@ -48,13 +48,34 @@ class JoinGameDialog extends StatelessWidget {
                   Navigator.pop(context);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => LobbyPage(ranked: false, idPartida: idPartida.text, MiCodigo: codigo,)),
+                    MaterialPageRoute(builder: (context) => LobbyPage(ranked: false, idPartida: idPartida.text, MiCodigo: codigo, jug: res["jugadores"],)),
                   );
                 }
               }
             }
           },
-          child: const Text('Unirse'),
+          child: const Text('Unirse a Partida'),
+        ),
+        FilledButton(
+          onPressed: () async {
+            if(joinGameFormKey.currentState!.validate()) {
+              Map<String, dynamic>? res = await unirPartida(codigo, idPartida.text);
+              if (context.mounted) {
+                if (res == null) {
+                  openSnackBar(context, const Text('No se ha podido enviar la petición'));
+                  Navigator.pop(context);
+                } else {
+                  openSnackBar(context, const Text('Uniendose'));
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LobbyPage(ranked: true, idPartida: idPartida.text, MiCodigo: codigo, jug: res["jugadores"],)),
+                  );
+                }
+              }
+            }
+          },
+          child: const Text('Unirse a Torneo'),
         ),
         FilledButton(
           onPressed: () {

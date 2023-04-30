@@ -10,7 +10,7 @@ const String _loginURL = 'http://$_IP:$_PUERTO/api/auth/login';
 const String _registerURL = 'http://$_IP:$_PUERTO/api/auth/register';
 const String _getUserURL = 'http://$_IP:$_PUERTO/api/jugador/get/';
 const String _getUserCodeURL = 'http://$_IP:$_PUERTO/api/jugador/get2/';
-const String _getPartidasPendientesURL = 'http://$_IP:$_PUERTO/api/partidas/pendientes/get/';
+const String _getPartidasPendientesURL = 'http://$_IP:$_PUERTO/api/partidas/pausadas/get/';
 const String _getAmistadesURL = 'http://$_IP:$_PUERTO/api/amistad/get/';
 const String _getSolicitudesURL = 'http://$_IP:$_PUERTO/api/amistad/get/pendientes/';
 const String _nuevoAmigoURL = 'http://$_IP:$_PUERTO/api/amistad/add';
@@ -140,14 +140,14 @@ Future<Map<String, dynamic>?> getUserCode(String codigo) async {
   return datos;
 }
 
-Future<List<Map<String, dynamic>>?> getPartidasPendientes(String codigo) async {
+Future<Map<String, dynamic>?> getPartidasPendientes(String codigo) async {
   String uri = "$_getPartidasPendientesURL$codigo";
 
   final response = await http.get(Uri.parse(uri));
 
   //print(response.statusCode);
 
-  List<Map<String, dynamic>>? datos = null;
+  Map<String, dynamic>? datos = null;
   if (response.statusCode == 200 || response.statusCode == 202) {
     datos = jsonDecode(response.body);
   } else {
@@ -284,14 +284,20 @@ Future <Map<String, dynamic>?> crearPartida(String codigo, String tipo) async {
   return datos;
 }
 
-Future<bool> unirPartida(String codigo, String partida) async {
+Future<Map<String, dynamic>?> unirPartida(String codigo, String partida) async {
   final json = '{"codigo": "$codigo", "clave": "$partida"}';
 
   final response = await http.post(Uri.parse(_unirPartidaURL), body: json);
 
   //print(response.statusCode);
 
-  return response.statusCode == 200 || response.statusCode == 202;
+  Map<String, dynamic>? datos = null;
+  if (response.statusCode == 200 || response.statusCode == 202) {
+    datos = jsonDecode(response.body);
+  } else {
+    print('Error al hacer la solicitud: ${response.statusCode}');
+  }
+  return datos;
 }
 
 Future<bool> iniciarPartida(String jugador, String codigo) async {

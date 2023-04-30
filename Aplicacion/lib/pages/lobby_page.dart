@@ -17,10 +17,12 @@ const String _PUERTO = '3001';
 List<Map<String, dynamic>> jugadores = [];
 
 class LobbyPage extends StatefulWidget {
-  const LobbyPage({Key? key, required this.ranked, required this.idPartida, required this.MiCodigo}) : super(key: key);
+  const LobbyPage({Key? key, this.creador = false, required this.ranked, required this.idPartida, required this.MiCodigo, this.jug = const []}) : super(key: key);
   final bool ranked;
   final String idPartida;
   final String MiCodigo;
+  final bool creador;
+  final List<dynamic> jug;
   @override
   State<LobbyPage> createState() => _LobbyPage();
 }
@@ -34,9 +36,18 @@ class _LobbyPage extends State<LobbyPage> {
   void initState() {
     super.initState();
     jugadores.clear();
+    for(int i = 0; i < widget.jug.length; i++){
+      recuperarUser(widget.jug[i]);
+    }
     recuperarUser(widget.MiCodigo);
 
-      ws_partida = IOWebSocketChannel.connect('ws://$_IP:$_PUERTO/api/ws/partida/${widget.idPartida}');
+    if(!widget.ranked) {
+      ws_partida = IOWebSocketChannel.connect(
+          'ws://$_IP:$_PUERTO/api/ws/partida/${widget.idPartida}');
+    } else{
+      ws_partida = IOWebSocketChannel.connect(
+          'ws://$_IP:$_PUERTO/api/ws/torneo/${widget.idPartida}');
+    }
       ws_partida.stream.handleError((error) {
         print('Error: $error');
       });
@@ -48,10 +59,16 @@ class _LobbyPage extends State<LobbyPage> {
         String tipo = indice >= 0 ? datos["tipo"].substring(0, indice) : datos["tipo"];
         if(tipo == "Partida_Iniciada"){
           openSnackBar(context, const Text('Iniciando partida'));
+          Map<String, String> turnos = {};
+          for (int i = 0; i < datos["turnos"].length; i++){
+            List<dynamic> t = datos["turnos"][i];
+            turnos[t[1]] = t[0];
+          }
+
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) =>  BoardPage(idPartida: widget.idPartida,
-              MiCodigo: widget.MiCodigo,)),
+              MiCodigo: widget.MiCodigo, turnos: turnos, ranked: widget.ranked, creador: widget.creador,)),
           );
         } else if(tipo == "Nuevo_Jugador"){
           String N_codigo = indice >= 0 ? datos["tipo"].substring(indice + 2) : "";

@@ -331,7 +331,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
                       context,
                       SaveChangesDialog(
                           nombre: _nombre.text == "" ? widget.nombre : _nombre.text,
-                          desc: _descripcion.text == "" ? widget.desc : _descripcion.text,
+                          desc: _descripcion.text == " " ? widget.desc : _descripcion.text,
                           foto: ProfileImage.getIndex(),
                           email: widget.email,
                           codigo: widget.codigo));

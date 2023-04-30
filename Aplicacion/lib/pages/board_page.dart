@@ -16,6 +16,9 @@ List<int> CSelecion= [];
 List<List<Carta>> Cartas_abrir = [];
 
 List<Carta> cartMano= [];
+
+List<Map<String, dynamic>> msg = [];
+
 List<List<Carta>> t = [
   // [Carta(2,2),
   //   Carta(3,2),
@@ -59,10 +62,13 @@ PlayingCard? descarte;
 int abrir = 0; //0 - tiene que abrir, 1 - esta abriendo, 2 - no tiene que abrir
 
 class BoardPage extends StatefulWidget {
-  BoardPage({Key? key, required this.idPartida,required this.MiCodigo}) : super(key: key);
+  BoardPage({Key? key, required this.idPartida,required this.MiCodigo, required this.turnos, required this.ranked, this.creador = false}) : super(key: key);
   String idPartida;
   //final ws_partida;
   String MiCodigo;
+  bool creador;
+  bool ranked;
+  Map<String, String> turnos;
   @override
   State<BoardPage> createState() => _BoardPageState();
 }
@@ -76,7 +82,10 @@ class _BoardPageState extends State<BoardPage>{
   void initState() {
     super.initState();
     AudioManager.toggleBGM(true);
+    msg.clear();
+    setState(() {
     nuevos_msg = false;
+    });
     cartMano.clear();
     ws_chat= IOWebSocketChannel.connect('ws://$_IP:$_PUERTO/api/ws/chat/lobby/${widget.idPartida}');
     ws_chat.stream.handleError((error) {
@@ -87,42 +96,72 @@ class _BoardPageState extends State<BoardPage>{
       setState(() {
         nuevos_msg = true;
       });
+      print("mensaje reivido: " + message);
+      Map<String, dynamic> datos = jsonDecode(message);
+      bool esta = false;
+      for(Map<String, dynamic> i in msg){
+        if(datos["id"] == i["id"] && datos["codigo"] == i["codigo"]){
+          esta = true;
+        }
+      }
+      if(!esta) {
+        msg.add(datos);
+      }
+
     });
 
-    ws_partida = IOWebSocketChannel.connect('ws://$_IP:$_PUERTO/api/ws/partida/${widget.idPartida}');
+    if(!widget.ranked) {
+      ws_partida = IOWebSocketChannel.connect(
+          'ws://$_IP:$_PUERTO/api/ws/partida/${widget.idPartida}');
+    } else{
+      ws_partida = IOWebSocketChannel.connect(
+          'ws://$_IP:$_PUERTO/api/ws/torneo/${widget.idPartida}');
+    }
     ws_partida.stream.handleError((error) {
       print('Error: $error');
     });
 
     ws_partida.stream.listen((message) {
       Map<String, dynamic> datos = jsonDecode(message);
-      if(datos["tipo"] == "Mostrar_mano" && datos["receptor"] == widget.MiCodigo) {
+      if(datos["tipo"] == "Mostrar_manos") {
         _load = false;
-        print('mostar_mano');
-        List<dynamic> cartas = datos["cartas"];
-        cartMano.clear();
-        List<Carta> temp = [];
-        for(String i in cartas){
-          List<String> listaNumeros = i.split(",");
-          int valor = int.parse(listaNumeros[0]);
-          int palo = int.parse(listaNumeros[1]);
-          temp.add(Carta(valor,palo));
+        print('mostar_manos');
+        for(int j = 0; j < widget.turnos.length; j++) {
+          if(widget.turnos[j.toString()] == widget.MiCodigo) {
+            List<dynamic> cartas = datos["manos"][j];
+            cartMano.clear();
+            List<Carta> temp = [];
+            for (String i in cartas) {
+              List<String> listaNumeros = i.split(",");
+              int valor = int.parse(listaNumeros[0]);
+              int palo = int.parse(listaNumeros[1]);
+              temp.add(Carta(valor, palo));
+            }
+            setState(() {
+              cartMano = temp;
+              _load = true;
+            });
+          }
         }
-        setState(() {
-          cartMano = temp;
-          _load = true;
-        });
       }
     });
 
-    String data = '{"emisor": "${widget.MiCodigo}","tipo": "Mostrar_mano"}';
-    ws_partida.sink.add(data);
+      String data = '{"emisor": "${widget.MiCodigo}","tipo": "Mostrar_manos"}';
+      ws_partida.sink.add(data);
   }
 
   @override
   void dispose() {
     AudioManager.toggleBGM(false);
     super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(BoardPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    setState(() {
+      nuevos_msg = false;
+    });
   }
 
   bool compararCombinaciones(List<Carta> comb1, List<Carta> comb2){
@@ -188,7 +227,7 @@ class _BoardPageState extends State<BoardPage>{
                             Navigator.pop(context);
                             Navigator.push(context,
                               MaterialPageRoute(
-                                  builder: (context) => BoardPage(idPartida: widget.idPartida,MiCodigo:  widget.MiCodigo,)),);
+                                  builder: (context) => BoardPage(idPartida: widget.idPartida,MiCodigo:  widget.MiCodigo,turnos: widget.turnos, ranked: widget.ranked)),);
                           }
                         },
                         child: PlayingCardView(
@@ -281,10 +320,12 @@ class _BoardPageState extends State<BoardPage>{
                           children:[
                             ElevatedButton(
                               onPressed: () {
+                                setState(() {
                                 nuevos_msg = false;
+                                });
                                 Navigator.push(context,
                                   MaterialPageRoute(builder: (
-                                      context) => const ChatPage()),);
+                                      context) => ChatPage(msg: msg, amistad: false, idPartida: widget.idPartida, MiCodigo: widget.MiCodigo,)),);
                               },
                               child: const Text('Mostrar chat'),
                             ),

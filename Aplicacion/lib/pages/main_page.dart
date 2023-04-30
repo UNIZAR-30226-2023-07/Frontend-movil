@@ -7,6 +7,7 @@ import '../widgets/circular_border_picture.dart';
 import '../services/open_dialog.dart';
 import '../services/profile_image.dart';
 
+
 class MainPage extends StatefulWidget {
   final Map<String, dynamic>? user;
 
@@ -31,7 +32,7 @@ class _MainPageState extends State<MainPage> {
               child: TabBar(
                 tabs: [
                   Tab(
-                    text: 'TORNEOS',
+                    text: 'PENDIENTES',
                   ),
                   Tab(
                     text: 'RANKING',
@@ -166,7 +167,9 @@ class TournamentTab extends StatefulWidget {
 class _TournamentTabState extends State<TournamentTab> {
   // 0 - codigo partida;
   // 1 - creador;
-  List<Map<String, dynamic>>? pendientes;
+  Map<String, dynamic>? pendientes;
+  bool _load = false;
+  late List<dynamic> lista_pendientes;
 
   @override
   void initState() {
@@ -176,12 +179,20 @@ class _TournamentTabState extends State<TournamentTab> {
 
   Future<void> _getPartidasPendientes() async {
     pendientes = await getPartidasPendientes(widget.codigo);
+    lista_pendientes = pendientes!.values.toList();
+    _load = true;
+    setState(() {
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      itemCount: 20,
+    return !_load
+        ? const Center(child: CircularProgressIndicator())
+        :  lista_pendientes[0] == null
+        ? const SizedBox()
+        : ListView.separated(
+      itemCount: lista_pendientes[0].length,
       itemBuilder: (_, index) {
         return ListTile(
           leading: Hero(
@@ -193,9 +204,9 @@ class _TournamentTabState extends State<TournamentTab> {
             ),
           ),
           title: Text(
-              "partida de"), //Text('Partida de ' + (pendientes![index])[1]),
+              "Partida de ${(lista_pendientes[0][index])["Creador"]}"), //Text('Partida de ' + (pendientes![index])[1]),
           subtitle:
-              Text("codigo"), //Text('Codigo: ' + (pendientes![index])[0]),
+              Text("Código: ${(lista_pendientes[0][index])["Clave"]}"), //Text('Codigo: ' + (pendientes![index])[0]),
           onTap: () {
             Navigator.push(
                 context,
