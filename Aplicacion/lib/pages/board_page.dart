@@ -6,6 +6,7 @@ import 'package:playing_cards/playing_cards.dart';
 import 'package:untitled/dialogs/pause_game_dialog.dart';
 import 'package:untitled/dialogs/winner_dialog.dart';
 import 'package:untitled/services/audio_manager.dart';
+import 'package:untitled/services/http_petitions.dart';
 import 'package:web_socket_channel/io.dart';
 import '../pages/chat_page.dart';
 import '../services/open_snack_bar.dart';
@@ -22,7 +23,6 @@ List<List<int>> Indices_abrir = [];
 List<Carta> cartMano= [];
 List<bool> mostrar_carta = [];
 
-List<Map<String, dynamic>> msg = [];
 
 List<List<Carta>> t = [
   // [Carta(2,2),
@@ -83,20 +83,14 @@ class BoardPage extends StatefulWidget {
 }
 
 class _BoardPageState extends State<BoardPage>{
-  late final ws_chat;
-  bool nuevos_msg = false;
   bool _load = false;
-  late StreamSubscription subscription_p, subscription_c;
+  late StreamSubscription subscription_p;
 
   @override
   void initState() {
     super.initState();
     AudioManager.toggleBGM(true);
     if(widget.init) {
-      msg.clear();
-      setState(() {
-        nuevos_msg = false;
-      });
       cartMano.clear();
       t_actual = widget.turnos["0"]!;
       if (t_actual == widget.MiCodigo) {
@@ -105,28 +99,7 @@ class _BoardPageState extends State<BoardPage>{
         modo = 0;
       }
     }
-    ws_chat= IOWebSocketChannel.connect('ws://$_IP:$_PUERTO/api/ws/chat/lobby/${widget.idPartida}');
-    ws_chat.stream.handleError((error) {
-      print('Error: $error');
-    });
 
-    subscription_c = ws_chat.stream.listen((message) {
-      setState(() {
-        nuevos_msg = true;
-      });
-      print("mensaje reivido: " + message);
-      Map<String, dynamic> datos = jsonDecode(message);
-      bool esta = false;
-      for(Map<String, dynamic> i in msg){
-        if(datos["id"] == i["id"] && datos["codigo"] == i["codigo"]){
-          esta = true;
-        }
-      }
-      if(!esta) {
-        msg.add(datos);
-      }
-
-    });
 
     if(!widget.ranked) {
       widget.ws_partida = IOWebSocketChannel.connect(
@@ -379,19 +352,9 @@ class _BoardPageState extends State<BoardPage>{
   @override
   void dispose() {
     subscription_p.cancel();
-    subscription_c.cancel();
     widget.ws_partida.sink.close();
-    ws_chat.sink.close();
     AudioManager.toggleBGM(false);
     super.dispose();
-  }
-
-  @override
-  void didUpdateWidget(BoardPage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    setState(() {
-      nuevos_msg = false;
-    });
   }
 
   bool compararCombinaciones(List<Carta> comb1, List<Carta> comb2){
@@ -530,27 +493,13 @@ class _BoardPageState extends State<BoardPage>{
                           children:[
                             ElevatedButton(
                               onPressed: () {
-                                setState(() {
-                                nuevos_msg = false;
-                                });
                                 Navigator.push(context,
                                   MaterialPageRoute(builder: (
-                                      context) => ChatPage(msg: msg, amistad: false, idPartida: widget.idPartida, MiCodigo: widget.MiCodigo,)),);
+                                      context) => ChatPage( amistad: false, idPartida: widget.idPartida, MiCodigo: widget.MiCodigo,)),);
                               },
                               child: const Text('Mostrar chat'),
                             ),
-                            if (nuevos_msg)
-                              Positioned(
-                                right: 0,
-                                child: Container(
-                                  width: 10,
-                                  height: 10,
-                                  decoration: BoxDecoration(
-                                    color: Colors.red,
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                              ),
+
                           ],
                         ),
                         ElevatedButton(
@@ -675,7 +624,7 @@ class _BoardPageState extends State<BoardPage>{
     shrinkWrap: true,
     physics: const NeverScrollableScrollPhysics(),
     itemCount: widget.turnos.length,
-    itemBuilder: (context, index) {
+    itemBuilder: (context, index)  {
       return ListTile(
         leading: CircularBorderPicture(),
         title: Row(

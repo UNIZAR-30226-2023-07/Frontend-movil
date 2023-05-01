@@ -9,7 +9,6 @@ import '../widgets/circular_border_picture.dart';
 
 const String _IP = '52.166.36.105';
 const String _PUERTO = '3001';
-int id_msg = 0;
 
 class ShowMessages extends StatefulWidget {
   const ShowMessages(
@@ -247,37 +246,37 @@ class _ShowMessagesState extends State<ShowMessages> {
   }
 }
 
+String id_ant = "";
+
 class ChatPage extends StatefulWidget {
   const ChatPage(
       {Key? key,
       this.MiCodigo = "",
       this.codigo2 = "",
       this.amistad = false,
-      this.idPartida = "",
-      this.msg = const []})
+      this.idPartida = "",})
       : super(key: key);
   final String MiCodigo, codigo2;
   final bool amistad;
   final String idPartida;
-  final List<Map<String, dynamic>> msg;
   @override
   State<ChatPage> createState() => _ChatPage();
 }
 
+List<dynamic> lista_mensajes = [];
+
+
 class _ChatPage extends State<ChatPage> {
   final TextEditingController _textController = TextEditingController();
 
-  late List<dynamic> lista_mensajes = [
-    [
-      {'Emisor': '1', 'Receptor': '#admin', 'Contenido': 'Hola', 'Leido': 0}
-    ]
-  ];
+
   Map<String, dynamic>? mensajes;
   bool _load = false;
   late final wb_amistad;
   @override
   void initState() {
     super.initState();
+    bool primero = false;
     if (widget.amistad) {
       _getMensajes();
       wb_amistad = IOWebSocketChannel.connect(
@@ -285,7 +284,11 @@ class _ChatPage extends State<ChatPage> {
     } else {
       wb_amistad = IOWebSocketChannel.connect(
           'ws://$_IP:$_PUERTO/api/ws/chat/lobby/${widget.idPartida}');
-      lista_mensajes = widget.msg;
+      if(id_ant != widget.idPartida) {
+        primero = true;
+        id_ant = widget.idPartida;
+        lista_mensajes.clear();
+      }
       setState(() {
         _load = true;
       });
@@ -294,37 +297,28 @@ class _ChatPage extends State<ChatPage> {
       print('Error: $error');
     });
 
-    wb_amistad.stream.listen((message) {
-      print('Received: $message');
-      Map<String, dynamic> datos = jsonDecode(message);
-      if (widget.amistad) {
-        if (datos["emisor"] == widget.codigo2) {
-          _load = false;
-          _getMensajes();
-          build(context);
-        }
-      } else {
-        bool esta = false;
-        for(Map<String, dynamic> i in lista_mensajes){
-          print("nuevos datos " + datos["id"].toString() + " " + datos["codigo"]);
-          print("mensaje a mirar" + i["id"].toString() + " " + i["codigo"]);
-          if(datos["id"] == i["id"] && datos["codigo"] == i["codigo"]){
-            esta = true;
+
+
+      wb_amistad.stream.listen((message) {
+        print('Received: $message');
+        Map<String, dynamic> datos = jsonDecode(message);
+        if (widget.amistad) {
+          if (datos["emisor"] == widget.codigo2) {
+            _load = false;
+            _getMensajes();
+            build(context);
           }
+        } else {
+          if(primero)
+            {
+              lista_mensajes.add(datos);}
+            setState(() {
+              lista_mensajes;
+              _load = true;
+            });
+            //build(context);
         }
-        if(!esta) {
-          if(datos["codigo"] == widget.MiCodigo){
-            id_msg++;
-          }
-          lista_mensajes.add(datos);
-          setState(() {
-            lista_mensajes;
-            _load = true;
-          });
-          build(context);
-        }
-      }
-    });
+      });
   }
 
   Future<void> _getMensajes() async {
@@ -341,7 +335,8 @@ class _ChatPage extends State<ChatPage> {
     }
     _load = true;
     setState(() {});
-    // _load = true;
+    // _load = true;tion in 13.336ms.
+    // E/gralloc4(16107
   }
 
   List<dynamic> separarMensajesCodigo(String codigo1, String codigo2) {
@@ -407,7 +402,7 @@ class _ChatPage extends State<ChatPage> {
 
                               if (widget.amistad) {
                                 final data =
-                                    '{"emisor": "${widget.MiCodigo}","receptor": "${widget.codigo2}", "contenido": "${_textController.text}"}';
+                                    '{"Emisor": "${widget.MiCodigo}","Receptor": "${widget.codigo2}", "Contenido": "${_textController.text}"}';
                                 wb_amistad.sink.add(data);
                                 _getMensajes();
                                 _textController.clear();
@@ -418,7 +413,7 @@ class _ChatPage extends State<ChatPage> {
                                 Map<String, dynamic>? user =
                                     await getUserCode(widget.MiCodigo);
                                 final data =
-                                    '{"id": $id_msg, "codigo": "${widget.MiCodigo}","nombre": "${user!["nombre"]}", "foto": ${user!["foto"]}, "mensaje": "${_textController.text}"}';
+                                    '{"codigo": "${widget.MiCodigo}","nombre": "${user!["nombre"]}", "foto": ${user!["foto"]}, "mensaje": "${_textController.text}"}';
                                 print("enviado");
                                 wb_amistad.sink.add(data);
                                 _textController.clear();
