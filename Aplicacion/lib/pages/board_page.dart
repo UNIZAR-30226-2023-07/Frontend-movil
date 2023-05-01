@@ -64,7 +64,7 @@ class Carta {
 
 int modo = 1; // 0 - no turno, 1 - encarte, 2 - colocar/descarte
 PlayingCard? descarte;
-int abrir = 2; //0 - tiene que abrir, 1 - esta abriendo, 2 - no tiene que abrir
+int abrir = 0; //0 - tiene que abrir, 1 - esta abriendo, 2 - no tiene que abrir
 String t_actual = "";
 
 class BoardPage extends StatefulWidget {
@@ -170,6 +170,8 @@ class _BoardPageState extends State<BoardPage>{
           t.clear();
           for (List<dynamic> comb in datos["combinaciones"]) {
             List<Carta> temp = [];
+            print("comb:");
+            print (comb);
             for (String c in comb) {
               List<String> listaNumeros = c.split(",");
               int valor = int.parse(listaNumeros[0]);
@@ -443,8 +445,11 @@ class _BoardPageState extends State<BoardPage>{
                                 _cartas = _cartas + "," +
                                     i[j].toString();
                               }
+                              _cartas = "\"$_cartas\"";
                               cartas.add(_cartas);
                             }
+                            abrir = 0;
+                            print("$cartas");
                             String data = '{"emisor": "${widget.MiCodigo}","tipo": "Abrir", "cartas": $cartas}';
                             widget.ws_partida.sink.add(data);
                               //mandar peticion a logica de que quiero cerrar
@@ -468,7 +473,7 @@ class _BoardPageState extends State<BoardPage>{
                             widget.ws_partida.sink.add(data);
                           } else if (modo == 2) {
                             if (CSelecion.length == 1) {
-                              String data = '{"emisor": "${widget.MiCodigo}","tipo": "Descarte", "info": ${CSelecion[0]}}';
+                              String data = '{"emisor": "${widget.MiCodigo}","tipo": "Descarte", "info": "${CSelecion[0]}"}';
                               CSelecion.clear();
                               widget.ws_partida.sink.add(data);
                             } else{
@@ -554,6 +559,7 @@ class _BoardPageState extends State<BoardPage>{
                                       cartas = cartas + "," +
                                           CSelecion[i].toString();
                                     }
+                                    cartas = "\"$cartas\"";
                                     String data = '{"emisor": "${widget
                                         .MiCodigo}","tipo": "Colocar_combinacion", "cartas": $cartas}';
                                     widget.ws_partida.sink.add(data);
@@ -744,7 +750,7 @@ PlayingCardViewStyle setStyle(){
         builder: (context) => const FittedBox(
           fit: BoxFit.fitHeight,
           child: Text(
-            "𓇳",
+            "⊛",
             style: TextStyle(fontSize: 40),
           ),
         ),
@@ -761,7 +767,7 @@ PlayingCardViewStyle setStyle(){
         builder: (context) => const FittedBox(
           fit: BoxFit.fitHeight,
           child: Text(
-            "𓋾",
+            "↾",
             style: TextStyle(fontSize: 40),
           ),
         ),
@@ -872,7 +878,7 @@ class _CardViewState extends State<CardView> {
                           int i = t.indexOf(widget.c);
                           String inf = "${i.toString()},${CSelecion[0]}";
                           String data = '{"emisor": "${widget
-                              .MiCodigo}","tipo": "Colocar_carta", "info": $inf}';
+                              .MiCodigo}","tipo": "Colocar_carta", "info": "$inf"}';
                           widget.ws_partida.sink.add(data);
                         }
                         }
