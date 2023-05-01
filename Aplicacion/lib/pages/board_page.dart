@@ -10,6 +10,7 @@ import 'package:untitled/services/http_petitions.dart';
 import 'package:web_socket_channel/io.dart';
 import '../pages/chat_page.dart';
 import '../services/open_snack_bar.dart';
+import '../services/profile_image.dart';
 import '../widgets/circular_border_picture.dart';
 
 const String _IP = '52.166.36.105';
@@ -24,36 +25,7 @@ List<Carta> cartMano= [];
 List<bool> mostrar_carta = [];
 
 
-List<List<Carta>> t = [
-  // [Carta(2,2),
-  //   Carta(3,2),
-  //   Carta(4,2),
-  //   Carta(4,2),
-  //   Carta(4,2),
-  //   Carta(4,2),Carta(4,2),
-  //   Carta(4,2),
-  //   Carta(4,2),
-  //   Carta(4,2),
-  // ],
-  // [Carta(5,1),
-  //   Carta(5,3),
-  //   Carta(5,4),],
-  // [Carta(12,4),
-  //   Carta(13,4),
-  //   Carta(1,4),],
-  // [Carta(4,1),
-  //   Carta(4,4),
-  //   Carta(0,2),],
-  // [Carta(1,3),
-  //   Carta(2,3),
-  //   Carta(3,3),],
-  // [Carta(1,3),
-  //   Carta(2,3),
-  //   Carta(3,3),],
-  // [Carta(1,3),
-  //   Carta(2,3),
-  //   Carta(3,3),],
-];
+List<List<Carta>> t = [];
 
 class Carta {
   final int numero;
@@ -85,10 +57,12 @@ class BoardPage extends StatefulWidget {
 class _BoardPageState extends State<BoardPage>{
   bool _load = false;
   late StreamSubscription subscription_p;
+  late List<int> fotos = <int>[];
 
   @override
   void initState() {
     super.initState();
+    fotos.clear();
     AudioManager.toggleBGM(true);
     if(widget.init) {
       cartMano.clear();
@@ -99,6 +73,7 @@ class _BoardPageState extends State<BoardPage>{
         modo = 0;
       }
     }
+    procesarFotos();
 
 
     if(!widget.ranked) {
@@ -197,10 +172,10 @@ class _BoardPageState extends State<BoardPage>{
                           creador: widget.creador,
                           email: widget.email)),);
           } else
-          if (datos["info"] == "Combinacion no valida, intentelo de nuevo") {
+          if (int.tryParse(datos["info"]) == null ) {
             openSnackBar(context, const Text('Combinacion no valida, intentelo de nuevo'));
           } else {
-            String ganador = datos["ganador"];
+            String ganador = datos["info"];
             String jugador = widget.turnos[ganador]!;
             showDialog(
                 context: context,
@@ -276,10 +251,10 @@ class _BoardPageState extends State<BoardPage>{
                           ranked: widget.ranked,
                           creador: widget.creador,
                           email: widget.email)),);
-          } else if (datos["info"] == "No puedes colocar una carta porque no has abierto"){
+          } else if (int.tryParse(datos["info"]) == null){
             openSnackBar(context, const Text('No puedes colocar una carta porque no has abierto'));
           } else{
-            String ganador = datos["ganador"];
+            String ganador = datos["info"];
             String jugador = widget.turnos[ganador]!;
             showDialog(
                 context: context,
@@ -327,8 +302,8 @@ class _BoardPageState extends State<BoardPage>{
           Navigator.pop(context);
         }
       }
-      else if((datos["tipo"] == "Colocar_carta" || datos["tipo"] == "Colocar_combinacion") && datos["info"] is int){
-        String ganador = datos["ganador"];
+      else if((datos["tipo"] == "Colocar_carta" || datos["tipo"] == "Colocar_combinacion") && int.tryParse(datos["info"]) != null){
+        String ganador = datos["info"];
         String jugador = widget.turnos[ganador]!;
         showDialog(
             context: context,
@@ -349,6 +324,14 @@ class _BoardPageState extends State<BoardPage>{
         });
       }
 
+  }
+
+  Future<void> procesarFotos() async {
+    fotos.clear();
+    for (int i = 0; i < widget.turnos.length; i++) {
+      Map<String, dynamic>? user = await getUserCode(widget.turnos[i.toString()]!);
+      fotos.add(user!["foto"]);
+    }
   }
 
   @override
@@ -632,7 +615,7 @@ class _BoardPageState extends State<BoardPage>{
     itemCount: widget.turnos.length,
     itemBuilder: (context, index)  {
       return ListTile(
-        leading: CircularBorderPicture(),
+        leading: CircularBorderPicture(image: ProfileImage.urls[fotos[index] % 6]!),
         title: Row(
           children: [
             Text(
@@ -846,48 +829,76 @@ class _CardViewState extends State<CardView> {
             children: deck!.asMap().entries.map((entry) {
               final int index = entry.key;
               final PlayingCard card = entry.value;
-              return mostrar_carta[index] ? GestureDetector(
-                child: PlayingCardView(
-                  card: card,
-                  style: myCardStyles,
-                  shape: selected[index]
-                      ? RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    side: BorderSide(
-                      color: Colors.lightBlueAccent,
-                      width: 3,
-                    ),
-                  )
-                      : null, // No shape border when not selected
-                ),
-                onTap: () {
-                  AudioManager.toggleSFX(true);
-                  setState(() {
-                    if (modo == 2) {
-                      if (widget.mano) {
-                        selected[index] = !selected[index];
-                        if (selected[index]) {
-                          CSelecion.add(index);
-                        } else {
-                          CSelecion.remove(index);
+              if (widget.mano) {
+                return mostrar_carta[index] ? GestureDetector(
+                  child: PlayingCardView(
+                    card: card,
+                    style: myCardStyles,
+                    shape: selected[index]
+                        ? RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      side: BorderSide(
+                        color: Colors.lightBlueAccent,
+                        width: 3,
+                      ),
+                    )
+                        : null, // No shape border when not selected
+                  ),
+                  onTap: () {
+                    AudioManager.toggleSFX(true);
+                    setState(() {
+                      if (modo == 2) {
+                        if (widget.mano) {
+                          selected[index] = !selected[index];
+                          if (selected[index]) {
+                            CSelecion.add(index);
+                          } else {
+                            CSelecion.remove(index);
+                          }
                         }
-                      } else if (abrir == 2) {
-                        if(CSelecion.length > 1){
-                          openSnackBar(context, const Text('Solo puedes añadir cartas a una combinacion de 1 en 1'));
-                        } else {
-                          int i = t.indexOf(widget.c);
-                          String inf = "${i.toString()},${CSelecion[0]}";
-                          String data = '{"emisor": "${widget
-                              .MiCodigo}","tipo": "Colocar_carta", "info": "$inf"}';
-                          widget.ws_partida.sink.add(data);
+                      } else if (modo == 1){
+                        openSnackBar(context, const Text('Roba una carta para comenzar'));
+                      }
+                    });
+                  },
+                ) : SizedBox();
+              } else {
+                return GestureDetector(
+                  child: PlayingCardView(
+                    card: card,
+                    style: myCardStyles,
+                    shape: selected[index]
+                        ? RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      side: BorderSide(
+                        color: Colors.lightBlueAccent,
+                        width: 3,
+                      ),
+                    )
+                        : null, // No shape border when not selected
+                  ),
+                  onTap: () {
+                    AudioManager.toggleSFX(true);
+                    setState(() {
+                      if (modo == 2) {
+                        if (abrir == 2) {
+                          if(CSelecion.length > 1){
+                            openSnackBar(context, const Text('Solo puedes añadir cartas a una combinacion de 1 en 1'));
+                          } else {
+                            int i = t.indexOf(widget.c);
+                            String inf = "${i.toString()},${CSelecion[0]}";
+                            String data = '{"emisor": "${widget
+                                .MiCodigo}","tipo": "Colocar_carta", "info": "$inf"}';
+                            widget.ws_partida.sink.add(data);
+                          }
                         }
-                        }
-                    } else if (modo == 1){
-                      openSnackBar(context, const Text('Roba una carta para comenzar'));
-                    }
-                  });
-                },
-              ) : SizedBox();
+                      } else if (modo == 1){
+                        openSnackBar(context, const Text('Roba una carta para comenzar'));
+                      }
+                    });
+                  },
+                );
+              }
             }).toList(),
           ),
         ),
