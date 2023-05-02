@@ -9,7 +9,6 @@ import '../widgets/circular_border_picture.dart';
 
 const String _IP = '52.166.36.105';
 const String _PUERTO = '3001';
-int id_msg = 0;
 
 class ShowMessages extends StatefulWidget {
   const ShowMessages({
@@ -254,17 +253,18 @@ class _ShowMessagesState extends State<ShowMessages> {
   }
 }
 
+String id_ant = "";
+
 class ChatPage extends StatefulWidget {
-  const ChatPage({
-    super.key,
-    this.MiCodigo = "",
-    this.codigo2 = "",
-    this.amistad = false,
-    this.idPartida = "",
-    this.msg = const [],
-    this.fotoAmigo = -1,
-    this.nombreAmigo = ''
-  });
+  const ChatPage(
+      {super.key,
+      this.MiCodigo = "",
+      this.codigo2 = "",
+      this.amistad = false,
+      this.idPartida = "",
+      this.msg = const [],
+      this.fotoAmigo = -1,
+      this.nombreAmigo = ''});
 
   final String MiCodigo, codigo2;
   final bool amistad;
@@ -277,14 +277,11 @@ class ChatPage extends StatefulWidget {
   State<ChatPage> createState() => _ChatPage();
 }
 
+List<dynamic> lista_mensajes = [];
+
 class _ChatPage extends State<ChatPage> {
   final TextEditingController _textController = TextEditingController();
 
-  late List<dynamic> lista_mensajes = [
-    [
-      {'Emisor': '1', 'Receptor': '#admin', 'Contenido': 'Hola', 'Leido': 0}
-    ]
-  ];
   Map<String, dynamic>? mensajes;
   bool _load = false;
   late final wb_amistad;
@@ -292,6 +289,7 @@ class _ChatPage extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
+    bool primero = false;
     if (widget.amistad) {
       _getMensajes();
       wb_amistad = IOWebSocketChannel.connect(
@@ -299,7 +297,11 @@ class _ChatPage extends State<ChatPage> {
     } else {
       wb_amistad = IOWebSocketChannel.connect(
           'ws://$_IP:$_PUERTO/api/ws/chat/lobby/${widget.idPartida}');
-      lista_mensajes = widget.msg;
+      if (id_ant != widget.idPartida) {
+        primero = true;
+        id_ant = widget.idPartida;
+        lista_mensajes.clear();
+      }
       setState(() {
         _load = true;
       });
@@ -318,25 +320,14 @@ class _ChatPage extends State<ChatPage> {
           build(context);
         }
       } else {
-        bool esta = false;
-        for(Map<String, dynamic> i in lista_mensajes){
-          print("nuevos datos " + datos["id"].toString() + " " + datos["codigo"]);
-          print("mensaje a mirar" + i["id"].toString() + " " + i["codigo"]);
-          if(datos["id"] == i["id"] && datos["codigo"] == i["codigo"]){
-            esta = true;
-          }
-        }
-        if(!esta) {
-          if(datos["codigo"] == widget.MiCodigo){
-            id_msg++;
-          }
+        if (primero) {
           lista_mensajes.add(datos);
-          setState(() {
-            lista_mensajes;
-            _load = true;
-          });
-          build(context);
         }
+        setState(() {
+          lista_mensajes;
+          _load = true;
+        });
+        //build(context);
       }
     });
   }
@@ -355,7 +346,8 @@ class _ChatPage extends State<ChatPage> {
     }
     _load = true;
     setState(() {});
-    // _load = true;
+    // _load = true;tion in 13.336ms.
+    // E/gralloc4(16107
   }
 
   List<dynamic> separarMensajesCodigo(String codigo1, String codigo2) {
@@ -363,14 +355,13 @@ class _ChatPage extends State<ChatPage> {
     if (lista_mensajes[0] != null) {
       for (int i = 0; i < lista_mensajes[0].length; i++) {
         //if ((lista_mensajes[0][i])["Emisor"] == codigo1 && (lista_mensajes[0][i])["Receptor"] == codigo2
-          //  || (lista_mensajes[0][i])["Emisor"] == codigo2 && (lista_mensajes[0][i])["Receptor"] == codigo1){
+        //  || (lista_mensajes[0][i])["Emisor"] == codigo2 && (lista_mensajes[0][i])["Receptor"] == codigo1){
         lista_mensajes_amistad.add(lista_mensajes[0][i]);
         //}
       }
     }
     return lista_mensajes_amistad!;
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -384,80 +375,86 @@ class _ChatPage extends State<ChatPage> {
       child: Scaffold(
         appBar: AppBar(
           title: (widget.fotoAmigo != -1)
-          ? Row(
-            children: [
-              CircularBorderPicture(
-                width: 45,
-                height: 45,
-                image: ProfileImage.getImage(widget.fotoAmigo%6)
-              ),
-              Padding(padding: const EdgeInsets.only(left: 10), child: Text(widget.nombreAmigo))
-            ],
-          )
-          : const Text('Chat'),
+              ? Row(
+                  children: [
+                    CircularBorderPicture(
+                        width: 45,
+                        height: 45,
+                        image: ProfileImage.getImage(widget.fotoAmigo % 6)),
+                    Padding(
+                        padding: const EdgeInsets.only(left: 10),
+                        child: Text(widget.nombreAmigo))
+                  ],
+                )
+              : const Text('Chat'),
         ),
         body: !_load
-        ? const Center(child: CircularProgressIndicator())
-        : Column(
-          children: [
-            Expanded(child: ShowMessages(len: lista_mensajes, MiCodigo: widget.MiCodigo, codigo2: widget.codigo2, amistad: widget.amistad),),
-            Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-                    child: TextField(
-                      controller: _textController,
-                      decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.all(15),
-                        hintText: "Mensaje",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
+            ? const Center(child: CircularProgressIndicator())
+            : Column(
+                children: [
+                  Expanded(
+                    child: ShowMessages(
+                        len: lista_mensajes,
+                        MiCodigo: widget.MiCodigo,
+                        codigo2: widget.codigo2,
+                        amistad: widget.amistad),
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+                          child: TextField(
+                            controller: _textController,
+                            decoration: InputDecoration(
+                              contentPadding: const EdgeInsets.all(15),
+                              hintText: "Mensaje",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                            ),
+                            keyboardType: TextInputType.multiline,
+                            maxLines: null,
+                          ),
                         ),
                       ),
-                      keyboardType: TextInputType.multiline,
-                      maxLines: null,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 10, 10),
-                  child: FloatingActionButton(
-                    elevation: 0,
-                    tooltip: 'Enviar mensaje',
-                    onPressed: () async {
-                      if (_textController.text.isNotEmpty) {
-                        //msgs.add(_textController.text);
-                        ///msg.add(_textController.text);
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 0, 10, 10),
+                        child: FloatingActionButton(
+                          elevation: 0,
+                          tooltip: 'Enviar mensaje',
+                          onPressed: () async {
+                            if (_textController.text.isNotEmpty) {
+                              //msgs.add(_textController.text);
+                              ///msg.add(_textController.text);
 
-                        if (widget.amistad) {
-                          final data =
-                              '{"emisor": "${widget.MiCodigo}","receptor": "${widget.codigo2}", "contenido": "${_textController.text}"}';
-                          wb_amistad.sink.add(data);
-                          _getMensajes();
-                          _textController.clear();
-                          _load = false;
-                          setState(() {});
-                          build(context);
-                        } else {
-                          Map<String, dynamic>? user =
-                              await getUserCode(widget.MiCodigo);
-                          final data =
-                              '{"id": $id_msg, "codigo": "${widget.MiCodigo}","nombre": "${user!["nombre"]}", "foto": ${user!["foto"]}, "mensaje": "${_textController.text}"}';
-                          print("enviado");
-                          wb_amistad.sink.add(data);
-                          _textController.clear();
-                        }
-
-                      }
-                    },
-                    child: const Icon(Icons.send),
+                              if (widget.amistad) {
+                                final data =
+                                    '{"Emisor": "${widget.MiCodigo}","Receptor": "${widget.codigo2}", "Contenido": "${_textController.text}"}';
+                                wb_amistad.sink.add(data);
+                                _getMensajes();
+                                _textController.clear();
+                                _load = false;
+                                setState(() {});
+                                build(context);
+                              } else {
+                                Map<String, dynamic>? user =
+                                    await getUserCode(widget.MiCodigo);
+                                final data =
+                                    '{"codigo": "${widget.MiCodigo}","nombre": "${user!["nombre"]}", "foto": ${user!["foto"]}, "mensaje": "${_textController.text}"}';
+                                print("enviado");
+                                wb_amistad.sink.add(data);
+                                _textController.clear();
+                              }
+                            }
+                          },
+                          child: const Icon(Icons.send),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
-          ],
-        ),
+                ],
+              ),
       ),
     );
   }
