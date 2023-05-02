@@ -11,10 +11,12 @@ import 'board_page.dart';
 import '../widgets/custom_filled_button.dart';
 import '../widgets/circular_border_picture.dart';
 
-const String _IP = '52.166.36.105';
+const String _IP = '52.174.124.24';
 const String _PUERTO = '3001';
 
 List<Map<String, dynamic>> jugadores = [];
+
+bool _isChecked = false;
 
 class LobbyPage extends StatefulWidget {
 
@@ -171,11 +173,13 @@ class _LobbyPage extends State<LobbyPage> {
             ),
             const SizedBox(height: 20),
             (widget.creador)
-            ? CustomFilledButton(
+            ? Column(
+              children: [
+                CustomFilledButton(
               content: const Text('Empezar partida'),
               onPressed: () async {
                 if (jugadores.length >= 2) {
-                  bool res = await iniciarPartida(widget.MiCodigo,widget.idPartida);
+                  bool res = await iniciarPartida(widget.MiCodigo,widget.idPartida,_isChecked);
                   if (context.mounted) {
                     if (res == false) {
                       if(widget.ranked && widget.ranked){
@@ -192,6 +196,22 @@ class _LobbyPage extends State<LobbyPage> {
                   openSnackBar(context, const Text('Se necesitan al menos 2 jugadores para empezar la partida'));
                 }
               }
+            ),
+              const SizedBox(),
+              Row(
+                children: [
+                  Checkbox(
+                    value: _isChecked,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        _isChecked = value!;
+                      });
+                    },
+                  ),
+                  Text('Jugar con bots')
+                ],
+              ),
+            ]
             )
             : const SizedBox(),
           ],

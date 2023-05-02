@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import '../services/encrypt_password.dart';
 
-const String _IP = '52.166.36.105';
+const String _IP = '52.174.124.24';
 const String _PUERTO = '3001';
 
 const String _loginURL = 'http://$_IP:$_PUERTO/api/auth/login';
@@ -24,6 +24,7 @@ const String _leerMensajesURL = 'http://$_IP:$_PUERTO/api/msg/leer';
 const String _crearPartidaURL = 'http://$_IP:$_PUERTO/api/partida/crear';
 const String _unirPartidaURL = 'http://$_IP:$_PUERTO/api/partida/join';
 const String _iniciarPartidaURL = 'http://$_IP:$_PUERTO/api/partida/iniciar';
+const String _pausarPartidaURL = 'http://$_IP:$_PUERTO/api/partida/pausar';
 
 class User {
   final String nickname;
@@ -301,8 +302,15 @@ Future<Map<String, dynamic>?> unirPartida(String codigo, String partida) async {
   return datos;
 }
 
-Future<bool> iniciarPartida(String jugador, String codigo) async {
-  final json = '{"codigo": "$jugador", "clave": "$codigo"}';
+Future<bool> iniciarPartida(String jugador, String codigo, bool bot) async {
+  String b = "";
+  if(bot){
+    b = "si";
+  } else{
+    b = "no";
+  }
+  final json = '{"codigo": "$jugador", "clave": "$codigo", "bot": "$b"}';
+  //final json = '{"codigo": "$jugador", "clave": "$codigo"}';
 
   final response = await http.post(Uri.parse(_iniciarPartidaURL), body: json);
 
@@ -315,7 +323,7 @@ Future<bool> iniciarPartida(String jugador, String codigo) async {
 Future<bool> pausarPartida(String codigo, String partida) async {
   final json = '{"codigo": "$codigo", "clave": "$partida"}';
 
-  final response = await http.post(Uri.parse(_unirPartidaURL), body: json);
+  final response = await http.post(Uri.parse(_pausarPartidaURL), body: json);
 
   //print(response.statusCode);
 

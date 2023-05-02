@@ -13,7 +13,7 @@ import '../services/open_snack_bar.dart';
 import '../services/profile_image.dart';
 import '../widgets/circular_border_picture.dart';
 
-const String _IP = '52.166.36.105';
+const String _IP = '52.174.124.24';
 const String _PUERTO = '3001';
 
 List<int> CSelecion= [];
@@ -143,17 +143,19 @@ class _BoardPageState extends State<BoardPage>{
             descarte = PlayingCard(PaloToSuit(palo), NumToValue(valor));
           }
           t.clear();
-          for (List<dynamic> comb in datos["combinaciones"]) {
-            List<Carta> temp = [];
-            print("comb:");
-            print (comb);
-            for (String c in comb) {
-              List<String> listaNumeros = c.split(",");
-              int valor = int.parse(listaNumeros[0]);
-              int palo = int.parse(listaNumeros[1]);
-              temp.add(Carta(valor, palo));
+          if(datos["combinaciones"] != null) {
+            for (List<dynamic> comb in datos["combinaciones"]) {
+              List<Carta> temp = [];
+              print("comb:");
+              print(comb);
+              for (String c in comb) {
+                List<String> listaNumeros = c.split(",");
+                int valor = int.parse(listaNumeros[0]);
+                int palo = int.parse(listaNumeros[1]);
+                temp.add(Carta(valor, palo));
+              }
+              t.add(temp);
             }
-            t.add(temp);
           }
         } else if (datos["tipo"] == "Colocar_combinacion") {
           print('colocar_combinacion');
@@ -253,7 +255,22 @@ class _BoardPageState extends State<BoardPage>{
                           email: widget.email)),);
           } else if (int.tryParse(datos["info"]) == null){
             openSnackBar(context, const Text('No puedes colocar una carta porque no has abierto'));
-          } else{
+          } else if(datos["info"].toString().startsWith("0,")){
+            CSelecion.clear();
+            openSnackBar(context, const Text('Carta cambiada por jocker'));
+            Navigator.pop(context);
+            Navigator.push(context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      BoardPage(ws_partida: widget.ws_partida,
+                          idPartida: widget.idPartida,
+                          MiCodigo: widget.MiCodigo,
+                          turnos: widget.turnos,
+                          ranked: widget.ranked,
+                          creador: widget.creador,
+                          email: widget.email)),);
+          }
+            else{
             String ganador = datos["info"];
             String jugador = widget.turnos[ganador]!;
             showDialog(
@@ -323,7 +340,6 @@ class _BoardPageState extends State<BoardPage>{
           _load = true;
         });
       }
-
   }
 
   Future<void> procesarFotos() async {
@@ -537,12 +553,13 @@ class _BoardPageState extends State<BoardPage>{
                                                 email: widget.email)),);
                                   }
                                   else if (abrir == 2) {
-                                    String cartas = CSelecion[0].toString();
+                                    String _cartas = CSelecion[0].toString();
                                     for (int i = 1; i < CSelecion.length; i++) {
-                                      cartas = cartas + "," +
+                                      _cartas = _cartas + "," +
                                           CSelecion[i].toString();
                                     }
-                                    cartas = "\"$cartas\"";
+                                    _cartas = "\"$_cartas\"";
+                                    List<String> cartas = [_cartas];
                                     String data = '{"emisor": "${widget
                                         .MiCodigo}","tipo": "Colocar_combinacion", "cartas": $cartas}';
                                     widget.ws_partida.sink.add(data);
@@ -629,7 +646,7 @@ class _BoardPageState extends State<BoardPage>{
         ),
         trailing: t_actual == index.toString() ? Badge(
           label: Text('Jugando'),
-        ) : Badge(),
+        ) : SizedBox(),
         onTap: () {},
       );
     },
