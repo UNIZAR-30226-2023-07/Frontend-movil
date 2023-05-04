@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:untitled/pages/board_page.dart';
+import 'package:untitled/pages/confirm_code.dart';
 import 'package:untitled/services/audio_manager.dart';
 import 'package:untitled/services/http_petitions.dart';
+import 'package:untitled/services/local_notifications.dart';
 import 'package:untitled/services/profile_image.dart';
 import 'dialogs/close_session_dialog.dart';
 import 'package:untitled/services/open_dialog.dart';
@@ -24,6 +27,9 @@ import 'themes/theme_manager.dart';
 // 5 - codigo;
 // 6 - puntos;
 Map<String, dynamic>? user;
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+FlutterLocalNotificationsPlugin();
 
 Future<bool> _startPage() async {
   bool existsRememberMe = LocalStorage.prefs.getBool('rememberMe') != null;
@@ -48,6 +54,10 @@ void main() async {
   AudioManager.startAudio();
   ProfileImage.prepImages();
   bool res = await _startPage();
+  NotificationService().initNotification();
+  NotificationService().showDailyNotificationAtTime(id: 1, title: 'Recordatorio', body: '¡Echate una partida!', hour: 12, minute: 0);
+
+
   runApp(MyApp(res: res));
 }
 

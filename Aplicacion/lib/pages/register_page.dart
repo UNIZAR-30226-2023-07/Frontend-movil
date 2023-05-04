@@ -253,30 +253,17 @@ class _RegisterPageState extends State<RegisterPage> {
                                     ],
                                   ),
                                   const SizedBox(height: 10),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      SizedBox(
-                                        child: OutlinedButton(
-                                          onPressed: () {},
-                                          child: Image.asset(
-                                            'images/logo_google.png',
-                                            width: 70,
-                                            height: 70,
-                                          ),
-                                        ),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    height: 50,
+                                    child: OutlinedButton(
+                                      onPressed: () {},
+                                      child: Image.asset(
+                                        'images/logo_google.png',
+                                        width: 45,
+                                        height: 45,
                                       ),
-                                      SizedBox(
-                                        child: OutlinedButton(
-                                          onPressed: () {},
-                                          child: Image.asset(
-                                            'images/logo_facebook.png',
-                                            width: 70,
-                                            height: 70,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                    ),
                                   ),
                                 ],
                               ),

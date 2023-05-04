@@ -207,11 +207,12 @@ class _ProfilePictureState extends State<ProfilePicture> {
         AlertDialog(
           scrollable: true,
           content: SizedBox(
-            height: 200,
+            height: 190,
             width: 350,
             child: GridView.count(
-              crossAxisCount: 3, // especifica 3 columnas en cada fila
+              crossAxisCount: 3,
               children: List.generate(ProfileImage.urls.length, (index) {
+                print(ProfileImage.urls[index]);
                 return GestureDetector(
                   onTap: () {
                     ProfileImage.changeImage(index);
