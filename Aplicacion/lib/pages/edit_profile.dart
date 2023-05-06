@@ -83,7 +83,7 @@ class _EditProfilePageState extends State<EditProfilePage>{
                       tag: 'foto',
                       child: CircleAvatar(
                         backgroundImage: ResizeImage(
-                          AssetImage(ProfileImage.getImage(widget.foto%6)),
+                          AssetImage(ProfileImage.getImage(widget.foto%9)),
                           width: 200,
                           height: 200,
                         ),
@@ -205,14 +205,14 @@ class _ProfilePictureState extends State<ProfilePicture> {
     openDialog(
         context,
         AlertDialog(
-          scrollable: true,
           content: SizedBox(
             height: 300,
             width: 350,
             child: GridView.count(
               crossAxisCount: 3,
+              mainAxisSpacing: 10,
+              crossAxisSpacing: 10,
               children: List.generate(ProfileImage.urls.length, (index) {
-                print(ProfileImage.urls[index]);
                 return GestureDetector(
                   onTap: () {
                     ProfileImage.changeImage(index);
@@ -223,15 +223,13 @@ class _ProfilePictureState extends State<ProfilePicture> {
                     Navigator.pop(context);
                     Navigator.pop(context);
                   },
-                  child: Container(
-                    margin: const EdgeInsets.all(5.0),
-                    child: Center(
-                        child: CircularBorderPicture(
-                      image: ProfileImage.urls[index]!,
-                      width: 100,
-                      height: 100,
-                    )),
-                  ));
+                  child: Center(
+                      child: CircularBorderPicture(
+                    image: ProfileImage.urls[index]!,
+                    width: 100,
+                    height: 100,
+                  )),
+                );
               }),
             )),
         ));

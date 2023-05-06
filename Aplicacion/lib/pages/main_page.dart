@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:untitled/pages/lobby_page.dart';
+import 'package:untitled/pages/profile_page.dart';
 import '../dialogs/join_game_dialog.dart';
 import '../pages/tournament_page.dart';
 import '../dialogs/create_game_dialog.dart';
@@ -8,6 +9,7 @@ import '../services/open_snack_bar.dart';
 import '../widgets/circular_border_picture.dart';
 import '../services/open_dialog.dart';
 import '../services/profile_image.dart';
+import '../widgets/points.dart';
 
 
 class MainPage extends StatefulWidget {
@@ -65,7 +67,7 @@ class TopSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ProfileImage.changeImage(user["foto"]%6);
+    ProfileImage.changeImage(user["foto"]%9);
     return SizedBox(
       height: 220,
       child: Stack(
@@ -321,7 +323,7 @@ class _RankingTabState extends State<RankingTab> {
                     ),
                     const Spacer(),
                     CircularBorderPicture(image: ProfileImage
-                        .urls[(lista_amigos[0][index])["Foto"] % 6]!,),
+                        .urls[(lista_amigos[0][index])["Foto"] % 9]!,),
                   ],
                 ),
               ),
@@ -337,7 +339,17 @@ class _RankingTabState extends State<RankingTab> {
                 ],
               ),
               trailing: Points(value: ((lista_amigos[0][index])["Puntos"])),
-              onTap: () {},
+              onTap: () async {
+                Map<String, dynamic>? user = await getUserCode((lista_amigos[0][index])["Codigo"]);
+                setState(() { });
+                if (context.mounted) {
+                  Navigator.push(context,
+                    MaterialPageRoute(builder: (
+                        context) => ProfilePage(email: '', user: user, editActive: false,)),
+                  );
+                  print(user);
+                }
+              },
             );
           },
           separatorBuilder: (context, index) => const Divider(),
@@ -350,22 +362,5 @@ class _RankingTabState extends State<RankingTab> {
     else{
       return const Center(child: CircularProgressIndicator());
     }
-  }
-}
-
-class Points extends StatelessWidget {
-  const Points({super.key, required this.value});
-
-  final int value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 5.0),
-      decoration: const BoxDecoration(
-          color: Colors.amber,
-          borderRadius: BorderRadius.all(Radius.circular(50))),
-      child: Text('$value'),
-    );
   }
 }

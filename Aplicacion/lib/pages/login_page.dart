@@ -241,7 +241,7 @@ class _LoginState extends State<Login> {
                                     height: 50,
                                     child: OutlinedButton(
                                       onPressed: () async {
-                                        final user = await signIn();
+                                        final user = await GoogleSignInApi().signIn();
                                         if (user != null) {
                                           final bool res = await login(user.email, '1234');
                                           if (!res) {

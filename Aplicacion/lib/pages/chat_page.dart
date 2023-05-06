@@ -168,10 +168,10 @@ class _ShowMessagesState extends State<ShowMessages> {
                                         height: 52,
                                         image: widget.amistad
                                             ? ProfileImage
-                                                .urls[fotos[index] % 6]!
+                                                .urls[fotos[index] % 9]!
                                             : ProfileImage.urls[
                                                 widget.len[index]["foto"] %
-                                                    6]!),
+                                                    9]!),
                                   ),
                                 ],
                               )
@@ -187,10 +187,10 @@ class _ShowMessagesState extends State<ShowMessages> {
                                         height: 52,
                                         image: widget.amistad
                                             ? ProfileImage
-                                                .urls[fotos[index] % 6]!
+                                                .urls[fotos[index] % 9]!
                                             : ProfileImage.urls[
                                                 widget.len[index]["foto"] %
-                                                    6]!),
+                                                    9]!),
                                   ),
                                   ConstrainedBox(
                                     constraints: BoxConstraints(
@@ -381,7 +381,7 @@ class _ChatPage extends State<ChatPage> {
                     CircularBorderPicture(
                         width: 45,
                         height: 45,
-                        image: ProfileImage.getImage(widget.fotoAmigo % 6)),
+                        image: ProfileImage.getImage(widget.fotoAmigo % 9)),
                     Padding(
                         padding: const EdgeInsets.only(left: 10),
                         child: Text(widget.nombreAmigo))

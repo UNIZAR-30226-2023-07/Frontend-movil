@@ -259,7 +259,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                     height: 50,
                                     child: OutlinedButton(
                                       onPressed: () async {
-                                        final user = await signIn();
+                                        final user = await GoogleSignInApi().signIn();
                                         if (user != null) {
                                           final bool res = await register(user.displayName!, user.email, '1234');
                                           if (!res) {

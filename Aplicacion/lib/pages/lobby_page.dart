@@ -7,6 +7,7 @@ import 'package:share_plus/share_plus.dart';
 import '../services/http_petitions.dart';
 import '../services/open_snack_bar.dart';
 import '../services/profile_image.dart';
+import '../widgets/points.dart';
 import 'board_page.dart';
 import '../widgets/custom_filled_button.dart';
 import '../widgets/circular_border_picture.dart';
@@ -151,17 +152,20 @@ class _LobbyPage extends State<LobbyPage> {
                   return Row(
                     children: [
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        padding: const EdgeInsets.fromLTRB(20,10,10,10),
                         child: CircularBorderPicture(image: ProfileImage
-                            .urls[(jugadores[index])["foto"] % 6]!,),
+                            .urls[(jugadores[index])["foto"] % 9]!,),
                       ),
                       Text(
                         (jugadores[index])["nombre"],
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold
                         ),
                       ),
+                      const Spacer(),
+                      Points(value: ((jugadores[index])["puntos"])),
+                      const SizedBox(width: 20)
                     ],
                   );
                 },
@@ -221,7 +225,7 @@ class _LobbyPage extends State<LobbyPage> {
                       });
                     },
                   ),
-                  Text('Jugar con bots')
+                  const Text('Jugar con bots')
                 ],
               ),
             ]

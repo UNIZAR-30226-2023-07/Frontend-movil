@@ -181,7 +181,7 @@ class _FriendsPageState extends State<FriendsPage> {
           ),
           Expanded(
             child: lista_amigos[0] == null
-            ? Container()
+            ? const SizedBox()
             : ListView.separated(
               itemCount: lista_amigos[0].length,
               itemBuilder: (context, index) {
@@ -202,7 +202,7 @@ class _FriendsPageState extends State<FriendsPage> {
                           print(user);
                         }
                       },
-                      child: CircularBorderPicture(image: ProfileImage.urls[(lista_amigos[0][index])["Foto"]%6]!),
+                      child: CircularBorderPicture(image: ProfileImage.urls[(lista_amigos[0][index])["Foto"]%9]!),
                     ),
                     title: Row(
                       children:  [

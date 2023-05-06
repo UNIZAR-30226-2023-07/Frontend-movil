@@ -79,74 +79,24 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Column(
-                    children: [
-                      Text(
-                        'PARTIDAS JUGADAS',
-                        style: TextStyle(
-                            color: Colors.blueGrey[700],
-                            fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        '${widget.user!["pjugadas"]}',
-                        style: const TextStyle(
-                          color: Colors.blueGrey,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
+                  Stat(title: 'PARTIDAS', value: '${widget.user!["pjugadas"]}'),
+                  Container(
+                    width: 1,
+                    height: 50,
+                    color: Colors.indigoAccent,
+                  ),
+                  Stat(
+                    title: 'WINRATE',
+                    value: widget.user!["pjugadas"] == 0
+                    ? '0%'
+                    : '${widget.user!["pganadas"]*100~/widget.user!["pjugadas"]}%'
                   ),
                   Container(
                     width: 1,
                     height: 50,
                     color: Colors.indigoAccent,
                   ),
-                  Column(
-                    children: [
-                      Text(
-                        'WINRATE',
-                        style: TextStyle(
-                            color: Colors.blueGrey[700],
-                            fontWeight: FontWeight.bold
-                        ),
-                      ),
-                      Text(
-                        widget.user!["pjugadas"] == 0 ?
-                        '0%':
-                        '${widget.user!["pganadas"]*100~/widget.user!["pjugadas"]}%',
-                        style: const TextStyle(
-                          color: Colors.blueGrey,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Container(
-                    width: 1,
-                    height: 50,
-                    color: Colors.indigoAccent,
-                  ),
-                  Column(
-                    children: [
-                      Text(
-                        'PUNTOS',
-                        style: TextStyle(
-                            color: Colors.blueGrey[700],
-                            fontWeight: FontWeight.bold
-                        ),
-                      ),
-                      Text(
-                        '${widget.user!["puntos"]}',
-                        style: const TextStyle(
-                          color: Colors.blueGrey,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
+                  Stat(title: 'PUNTOS', value: '${widget.user!["puntos"]}'),
                 ],
               ),
             ),
@@ -181,6 +131,38 @@ class _ProfilePageState extends State<ProfilePage> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class Stat extends StatelessWidget {
+  final String title;
+  final String value;
+
+  const Stat({super.key, required this.title, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+                color: Colors.blueGrey[700],
+                fontWeight: FontWeight.bold),
+          ),
+          Text(
+            value,
+            style: const TextStyle(
+              color: Colors.blueGrey,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      )
     );
   }
 }

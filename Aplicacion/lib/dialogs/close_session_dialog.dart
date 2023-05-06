@@ -14,7 +14,7 @@ class CloseSessionDialog extends StatelessWidget {
       actions: [
         FilledButton(
           onPressed: () {
-            logOut();
+            GoogleSignInApi().logOut();
             Navigator.pop(context);
             Navigator.pushReplacement(
               context,
