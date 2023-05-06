@@ -50,6 +50,7 @@ class BoardPage extends StatefulWidget {
   bool ranked;
   String email;
   Map<String, String> turnos;
+  Map<String, String> num_cartas = {};
   @override
   State<BoardPage> createState() => _BoardPageState();
 }
@@ -94,8 +95,9 @@ class _BoardPageState extends State<BoardPage>{
             _load = false;
             print('mostar_manos');
             for (int j = 0; j < widget.turnos.length; j++) {
+              List<dynamic> cartas = datos["manos"][j];
+              widget.num_cartas[j.toString()] = cartas.length.toString();
               if (widget.turnos[j.toString()] == widget.MiCodigo) {
-                List<dynamic> cartas = datos["manos"][j];
                 cartMano.clear();
                 mostrar_carta.clear();
                 List<Carta> temp = [];
@@ -312,12 +314,6 @@ class _BoardPageState extends State<BoardPage>{
                 builder: (context) => WinnerDialog(ganador: jugador, ranked: widget.ranked, email: widget.email,));
           }
         }
-        else if (datos["tipo"] == "Partida_Pausada") {
-          openSnackBar(context, const Text('Partida Pausada'));
-          Navigator.pop(context);
-          Navigator.pop(context);
-          Navigator.pop(context);
-        }
       }
       else if((datos["tipo"] == "Colocar_carta" || datos["tipo"] == "Colocar_combinacion") && int.tryParse(datos["info"]) != null){
         String ganador = datos["info"];
@@ -325,6 +321,14 @@ class _BoardPageState extends State<BoardPage>{
         showDialog(
             context: context,
             builder: (context) => WinnerDialog(ganador: jugador, ranked: widget.ranked, email: widget.email,));
+      }
+      else if (datos["tipo"] == "Partida_Pausada") {
+        openSnackBar(context, const Text('Partida Pausada'));
+        if(widget.creador){
+          Navigator.pop(context);
+        }
+        Navigator.pop(context);
+        Navigator.pop(context);
       }
     });
 
@@ -345,8 +349,13 @@ class _BoardPageState extends State<BoardPage>{
   Future<void> procesarFotos() async {
     fotos.clear();
     for (int i = 0; i < widget.turnos.length; i++) {
-      Map<String, dynamic>? user = await getUserCode(widget.turnos[i.toString()]!);
-      fotos.add(user!["foto"]);
+      if(widget.turnos[i.toString()] != "bot1" && widget.turnos[i.toString()] != "bot2"
+      && widget.turnos[i.toString()] != "bot3"){
+        Map<String, dynamic>? user = await getUserCode(widget.turnos[i.toString()]!);
+        fotos.add(user!["foto"]);
+      } else{
+        fotos.add(2);
+      }
     }
   }
 
@@ -644,10 +653,9 @@ class _BoardPageState extends State<BoardPage>{
             ),
           ],
         ),
-        trailing: t_actual == index.toString() ? Badge(
-          label: Text('Jugando'),
-        ) : SizedBox(),
-        onTap: () {},
+        trailing: Badge(
+          label: Text('${widget.num_cartas[index.toString()]} cartas')
+        )
       );
     },
     separatorBuilder: (context, index) => const Divider(),
@@ -767,7 +775,7 @@ PlayingCardViewStyle setStyle(){
         builder: (context) => const FittedBox(
           fit: BoxFit.fitHeight,
           child: Text(
-            "↾",
+            "۲",
             style: TextStyle(fontSize: 40),
           ),
         ),
