@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:untitled/services/http_petitions.dart';
+import 'package:untitled/widgets/custom_filled_button.dart';
 import '../pages/lobby_page.dart';
 import '../services/open_snack_bar.dart';
 
@@ -14,8 +15,10 @@ class CreateGameDialog extends StatelessWidget {
       title: const Text('Crear partida'),
       scrollable: true,
       actionsAlignment: MainAxisAlignment.spaceAround,
+      actionsOverflowAlignment: OverflowBarAlignment.center,
       actions: [
-        FilledButton(
+        CustomFilledButton(
+          width: 40,
           onPressed: () async {
             Map<String, dynamic>? res = await crearPartida(codigo,"amistosa");
             if (context.mounted) {
@@ -33,9 +36,11 @@ class CreateGameDialog extends StatelessWidget {
               }
             }
           },
-          child: const Text('Partida normal'),
+          content: const Text('Partida normal'),
         ),
-        FilledButton(
+        const SizedBox(height: 10),
+        CustomFilledButton(
+          width: 40,
           onPressed: () async {
             Map<String, dynamic>? res = await crearPartida(codigo,"torneo");
             if (context.mounted) {
@@ -55,7 +60,7 @@ class CreateGameDialog extends StatelessWidget {
               }
             }
           },
-          child: const Text('Partida clasificatoria'),
+          content: const Text('Partida clasificatoria'),
         ),
       ],
     );

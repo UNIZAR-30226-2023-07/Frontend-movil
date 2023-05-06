@@ -11,9 +11,9 @@ class ProfileImage {
     3:'images/jaime.jpg',
     4:'images/lucia.jpg',
     5:'images/patricia.jpg',
-    //6:'images/jorge.jpg',
-    //7:'images/picachu.jpg',
-    //8:'images/mondongo.jpg'
+    6:'images/jorge.jpg',
+    7:'images/pikachu.jpg',
+    8:'images/mondongo.jpg'
   };
 
   static void prepImages() {
@@ -25,9 +25,9 @@ class ProfileImage {
       3:'images/jaime.jpg',
       4:'images/lucia.jpg',
       5:'images/patricia.jpg',
-      //6:'images/jorge.jpg',
-      //7:'images/picachu.jpg',
-      //8:'images/mondongo.jpg'
+      6:'images/jorge.jpg',
+      7:'images/pikachu.jpg',
+      8:'images/mondongo.jpg'
     };
   }
 

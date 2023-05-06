@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:untitled/pages/board_page.dart';
-import 'package:untitled/pages/confirm_code.dart';
 import 'package:untitled/services/audio_manager.dart';
 import 'package:untitled/services/http_petitions.dart';
 import 'package:untitled/services/local_notifications.dart';

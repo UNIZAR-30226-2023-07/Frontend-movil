@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../main.dart';
+import '../services/google_sign_in.dart';
 import '../widgets/custom_filled_button.dart';
 import '../services/open_snack_bar.dart';
 import '../services/http_petitions.dart';
@@ -239,7 +240,7 @@ class _LoginState extends State<Login> {
                                     width: double.infinity,
                                     height: 50,
                                     child: OutlinedButton(
-                                      onPressed: () {},
+                                      onPressed: () async {signIn(context);},
                                       child: Image.asset(
                                         'images/logo_google.png',
                                         width: 45,

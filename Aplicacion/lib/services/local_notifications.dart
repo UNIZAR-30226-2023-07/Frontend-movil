@@ -2,12 +2,24 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
+import 'local_storage.dart';
+
 class NotificationService {
   final FlutterLocalNotificationsPlugin notificationsPlugin =
   FlutterLocalNotificationsPlugin();
 
+  bool _enabled = false;
+
   Future<void> initNotification() async {
     tz.initializeTimeZones();
+
+    if(LocalStorage.prefs.getBool('enabledNotifications') != null) {
+      _enabled = LocalStorage.prefs.getBool('enabledNotifications') as bool;
+    } else {
+      _enabled = (await notificationsPlugin.resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()?.requestPermission())!;
+      LocalStorage.prefs.setBool('enabledNotifications', _enabled);
+    }
 
     AndroidInitializationSettings initializationSettingsAndroid =
     const AndroidInitializationSettings('mipmap/ic_launcher');

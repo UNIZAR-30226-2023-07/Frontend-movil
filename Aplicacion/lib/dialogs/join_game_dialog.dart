@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:untitled/services/http_petitions.dart';
+import 'package:untitled/widgets/custom_filled_button.dart';
 import '../pages/lobby_page.dart';
 import '../services/open_snack_bar.dart';
 
@@ -34,9 +35,11 @@ class JoinGameDialog extends StatelessWidget {
         ),
       ),
       scrollable: true,
-      actionsAlignment: MainAxisAlignment.spaceAround,
+      actionsAlignment: MainAxisAlignment.center,
+      actionsOverflowAlignment: OverflowBarAlignment.center,
       actions: [
-        FilledButton(
+        CustomFilledButton(
+          width: 40,
           onPressed: () async {
             if(joinGameFormKey.currentState!.validate()) {
               Map<String, dynamic>? res = await unirPartida(codigo, idPartida.text);
@@ -50,15 +53,17 @@ class JoinGameDialog extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => LobbyPage(creador: false, ranked: false, idPartida: idPartida.text,
-                      MiCodigo: codigo, jug: res["jugadores"], email:email)),
+                        MiCodigo: codigo, jug: res["jugadores"], email:email)),
                   );
                 }
               }
             }
           },
-          child: const Text('Unirse a Partida'),
+          content: const Text('Unirse a Partida'),
         ),
-        FilledButton(
+        const SizedBox(height: 10),
+        CustomFilledButton(
+          width: 40,
           onPressed: () async {
             if(joinGameFormKey.currentState!.validate()) {
               Map<String, dynamic>? res = await unirPartida(codigo, idPartida.text);
@@ -72,19 +77,21 @@ class JoinGameDialog extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => LobbyPage(creador: false, ranked: true, idPartida: idPartida.text,
-                      MiCodigo: codigo, jug: res["jugadores"],email:email)),
+                        MiCodigo: codigo, jug: res["jugadores"],email:email)),
                   );
                 }
               }
             }
           },
-          child: const Text('Unirse a Torneo'),
+          content: const Text('Unirse a Torneo'),
         ),
-        FilledButton(
+        const SizedBox(height: 10),
+        CustomFilledButton(
+          width: 40,
           onPressed: () {
             Navigator.pop(context);
           },
-          child: const Text('Cancelar'),
+          content: const Text('Cancelar'),
         ),
       ],
     );

@@ -207,7 +207,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
         AlertDialog(
           scrollable: true,
           content: SizedBox(
-            height: 190,
+            height: 300,
             width: 350,
             child: GridView.count(
               crossAxisCount: 3,
