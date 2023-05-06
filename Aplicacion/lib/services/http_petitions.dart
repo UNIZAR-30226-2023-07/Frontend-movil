@@ -325,7 +325,7 @@ Future<bool> pausarPartida(String codigo, String partida) async {
 
   final response = await http.post(Uri.parse(_pausarPartidaURL), body: json);
 
-  //print(response.statusCode);
+  print(response.statusCode);
 
   return response.statusCode == 200 || response.statusCode == 202;
 }

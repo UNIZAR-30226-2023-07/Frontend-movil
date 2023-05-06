@@ -25,10 +25,12 @@ class LobbyPage extends StatefulWidget {
   final String MiCodigo;
   final bool creador;
   final String email;
+  final bool nueva;
   final List<dynamic> jug;
 
   const LobbyPage({
     super.key,
+    this.nueva = true,
     required this.email,
     required this.creador,
     required this.ranked,
@@ -49,47 +51,58 @@ class _LobbyPage extends State<LobbyPage> {
   void initState() {
     super.initState();
     jugadores.clear();
-    for(int i = 0; i < widget.jug.length; i++){
+    for (int i = 0; i < widget.jug.length; i++) {
       recuperarUser(widget.jug[i]);
     }
     recuperarUser(widget.MiCodigo);
 
-    if(!widget.ranked) {
-      ws_partida = IOWebSocketChannel.connect(
-          'ws://$_IP:$_PUERTO/api/ws/partida/${widget.idPartida}');
-    } else{
-      ws_partida = IOWebSocketChannel.connect(
-          'ws://$_IP:$_PUERTO/api/ws/torneo/${widget.idPartida}');
-    }
+      if (!widget.ranked) {
+        ws_partida = IOWebSocketChannel.connect(
+            'ws://$_IP:$_PUERTO/api/ws/partida/${widget.idPartida}');
+      } else {
+        ws_partida = IOWebSocketChannel.connect(
+            'ws://$_IP:$_PUERTO/api/ws/torneo/${widget.idPartida}');
+      }
       ws_partida.stream.handleError((error) {
         print('Error: $error');
       });
 
-        subscription = ws_partida.stream.listen((message) async {
+      subscription = ws_partida.stream.listen((message) async {
         print('Received: $message');
         Map<String, dynamic> datos = jsonDecode(message);
         int indice = datos["tipo"].indexOf(": ");
-        String tipo = indice >= 0 ? datos["tipo"].substring(0, indice) : datos["tipo"];
-        if(tipo == "Partida_Iniciada"){
+        String tipo = indice >= 0
+            ? datos["tipo"].substring(0, indice)
+            : datos["tipo"];
+        if (tipo == "Partida_Iniciada") {
           openSnackBar(context, const Text('Iniciando partida'));
           Map<String, String> turnos = {};
-          for (int i = 0; i < datos["turnos"].length; i++){
+          for (int i = 0; i < datos["turnos"].length; i++) {
             List<dynamic> t = datos["turnos"][i];
             turnos[t[1]] = t[0];
           }
 
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) =>  BoardPage(init: true, idPartida: widget.idPartida,
-              MiCodigo: widget.MiCodigo, turnos: turnos, ranked: widget.ranked, creador: widget.creador,
-                email: widget.email, ws_partida: ws_partida)),
+            MaterialPageRoute(builder: (context) =>
+                BoardPage(init: true,
+                    idPartida: widget.idPartida,
+                    MiCodigo: widget.MiCodigo,
+                    turnos: turnos,
+                    ranked: widget.ranked,
+                    creador: widget.creador,
+                    email: widget.email,
+                    ws_partida: ws_partida)),
           );
-        } else if(tipo == "Nuevo_Jugador"){
-          String N_codigo = indice >= 0 ? datos["tipo"].substring(indice + 2) : "";
+        } else if (tipo == "Nuevo_Jugador" || tipo == "Nuevo_Jugador ") {
+          String N_codigo = indice >= 0
+              ? datos["tipo"].substring(indice + 2)
+              : "";
           recuperarUser(N_codigo);
         }
       });
   }
+
 
   void recuperarUser(String code) async{
     Map<String, dynamic>? user = await getUserCode(code);
@@ -178,7 +191,7 @@ class _LobbyPage extends State<LobbyPage> {
                 CustomFilledButton(
               content: const Text('Empezar partida'),
               onPressed: () async {
-                if (jugadores.length >= 2) {
+                if (jugadores.length >= 2 || _isChecked) {
                   bool res = await iniciarPartida(widget.MiCodigo,widget.idPartida,_isChecked);
                   if (context.mounted) {
                     if (res == false) {

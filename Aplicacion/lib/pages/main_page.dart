@@ -4,6 +4,7 @@ import '../dialogs/join_game_dialog.dart';
 import '../pages/tournament_page.dart';
 import '../dialogs/create_game_dialog.dart';
 import '../services/http_petitions.dart';
+import '../services/open_snack_bar.dart';
 import '../widgets/circular_border_picture.dart';
 import '../services/open_dialog.dart';
 import '../services/profile_image.dart';
@@ -211,20 +212,32 @@ class _TournamentTabState extends State<TournamentTab> {
               "Partida de ${(lista_pendientes[0][index])["Creador"]}"), //Text('Partida de ' + (pendientes![index])[1]),
           subtitle:
               Text("Código: ${(lista_pendientes[0][index])["Clave"]}"), //Text('Codigo: ' + (pendientes![index])[0]),
-          onTap: () {
+          onTap: () async {
             bool torneo = true;
             if((lista_pendientes[0][index])["Tipo"] == "amistosa"){
               torneo = false;
             }
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) =>
-                  LobbyPage(ranked: torneo,
-                      idPartida: (lista_pendientes[0][index])["Clave"],
-                      MiCodigo: widget.codigo,
-                      creador: (lista_pendientes[0][index])["Creador"] == widget.codigo,
-                      email: widget.email)),
-            );
+            Map<String, dynamic>? res = await unirPartida(widget.codigo, (lista_pendientes[0][index])["Clave"]);
+            if (context.mounted) {
+              if (res == null) {
+                openSnackBar(context, const Text('No se ha podido enviar la petición'));
+                Navigator.pop(context);
+              } else {
+                openSnackBar(context, const Text('Uniendose'));
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) =>
+                      LobbyPage(ranked: torneo,
+                          idPartida: (lista_pendientes[0][index])["Clave"],
+                          MiCodigo: widget.codigo,
+                          creador: (lista_pendientes[0][index])["Creador"] == widget.codigo,
+                          email: widget.email,
+                          jug: res["jugadores"] ?? [],
+                          nueva: false)),
+                );
+              }
+            }
           },
         );
       },
