@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/google_sign_in.dart';
 import 'login_page.dart';
 import '../services/open_snack_bar.dart';
 import '../services/http_petitions.dart';
@@ -257,7 +258,26 @@ class _RegisterPageState extends State<RegisterPage> {
                                     width: double.infinity,
                                     height: 50,
                                     child: OutlinedButton(
-                                      onPressed: () {},
+                                      onPressed: () async {
+                                        final user = await signIn();
+                                        if (user != null) {
+                                          final bool res = await register(user.displayName!, user.email, '1234');
+                                          if (!res) {
+                                            setState(() {
+                                              _emailError = 'El email o la contraseña no coinciden';
+                                              _passwordError = 'El email o la contraseña no coinciden';
+                                            });
+                                          } else {
+                                            if (context.mounted) {
+                                              return _actions(res, context, user.email);
+                                            }
+                                          }
+                                        } else {
+                                          if(context.mounted) {
+                                            openSnackBar(context, const Text('No se puedo iniciar sesión con google'));
+                                          }
+                                        }
+                                      },
                                       child: Image.asset(
                                         'images/logo_google.png',
                                         width: 45,

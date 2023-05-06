@@ -180,7 +180,7 @@ class _LoginState extends State<Login> {
                                             MaterialPageRoute(builder: (context) => MyHomePage(email: _email.text)),
                                           );
                                         } else {
-                                          bool res = await login(_email.text, _password.text);
+                                          final bool res = await login(_email.text, _password.text);
                                           if (!res) {
                                             setState(() {
                                               _emailError = 'El email o la contraseña no coinciden';
@@ -240,7 +240,28 @@ class _LoginState extends State<Login> {
                                     width: double.infinity,
                                     height: 50,
                                     child: OutlinedButton(
-                                      onPressed: () async {signIn(context);},
+                                      onPressed: () async {
+                                        final user = await signIn();
+                                        if (user != null) {
+                                          final bool res = await login(user.email, '1234');
+                                          if (!res) {
+                                            setState(() {
+                                              _emailError = 'El email o la contraseña no coinciden';
+                                              _passwordError = 'El email o la contraseña no coinciden';
+                                            });
+                                          } else {
+                                            LocalStorage.prefs.setString('email', user.email);
+                                            LocalStorage.prefs.setString('password', '1234');
+                                            if (context.mounted) {
+                                              return _actions(res, context, user.email);
+                                            }
+                                          }
+                                        } else {
+                                          if(context.mounted) {
+                                            openSnackBar(context, const Text('No se puedo iniciar sesión con google'));
+                                          }
+                                        }
+                                      },
                                       child: Image.asset(
                                         'images/logo_google.png',
                                         width: 45,

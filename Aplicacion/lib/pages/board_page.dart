@@ -2,11 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:playing_cards/playing_cards.dart';
 import 'package:untitled/dialogs/pause_game_dialog.dart';
 import 'package:untitled/dialogs/winner_dialog.dart';
 import 'package:untitled/services/audio_manager.dart';
 import 'package:untitled/services/http_petitions.dart';
+import 'package:wakelock/wakelock.dart';
 import 'package:web_socket_channel/io.dart';
 import '../pages/chat_page.dart';
 import '../services/open_snack_bar.dart';
@@ -63,6 +65,16 @@ class _BoardPageState extends State<BoardPage>{
   @override
   void initState() {
     super.initState();
+
+    //Hacer que la pantalla no se pueda apagar
+    Wakelock.enable();
+
+    // Forzar la orientación en modo retrato
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+
     fotos.clear();
     AudioManager.toggleBGM(true);
     if(widget.init) {
@@ -361,6 +373,17 @@ class _BoardPageState extends State<BoardPage>{
 
   @override
   void dispose() {
+    //Permitir que la pantalla se pueda apagar
+    Wakelock.disable();
+
+    // Permitir todas las orientaciones de nuevo
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+
     subscription_p.cancel();
     widget.ws_partida.sink.close();
     AudioManager.toggleBGM(false);

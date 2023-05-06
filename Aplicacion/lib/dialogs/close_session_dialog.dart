@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:untitled/services/google_sign_in.dart';
 import '../pages/login_page.dart';
 
 class CloseSessionDialog extends StatelessWidget {
@@ -13,6 +14,7 @@ class CloseSessionDialog extends StatelessWidget {
       actions: [
         FilledButton(
           onPressed: () {
+            logOut();
             Navigator.pop(context);
             Navigator.pushReplacement(
               context,
