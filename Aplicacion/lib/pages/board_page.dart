@@ -307,6 +307,28 @@ class _BoardPageState extends State<BoardPage>{
             } else {
               modo = 0;
             }
+            if (datos["descartes"] != null) {
+              String d = datos["descartes"][0];
+              List<String> listaNumeros = d.split(",");
+              int valor = int.parse(listaNumeros[0]);
+              int palo = int.parse(listaNumeros[1]);
+              descarte = PlayingCard(PaloToSuit(palo), NumToValue(valor));
+            }
+            if(datos["combinaciones"] != null) {
+              t.clear();
+              for (List<dynamic> comb in datos["combinaciones"]) {
+                List<Carta> temp = [];
+                print("comb:");
+                print(comb);
+                for (String c in comb) {
+                  List<String> listaNumeros = c.split(",");
+                  int valor = int.parse(listaNumeros[0]);
+                  int palo = int.parse(listaNumeros[1]);
+                  temp.add(Carta(valor, palo));
+                }
+                t.add(temp);
+              }
+            }
             Navigator.pop(context);
             Navigator.push(context,
               MaterialPageRoute(
@@ -344,7 +366,9 @@ class _BoardPageState extends State<BoardPage>{
       }
     });
 
-      if(widget.actualizar) {
+      if(widget.actualizar && t_actual != "bot1" && t_actual != "bot2"
+          && t_actual != "bot3") {
+
         String data = '{"emisor": "${widget
             .MiCodigo}","tipo": "Mostrar_tablero"}';
         widget.ws_partida.sink.add(data);
@@ -352,6 +376,8 @@ class _BoardPageState extends State<BoardPage>{
         data = '{"emisor": "${widget.MiCodigo}","tipo": "Mostrar_manos"}';
         widget.ws_partida.sink.add(data);
       } else{
+        print("load");
+        _load = true;
         setState(() {
           _load = true;
         });
