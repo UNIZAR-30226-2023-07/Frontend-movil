@@ -215,8 +215,8 @@ class _FriendsPageState extends State<FriendsPage> {
                     ),
                     subtitle: Text((lista_amigos[0][index])["Descp"], maxLines: 1, overflow: TextOverflow.ellipsis),
                     trailing: contarMsgPendientes((lista_amigos[0][index])["Codigo"]) == '0'
-                        ? const SizedBox()
-                        : Badge(
+                    ? const SizedBox()
+                    : Badge(
                       label: Text(contarMsgPendientes((lista_amigos[0][index])["Codigo"])), //Text((amigos![index])[1])
                     ),
                     onTap: () async {
@@ -249,12 +249,13 @@ class _FriendsPageState extends State<FriendsPage> {
           await _getMensajes();
           await _getSolicitudes();
           setState(() {});
-          build(context);
+          if(context.mounted) {
+            build(context);
+          }
         },
         child: const Icon(
           Icons.add_rounded,
           size: 30,
-          color: Colors.white,
         ),
       ),
     );

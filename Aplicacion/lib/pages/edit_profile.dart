@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:clipboard/clipboard.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:untitled/dialogs/save_changes_dialog.dart';
 import 'package:untitled/services/open_dialog.dart';
@@ -126,12 +125,14 @@ class _EditProfilePageState extends State<EditProfilePage>{
                   icon: const Icon(Icons.copy)
               ),
               */
-              IconButton(
-                onPressed: () {
-                  Share.share(widget.codigo);
-                },
-                icon: const Icon(Icons.share)
-              ),
+              (widget.editActive)
+              ? IconButton(
+                  onPressed: () {
+                    Share.share(widget.codigo);
+                  },
+                  icon: Icon(Icons.share, color: Theme.of(context).colorScheme.primary,)
+              )
+              : const SizedBox()
             ],
           ),
           Padding(

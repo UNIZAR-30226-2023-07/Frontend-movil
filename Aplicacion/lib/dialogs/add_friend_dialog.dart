@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:untitled/services/http_petitions.dart';
 import '../services/open_snack_bar.dart';
 
@@ -19,9 +20,17 @@ class AddFriendDialog extends StatelessWidget {
           controller: idAmigo,
           autofocus: true,
           keyboardType: TextInputType.text,
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             hintText: 'amigo_123',
-            border: UnderlineInputBorder(),
+            border: const UnderlineInputBorder(),
+            suffixIcon: IconButton(
+                onPressed: () async {
+                  Clipboard.getData(Clipboard.kTextPlain).then((value){
+                    idAmigo.text = value!.text!;
+                  });
+                },
+                icon: Icon(Icons.content_paste, color: Theme.of(context).colorScheme.primary)
+            ),
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {

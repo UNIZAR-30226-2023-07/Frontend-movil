@@ -226,7 +226,6 @@ class _TournamentTabState extends State<TournamentTab> {
                 Navigator.pop(context);
               } else {
                 openSnackBar(context, const Text('Uniendose'));
-                Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) =>

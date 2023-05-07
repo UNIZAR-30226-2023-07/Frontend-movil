@@ -23,8 +23,12 @@ class AcceptFriendDialog extends StatelessWidget {
                 openSnackBar(context, const Text('Petición enviada'));
               }
             }
-            else openSnackBar(context, const Text('Amigo añadido'));
-            Navigator.pop(context);
+            else {
+              openSnackBar(context, const Text('Amigo añadido'));
+            }
+            if (context.mounted) {
+              Navigator.pop(context);
+            }
           },
           child: const Text('Sí'),
         ),
@@ -38,8 +42,12 @@ class AcceptFriendDialog extends StatelessWidget {
                 openSnackBar(context, const Text('Petición enviada'));
               }
             }
-            else openSnackBar(context, const Text('Solicitud denegada'));
-            Navigator.pop(context);
+            else {
+              openSnackBar(context, const Text('Solicitud denegada'));
+            }
+            if (context.mounted) {
+              Navigator.pop(context);
+            }
           },
           child: const Text('No'),
         ),

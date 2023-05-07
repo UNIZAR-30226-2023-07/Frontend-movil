@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:untitled/services/http_petitions.dart';
 import 'package:untitled/widgets/custom_filled_button.dart';
 import '../pages/lobby_page.dart';
@@ -22,9 +23,17 @@ class JoinGameDialog extends StatelessWidget {
           controller: idPartida,
           autofocus: true,
           keyboardType: TextInputType.text,
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             hintText: '4541',
-            border: UnderlineInputBorder(),
+            suffixIcon: IconButton(
+              onPressed: () async {
+                Clipboard.getData(Clipboard.kTextPlain).then((value){
+                  idPartida.text = value!.text!;
+                });
+              },
+              icon: Icon(Icons.content_paste, color: Theme.of(context).colorScheme.primary)
+            ),
+            border: const UnderlineInputBorder(),
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {

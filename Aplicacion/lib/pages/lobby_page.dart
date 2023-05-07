@@ -184,7 +184,7 @@ class _LobbyPage extends State<LobbyPage> {
                     onPressed: () {
                       Share.share(widget.idPartida);
                     },
-                    icon: const Icon(Icons.share)
+                    icon: Icon(Icons.share, color: Theme.of(context).colorScheme.primary,)
                 ),
               ],
             ),
