@@ -123,6 +123,16 @@ class _FriendsPageState extends State<FriendsPage> {
     return n.toString();
   }
 
+  Widget _buildItem(String item, Animation<double> animation) {
+    return FadeTransition(
+      opacity: CurvedAnimation(parent: animation, curve: const Interval(0.5, 1.0)),
+      child: SizeTransition(
+        sizeFactor: CurvedAnimation(parent: animation, curve: const Interval(0.0, 0.5)),
+        child: ListTile(title: Text(item)),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -131,47 +141,59 @@ class _FriendsPageState extends State<FriendsPage> {
       : Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          lista_solicitudes[0] == null
-          ? const SizedBox()
-          : Padding(
-            padding: const EdgeInsets.only(left: 17, top: 17, bottom: 10),
-            child: Text('Solicitudes de amistad',
-                style: Theme.of(context).textTheme.headlineSmall),
-          ),
-          lista_solicitudes[0] == null
-          ? const SizedBox()
-          : SizedBox(
-            height: 70,
-            child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: lista_solicitudes[0].length,
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () async {
-                      if ((lista_solicitudes[0][index])["Estado"] == "pendiente") {
-                        await openDialog(context, AcceptFriendDialog(
-                            nombre: (lista_solicitudes[0][index])["Nombre"],
-                            codigoEm: (lista_solicitudes[0][index])["Codigo"],
-                            codigoRec: widget.codigo));
-                      } else {
-                        await openDialog(context, DenyFriendDialog(
-                            nombre: (lista_solicitudes[0][index])["Nombre"],
-                            codigoEm: (lista_solicitudes[0][index])["Codigo"],
-                            codigoRec: widget.codigo));
-                      }
-                      await _getAmistades();
-                      await _getMensajes();
-                      await _getSolicitudes();
-                      setState(() {});
-                      build(context);
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 17),
-                      child: CircularBorderPicture(image: ProfileImage
-                          .urls[(lista_solicitudes[0][index])["Foto"] % 9]!),
-                    )
-                  );
-                }
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            height: lista_solicitudes[0] != null ? 140 : 0,
+            width: double.infinity,
+            child: AnimatedOpacity(
+              duration: const Duration(milliseconds: 200),
+              opacity: lista_solicitudes[0] != null ? 1.0 : 0.0,
+                child: lista_solicitudes[0] != null
+                  ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 17, top: 17, bottom: 10),
+                      child: Text('Solicitudes de amistad',
+                          style: Theme.of(context).textTheme.headlineSmall),
+                    ),
+                    SizedBox(
+                      height: 70,
+                      child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: lista_solicitudes[0].length,
+                          itemBuilder: (context, index) {
+                            return GestureDetector(
+                                onTap: () async {
+                                  if ((lista_solicitudes[0][index])["Estado"] == "pendiente") {
+                                    await openDialog(context, AcceptFriendDialog(
+                                        nombre: (lista_solicitudes[0][index])["Nombre"],
+                                        codigoEm: (lista_solicitudes[0][index])["Codigo"],
+                                        codigoRec: widget.codigo));
+                                  } else {
+                                    await openDialog(context, DenyFriendDialog(
+                                        nombre: (lista_solicitudes[0][index])["Nombre"],
+                                        codigoEm: (lista_solicitudes[0][index])["Codigo"],
+                                        codigoRec: widget.codigo));
+                                  }
+                                  await _getAmistades();
+                                  await _getMensajes();
+                                  await _getSolicitudes();
+                                  setState(() {});
+                                  build(context);
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 17),
+                                  child: CircularBorderPicture(image: ProfileImage
+                                      .urls[(lista_solicitudes[0][index])["Foto"] % 9]!),
+                                )
+                            );
+                          }
+                      ),
+                    ),
+                  ],
+                )
+                : null
             ),
           ),
           Padding(

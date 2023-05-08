@@ -13,6 +13,8 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
 
+  final int _animationsDuration = 200;
+
   final Icon _muted = const Icon(
     Icons.volume_off,
   );
@@ -157,39 +159,51 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ],
             ),
-            Row(
-              children: [
-                const SizedBox(
-                  child: Text('Volumen'),
-                ),
-                Expanded(
-                  child: Slider.adaptive(
-                    value: _musicValue,
-                    max: 100,
-                    divisions: 100,
-                    label: _musicValue.round().toString(),
-                    //activeColor: Colors.indigoAccent,
-                    onChanged: (double value) {
-                      if (_muteMusic) {
-                        null;
-                      } else {
-                        AudioManager.setBGMVolume(value / 100.0);
-                        setState(() {
-                          _musicValue = value;
-                        });
-                      }
-                    },
-                  ),
-                ),
-                IconButton(
-                  color: Theme.of(context).colorScheme.primary,
-                  iconSize: 30,
-                  icon: _musicIcon,
-                  onPressed: muteUnmuteMusic,
-                ),
-              ],
+            AnimatedContainer(
+              duration: Duration(milliseconds: _animationsDuration),
+              height: _musicOn ? 50 : 0,
+              width: double.infinity,
+              child: AnimatedOpacity(
+                duration: Duration(milliseconds: _animationsDuration),
+                opacity: _musicOn ? 1.0 : 0.0,
+                child: _musicOn
+                ? Row(
+                  children: [
+                    const SizedBox(
+                      child: Text('Volumen'),
+                    ),
+                    Expanded(
+                      child: Slider.adaptive(
+                        value: _musicValue,
+                        max: 100,
+                        divisions: 100,
+                        label: _musicValue.round().toString(),
+                        onChanged: (double value) {
+                          if (_muteMusic) {
+                            null;
+                          } else {
+                            AudioManager.setBGMVolume(value / 100.0);
+                            setState(() {
+                              _musicValue = value;
+                            });
+                          }
+                        },
+                      ),
+                    ),
+                    Tooltip(
+                        message: 'Silenciar música',
+                        child: IconButton(
+                          color: Theme.of(context).colorScheme.primary,
+                          iconSize: 30,
+                          icon: _musicIcon,
+                          onPressed: muteUnmuteMusic,
+                        )
+                    )
+                  ],
+                )
+                : null
+              ),
             ),
-            const SizedBox(height: 10,),
             Row(
               children: [
                 const Text('Efectos de sonido'),
@@ -205,37 +219,51 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ],
             ),
-            Row(
-              children: [
-                const SizedBox(
-                  child: Text('Volumen'),
-                ),
-                Expanded(
-                  child: Slider.adaptive(
-                    value: _soundEffectsValue,
-                    max: 100,
-                    divisions: 100,
-                    label: _soundEffectsValue.round().toString(),
-                    //activeColor: Colors.indigoAccent,
-                    onChanged: (double value) {
-                      if (_muteSoundEffects) {
-                        null;
-                      } else {
-                        AudioManager.setSFXVolume(value / 100.0);
-                        setState(() {
-                          _soundEffectsValue = value;
-                        });
-                      }
-                    },
-                  ),
-                ),
-                IconButton(
-                  color: Theme.of(context).colorScheme.primary,
-                  iconSize: 30,
-                  icon: _soundEffectsIcon,
-                  onPressed: muteUnmuteSoundEffects,
-                ),
-              ],
+            AnimatedContainer(
+              duration: Duration(milliseconds: _animationsDuration),
+              height: _soundEffectsOn ? 50 : 0,
+              width: double.infinity,
+              child: AnimatedOpacity(
+                duration: Duration(milliseconds: _animationsDuration),
+                opacity: _soundEffectsOn ? 1.0 : 0.0,
+                child: _soundEffectsOn
+                ? Row(
+                  children: [
+                    const SizedBox(
+                      child: Text('Volumen'),
+                    ),
+                    Expanded(
+                      child: Slider.adaptive(
+                        value: _soundEffectsValue,
+                        max: 100,
+                        divisions: 100,
+                        label: _soundEffectsValue.round().toString(),
+                        //activeColor: Colors.indigoAccent,
+                        onChanged: (double value) {
+                          if (_muteSoundEffects) {
+                            null;
+                          } else {
+                            AudioManager.setSFXVolume(value / 100.0);
+                            setState(() {
+                              _soundEffectsValue = value;
+                            });
+                          }
+                        },
+                      ),
+                    ),
+                    Tooltip(
+                        message: 'Silenciar efectos de sonido',
+                        child: IconButton(
+                          color: Theme.of(context).colorScheme.primary,
+                          iconSize: 30,
+                          icon: _soundEffectsIcon,
+                          onPressed: muteUnmuteSoundEffects,
+                        )
+                    ),
+                  ],
+                )
+                : null
+              )
             ),
             const SizedBox(height: 10,),
             const Divider(

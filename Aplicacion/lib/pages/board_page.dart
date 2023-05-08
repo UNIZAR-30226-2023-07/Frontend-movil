@@ -71,12 +71,6 @@ class _BoardPageState extends State<BoardPage>{
     //Hacer que la pantalla no se pueda apagar
     Wakelock.enable();
 
-    // Forzar la orientación en modo retrato
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
-
     fotos.clear();
     AudioManager.toggleBGM(true);
     if(widget.init) {
@@ -434,14 +428,6 @@ class _BoardPageState extends State<BoardPage>{
   void dispose() {
     //Permitir que la pantalla se pueda apagar
     Wakelock.disable();
-
-    // Permitir todas las orientaciones de nuevo
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
 
     subscription_p.cancel();
     widget.ws_partida!.sink.close();

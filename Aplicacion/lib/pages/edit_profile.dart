@@ -27,6 +27,7 @@ class EditProfilePage extends StatefulWidget {
 }
 
 class _EditProfilePageState extends State<EditProfilePage>{
+
   @override
   Widget build(BuildContext context) {
     String descrp = widget.desc;
@@ -126,11 +127,14 @@ class _EditProfilePageState extends State<EditProfilePage>{
               ),
               */
               (widget.editActive)
-              ? IconButton(
-                  onPressed: () {
-                    Share.share(widget.codigo);
-                  },
-                  icon: Icon(Icons.share, color: Theme.of(context).colorScheme.primary,)
+              ? Tooltip(
+                message: 'Compartir código de amigo',
+                child: IconButton(
+                    onPressed: () {
+                      Share.share(widget.codigo);
+                    },
+                    icon: Icon(Icons.share, color: Theme.of(context).colorScheme.primary,)
+                )
               )
               : const SizedBox()
             ],
@@ -166,6 +170,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
   bool _tipo = true;
   late TextEditingController _nombre;
   late TextEditingController _descripcion;
+  final _changesKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -276,49 +281,58 @@ class _ProfilePictureState extends State<ProfilePicture> {
               ),
               SizedBox(
                 width: double.infinity,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Nickname',
-                        style: Theme.of(context).textTheme.headlineMedium),
-                    TextField(
-                      controller: _nombre,
-                      keyboardType: TextInputType.text,
-                      maxLength: 20,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'apodo',
-                        counterText: ""
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    const Divider(
-                      color: Colors.indigoAccent,
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Text('Descripción',
-                        style: Theme.of(context).textTheme.headlineMedium),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    TextField(
-                      controller: _descripcion,
-                      keyboardType: TextInputType.text,
-                      maxLength: 200,
-                      maxLines: 5,
-                      minLines: 5,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
+                child: Form(
+                  key: _changesKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Nickname',
+                          style: Theme.of(context).textTheme.headlineMedium),
+                      TextFormField(
+                        controller: _nombre,
+                        keyboardType: TextInputType.text,
+                        maxLength: 20,
+                        decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'apodo',
+                            counterText: ""
                         ),
-                        hintText: 'Sobre mí',
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'El campo no puede estar vacío';
+                          }
+                          return null;
+                        },
                       ),
-                    ),
-                  ],
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const Divider(
+                        color: Colors.indigoAccent,
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Text('Descripción',
+                          style: Theme.of(context).textTheme.headlineMedium),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      TextField(
+                        controller: _descripcion,
+                        keyboardType: TextInputType.text,
+                        maxLength: 200,
+                        maxLines: 5,
+                        minLines: 5,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          hintText: 'Sobre mí',
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(
@@ -327,14 +341,16 @@ class _ProfilePictureState extends State<ProfilePicture> {
               CustomFilledButton(
                 content: const Text('Guardar cambios'),
                 onPressed: () {
-                  openDialog(
-                      context,
-                      SaveChangesDialog(
-                          nombre: _nombre.text == "" ? widget.nombre : _nombre.text,
-                          desc: _descripcion.text == " " ? widget.desc : _descripcion.text,
-                          foto: ProfileImage.getIndex(),
-                          email: widget.email,
-                          codigo: widget.codigo));
+                  if(_changesKey.currentState!.validate()) {
+                    openDialog(
+                        context,
+                        SaveChangesDialog(
+                            nombre: _nombre.text,
+                            desc: _descripcion.text == "" ? " " : _descripcion.text,
+                            foto: ProfileImage.getIndex(),
+                            email: widget.email,
+                            codigo: widget.codigo));
+                  }
                 },
               ),
             ],

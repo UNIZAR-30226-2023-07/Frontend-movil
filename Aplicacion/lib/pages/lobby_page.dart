@@ -180,12 +180,15 @@ class _LobbyPage extends State<LobbyPage> {
                     'Código: ${widget.idPartida}',
                     style: Theme.of(context).textTheme.headlineMedium
                 ),
-                IconButton(
-                    onPressed: () {
-                      Share.share(widget.idPartida);
-                    },
-                    icon: Icon(Icons.share, color: Theme.of(context).colorScheme.primary,)
-                ),
+                Tooltip(
+                    message: 'Compartir código de partida',
+                    child: IconButton(
+                        onPressed: () {
+                          Share.share(widget.idPartida);
+                        },
+                        icon: Icon(Icons.share, color: Theme.of(context).colorScheme.primary,)
+                    )
+                )
               ],
             ),
             const SizedBox(height: 20),

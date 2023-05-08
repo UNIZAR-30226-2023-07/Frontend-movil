@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:untitled/pages/board_page.dart';
 import 'package:untitled/services/audio_manager.dart';
@@ -52,10 +53,13 @@ void main() async {
   await LocalStorage.configurePrefs();
   AudioManager.startAudio();
   ProfileImage.prepImages();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   bool res = await _startPage();
   NotificationService().initNotification();
   NotificationService().showDailyNotificationAtTime(id: 1, title: 'Recordatorio', body: '¡Echate una partida!', hour: 12, minute: 0);
-
 
   runApp(MyApp(res: res));
 }
@@ -170,6 +174,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text('Rabino 7 Reinas'),
         actions: [
           PopupMenuButton(
+            tooltip: 'Menú',
             itemBuilder: (context) {
               return const [
                 PopupMenuItem(
