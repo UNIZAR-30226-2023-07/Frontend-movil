@@ -168,7 +168,7 @@ class _FriendsPageState extends State<FriendsPage> {
                     child: Padding(
                       padding: const EdgeInsets.only(left: 17),
                       child: CircularBorderPicture(image: ProfileImage
-                          .urls[(lista_solicitudes[0][index])["Foto"] % 6]!),
+                          .urls[(lista_solicitudes[0][index])["Foto"] % 9]!),
                     )
                   );
                 }

@@ -314,7 +314,7 @@ class _ChatPage extends State<ChatPage> {
       print('Received: $message');
       Map<String, dynamic> datos = jsonDecode(message);
       if (widget.amistad) {
-        if (datos["Emisor"] == widget.codigo2) {
+        if (datos["Emisor"] == widget.codigo2 || datos["Emisor"] == widget.MiCodigo) {
           _load = false;
           _getMensajes();
           build(context);
