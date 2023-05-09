@@ -25,6 +25,8 @@ const String _crearPartidaURL = 'http://$_IP:$_PUERTO/api/partida/crear';
 const String _unirPartidaURL = 'http://$_IP:$_PUERTO/api/partida/join';
 const String _iniciarPartidaURL = 'http://$_IP:$_PUERTO/api/partida/iniciar';
 const String _pausarPartidaURL = 'http://$_IP:$_PUERTO/api/partida/pausar';
+const String _borrarCuentaURL = 'http://$_IP:$_PUERTO/api';
+
 
 class User {
   final String nickname;
@@ -326,6 +328,17 @@ Future<bool> pausarPartida(String codigo, String partida) async {
   final response = await http.post(Uri.parse(_pausarPartidaURL), body: json);
 
   print(response.statusCode);
+
+  return response.statusCode == 200 || response.statusCode == 202;
+}
+
+Future<bool> deleteAccount(String email) async {
+  final json = '{"email": "$email"}';
+
+  final response = await http.post(Uri.parse(_borrarCuentaURL), body: json);
+
+  print(response.statusCode);
+  print(response.body);
 
   return response.statusCode == 200 || response.statusCode == 202;
 }

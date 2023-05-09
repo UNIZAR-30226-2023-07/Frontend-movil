@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:untitled/services/audio_manager.dart';
+import 'package:untitled/services/open_dialog.dart';
+import 'package:untitled/widgets/custom_filled_button.dart';
+import '../dialogs/delete_account.dart';
 import '../themes/theme_manager.dart';
 import '../services/local_storage.dart';
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({super.key});
+
+  final String email;
+
+  const SettingsPage({super.key, required this.email});
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
@@ -283,6 +289,22 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ],
             ),
+            const SizedBox(height: 10,),
+            const Divider(
+              color: Colors.indigoAccent,
+            ),
+            const SizedBox(height: 10,),
+            Text( 'Cuenta', style: Theme.of(context).textTheme.headlineMedium),
+            const SizedBox(height: 10,),
+            CustomFilledButton(
+              onPressed: () async {
+                openDialog(
+                    context,
+                    DeleteAccountDialog(email: widget.email)
+                );
+              },
+              content: const Text('Borrar cuenta')
+            )
           ],
         ),
       ),
