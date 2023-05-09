@@ -132,6 +132,11 @@ class _BoardPageState extends State<BoardPage>{
               List<dynamic> cartas = datos["manos"][j];
               widget.num_cartas[j.toString()] = cartas.length.toString();
               if (widget.turnos[j.toString()] == widget.MiCodigo) {
+                if(cartas.length >= 14){
+                  abrir = 0;
+                } else {
+                  abrir = 2;
+                }
                 cartMano.clear();
                 mostrar_carta.clear();
                 List<Carta> temp = [];
@@ -461,13 +466,13 @@ class _BoardPageState extends State<BoardPage>{
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: () async {
-          if(widget.creador) {
+          if(widget.creador && modo == 1) {
             showDialog(
                 context: context,
                 builder: (context) =>  PauseGameDialog(codigo: widget.MiCodigo, idPartida: widget.idPartida,)
             );
           } else{
-            openSnackBar(context, Text("Solo puede parar una partida su creador"));
+            openSnackBar(context, Text("Solo puede parar una partida su creador en su turno"));
             return false;
           }
       return true;
