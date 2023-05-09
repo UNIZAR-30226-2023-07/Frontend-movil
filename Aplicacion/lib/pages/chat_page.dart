@@ -355,10 +355,10 @@ class _ChatPage extends State<ChatPage> {
     List<dynamic>? lista_mensajes_amistad = <dynamic>[];
     if (lista_mensajes[0] != null) {
       for (int i = 0; i < lista_mensajes[0].length; i++) {
-        //if ((lista_mensajes[0][i])["Emisor"] == codigo1 && (lista_mensajes[0][i])["Receptor"] == codigo2
-        //  || (lista_mensajes[0][i])["Emisor"] == codigo2 && (lista_mensajes[0][i])["Receptor"] == codigo1){
+        if ((lista_mensajes[0][i])["Emisor"] == codigo1 && (lista_mensajes[0][i])["Receptor"] == codigo2
+          || (lista_mensajes[0][i])["Emisor"] == codigo2 && (lista_mensajes[0][i])["Receptor"] == codigo1){
         lista_mensajes_amistad.add(lista_mensajes[0][i]);
-        //}
+        }
       }
     }
     return lista_mensajes_amistad!;

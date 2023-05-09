@@ -40,6 +40,7 @@ int modo = 1; // 0 - no turno, 1 - encarte, 2 - colocar/descarte
 PlayingCard? descarte;
 int abrir = 0; //0 - tiene que abrir, 1 - esta abriendo, 2 - no tiene que abrir
 String t_actual = "";
+bool v = true;
 
 class BoardPage extends StatefulWidget {
   BoardPage({Key? key,this.actualizar = true,required this.email,this.ws_partida = null, this.init = false, required this.idPartida,
@@ -75,6 +76,7 @@ class _BoardPageState extends State<BoardPage>{
     AudioManager.toggleBGM(true);
     if(widget.init) {
       abrir = 0;
+      v = true;
       descarte = null;
       cartMano.clear();
       t_actual = widget.turnos["0"]!;
@@ -160,7 +162,10 @@ class _BoardPageState extends State<BoardPage>{
           if (datos["receptor"] == widget.MiCodigo) {
             modo = 2;
             openSnackBar(context, const Text('Carta robada'));
-            openSnackBar(context, const Text('Para terminar tu turno deja una carta en el monton de descartes'));
+            if(v) {
+              openSnackBar(context, const Text(
+                  'Para terminar tu turno deja una carta en el monton de descartes'));
+            }
             Navigator.pop(context);
             Navigator.push(context,
               MaterialPageRoute(
@@ -266,7 +271,10 @@ class _BoardPageState extends State<BoardPage>{
           if (datos["info"] != null) {
             modo = 2;
             openSnackBar(context, const Text('Carta robada'));
-            openSnackBar(context, const Text('Para terminar tu turno deja una carta en el monton de descartes'));
+            if(v) {
+              openSnackBar(context, const Text(
+                  'Para terminar tu turno deja una carta en el monton de descartes'));
+            }
             Navigator.pop(context);
             Navigator.push(context,
               MaterialPageRoute(
@@ -333,7 +341,10 @@ class _BoardPageState extends State<BoardPage>{
               } else {
                 abrir = 0;
               }
-              openSnackBar(context, const Text('Roba una carta para comenzar'));
+              if(v) {
+                openSnackBar(
+                    context, const Text('Roba una carta para comenzar'));
+              }
             } else {
               modo = 0;
             }
@@ -554,6 +565,7 @@ class _BoardPageState extends State<BoardPage>{
                             widget.ws_partida!.sink.add(data);
                           } else if (modo == 2) {
                             if (CSelecion.length == 1) {
+                              v = false;
                               String data = '{"emisor": "${widget.MiCodigo}","tipo": "Descarte", "info": "${CSelecion[0]}"}';
                               CSelecion.clear();
                               widget.ws_partida!.sink.add(data);
@@ -619,8 +631,11 @@ class _BoardPageState extends State<BoardPage>{
                                     //   cartMano.removeAt(i);
                                     // }
                                     CSelecion.clear();
-                                    openSnackBar(context, const Text('Se han eviado las cartas, una vez hayas colocado las suficientes combinaciones '
-                                        'para abrir pulsa Fin Abrir y recibiras los resultados'));
+                                    if(v) {
+                                      openSnackBar(context, const Text(
+                                          'Se han eviado las cartas, una vez hayas colocado las suficientes combinaciones '
+                                              'para abrir pulsa Fin Abrir y recibiras los resultados'));
+                                    }
                                     Navigator.pushReplacement(context,
                                       MaterialPageRoute(
                                           builder: (context) =>
