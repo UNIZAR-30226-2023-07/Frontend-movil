@@ -17,12 +17,16 @@ class ShowMessages extends StatefulWidget {
     required this.MiCodigo,
     required this.amistad,
     required this.codigo2,
+    this.MiFoto = -1,
+    this.fotoAmigo = -1,
   });
 
   final List<dynamic> len;
   final String MiCodigo;
   final String codigo2;
   final bool amistad;
+  final int MiFoto;
+  final int fotoAmigo;
 
   @override
   State<ShowMessages> createState() => _ShowMessagesState();
@@ -31,18 +35,14 @@ class ShowMessages extends StatefulWidget {
 class _ShowMessagesState extends State<ShowMessages> {
   late ScrollController _scrollController;
   late List<int> fotos = <int>[];
-  bool _load = false;
+  bool _load= false;
 
   @override
   void initState() {
     super.initState();
     _load = false;
-    fotos = <int>[];
     if (widget.amistad) {
       procesarMensajes();
-    } else {
-      _load = true;
-      setState(() {});
     }
     _scrollController = ScrollController();
 
@@ -51,6 +51,8 @@ class _ShowMessagesState extends State<ShowMessages> {
         _scrollToBottom();
       }
     });
+    _load = true;
+    setState(() {});
   }
 
   @override
@@ -63,13 +65,11 @@ class _ShowMessagesState extends State<ShowMessages> {
   void didUpdateWidget(ShowMessages oldWidget) {
     super.didUpdateWidget(oldWidget);
     _load = false;
-    fotos = <int>[];
     if (widget.amistad) {
       procesarMensajes();
-    } else {
-      _load = true;
-      setState(() {});
     }
+    _load = true;
+    setState(() {});
   }
 
   void _scrollToBottom() {
@@ -87,10 +87,8 @@ class _ShowMessagesState extends State<ShowMessages> {
   }
 
   void procesarMensajes() async {
-    fotos.clear();
     for (int i = 0; i < widget.len.length; i++) {
       Map<String, dynamic>? user = await getUserCode(widget.len[i]["Emisor"]);
-      fotos.add(user!["foto"]);
       if (widget.len[i]["Receptor"] == widget.MiCodigo) {
         bool res = await leerMensajes(
             widget.len[i]["Emisor"], widget.len[i]["Receptor"]);
@@ -102,8 +100,6 @@ class _ShowMessagesState extends State<ShowMessages> {
         }
       }
     }
-    _load = true;
-    setState(() {});
   }
 
   @override
@@ -168,7 +164,7 @@ class _ShowMessagesState extends State<ShowMessages> {
                                         height: 52,
                                         image: widget.amistad
                                             ? ProfileImage
-                                                .urls[fotos[index] % 9]!
+                                                .urls[widget.MiFoto % 9]!
                                             : ProfileImage.urls[
                                                 widget.len[index]["foto"] %
                                                     9]!),
@@ -187,7 +183,7 @@ class _ShowMessagesState extends State<ShowMessages> {
                                         height: 52,
                                         image: widget.amistad
                                             ? ProfileImage
-                                                .urls[fotos[index] % 9]!
+                                                .urls[widget.fotoAmigo % 9]!
                                             : ProfileImage.urls[
                                                 widget.len[index]["foto"] %
                                                     9]!),
@@ -264,6 +260,7 @@ class ChatPage extends StatefulWidget {
       this.idPartida = "",
       this.msg = const [],
       this.fotoAmigo = -1,
+      this.MiFoto = -1,
       this.nombreAmigo = ''});
 
   final String MiCodigo, codigo2;
@@ -271,6 +268,7 @@ class ChatPage extends StatefulWidget {
   final String idPartida;
   final List<Map<String, dynamic>> msg;
   final int fotoAmigo;
+  final int MiFoto;
   final String nombreAmigo;
 
   @override
@@ -315,9 +313,14 @@ class _ChatPage extends State<ChatPage> {
       Map<String, dynamic> datos = jsonDecode(message);
       if (widget.amistad) {
         if (datos["Emisor"] == widget.codigo2 || datos["Emisor"] == widget.MiCodigo) {
-          _load = false;
+          //_load = false;
+          lista_mensajes.add(datos);
           _getMensajes();
-          build(context);
+          setState(() {
+            lista_mensajes;
+            _load = true;
+          });
+          //build(context);
         }
       } else {
         if (primero) {
@@ -398,7 +401,9 @@ class _ChatPage extends State<ChatPage> {
                         len: lista_mensajes,
                         MiCodigo: widget.MiCodigo,
                         codigo2: widget.codigo2,
-                        amistad: widget.amistad),
+                        amistad: widget.amistad,
+                        MiFoto: widget.MiFoto,
+                        fotoAmigo: widget.fotoAmigo,),
                   ),
                   Row(
                     children: [
@@ -433,11 +438,13 @@ class _ChatPage extends State<ChatPage> {
                                 final data =
                                     '{"Emisor": "${widget.MiCodigo}","Receptor": "${widget.codigo2}", "Contenido": "${_textController.text}"}';
                                 wb_amistad.sink.add(data);
+                                lista_mensajes.add(jsonDecode(data));
                                 _getMensajes();
                                 _textController.clear();
-                                _load = false;
-                                setState(() {});
-                                build(context);
+                                setState(() {
+                                  lista_mensajes;
+                                  _load = true;
+                                });
                               } else {
                                 Map<String, dynamic>? user =
                                     await getUserCode(widget.MiCodigo);
