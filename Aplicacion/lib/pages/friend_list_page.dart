@@ -25,9 +25,9 @@ class _FriendsPageState extends State<FriendsPage> {
   Map<String, dynamic>? solicitudes;
   Map<String, dynamic>? mensajes;
   bool _load = false;
-  late List<dynamic> lista_amigos;
-  late List<dynamic> lista_solicitudes;
-  late List<dynamic> lista_mensajes;
+  late List<dynamic> lista_amigos = [];
+  late List<dynamic> lista_solicitudes = [];
+  late List<dynamic> lista_mensajes = [];
   @override
   void initState() {
     super.initState();
@@ -65,7 +65,9 @@ class _FriendsPageState extends State<FriendsPage> {
       lista_solicitudes = solicitudes!.values.toList();
     }
     _load = true;
-    setState(() {});
+    if(mounted) {
+      setState(() {});
+    }
   }
 
   Future<void> _getMensajes() async {
@@ -121,16 +123,6 @@ class _FriendsPageState extends State<FriendsPage> {
       }
     }
     return n.toString();
-  }
-
-  Widget _buildItem(String item, Animation<double> animation) {
-    return FadeTransition(
-      opacity: CurvedAnimation(parent: animation, curve: const Interval(0.5, 1.0)),
-      child: SizeTransition(
-        sizeFactor: CurvedAnimation(parent: animation, curve: const Interval(0.0, 0.5)),
-        child: ListTile(title: Text(item)),
-      ),
-    );
   }
 
   @override

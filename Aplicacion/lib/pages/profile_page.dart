@@ -17,21 +17,35 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   bool _load = false;
+
+
   @override
   void initState() {
     super.initState();
     _getUser();
+    //_getHistorial();
+  }
+
+  Future<void> _getHistorial() async {
+    widget.user = await getHistorial(widget.user!["codigo"]);
+    //_load = true;
+    setState(() {
+      _load = true;
+    });
   }
 
   Future<void> _getUser() async {
     if (widget.email == "#admin") {
       _load = true;
-      setState(() {});
+      //setState(() {});
     }
     widget.user = await getUserCode(widget.user!["codigo"]);
     _load = true;
-    setState(() { });
+    if(mounted) {
+      setState(() {});
+    }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

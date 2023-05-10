@@ -20,7 +20,7 @@ class DeleteAccountDialog extends StatelessWidget {
       actions: [
         FilledButton(
           onPressed: () async {
-            bool res = await deleteAccount(email);
+            bool res = await borrarCuenta(email);
             if (context.mounted) {
               if (!res) {
                 openSnackBar(context, const Text('No se ha podido borrar la cuenta'));

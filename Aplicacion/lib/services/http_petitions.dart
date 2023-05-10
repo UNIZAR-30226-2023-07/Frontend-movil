@@ -25,8 +25,8 @@ const String _crearPartidaURL = 'http://$_IP:$_PUERTO/api/partida/crear';
 const String _unirPartidaURL = 'http://$_IP:$_PUERTO/api/partida/join';
 const String _iniciarPartidaURL = 'http://$_IP:$_PUERTO/api/partida/iniciar';
 const String _pausarPartidaURL = 'http://$_IP:$_PUERTO/api/partida/pausar';
-const String _borrarCuentaURL = 'http://$_IP:$_PUERTO/api';
-
+const String _borrarCuentaURL = 'http://$_IP:$_PUERTO/api'; //terminar
+const String _getHistorialURL = 'http://$_IP:$_PUERTO/api'; //terminar
 
 class User {
   final String nickname;
@@ -279,7 +279,7 @@ Future <Map<String, dynamic>?> crearPartida(String codigo, String tipo) async {
 
   //print(response.statusCode);
 
-  Map<String, dynamic>? datos = null;
+  Map<String, dynamic>? datos;
   if (response.statusCode == 200 || response.statusCode == 202) {
     datos = jsonDecode(response.body);
   } else {
@@ -295,7 +295,7 @@ Future<Map<String, dynamic>?> unirPartida(String codigo, String partida) async {
 
   //print(response.statusCode);
 
-  Map<String, dynamic>? datos = null;
+  Map<String, dynamic>? datos;
   if (response.statusCode == 200 || response.statusCode == 202) {
     datos = jsonDecode(response.body);
   } else {
@@ -332,7 +332,7 @@ Future<bool> pausarPartida(String codigo, String partida) async {
   return response.statusCode == 200 || response.statusCode == 202;
 }
 
-Future<bool> deleteAccount(String email) async {
+Future<bool> borrarCuenta(String email) async {
   final json = '{"email": "$email"}';
 
   final response = await http.post(Uri.parse(_borrarCuentaURL), body: json);
@@ -342,6 +342,23 @@ Future<bool> deleteAccount(String email) async {
 
   return response.statusCode == 200 || response.statusCode == 202;
 }
+
+Future <Map<String, dynamic>?> getHistorial(String codigo) async {
+  String uri = "$_getHistorialURL$codigo";
+
+  final response = await http.get(Uri.parse(uri));
+
+  //print(response.statusCode);
+
+  Map<String, dynamic>? datos;
+  if (response.statusCode == 200 || response.statusCode == 202) {
+    datos = jsonDecode(response.body);
+  } else {
+    print('Error al hacer la solicitud: ${response.statusCode}');
+  }
+  return datos;
+}
+
 
 /*
 Future getImage(File image) async {

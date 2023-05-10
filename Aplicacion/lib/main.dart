@@ -108,6 +108,7 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
+
 class MyHomePage extends StatefulWidget {
   final String email;
 
@@ -120,6 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   late List<Widget> _widgetOptions;
   bool _load = false;
+
   @override
   void initState() {
     super.initState();
@@ -127,29 +129,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _getUser() async {
-    // saber el email con el que ha entrado el usuario, no se si pasandolo entre clases
-    // o se puede de otra manera
-    // Si no se puede pasar entre clases, tiramos de variable global y ya
-    if(widget.email == "#admin"){
-      _load = true;
-      setState(() { });
-    }
     user = await getUser(widget.email);
-    // if (user == null){
-    //     user = {
-    //       "nombre": "Ismaber",
-    //       "codigo": "#admin",
-    //       "puntos": 200,
-    //       "pganadas": 100,
-    //       "pjugadas": 200,
-    //       "foto": 0,
-    //       "descrp": "hola"
-    //     };
-    // }
-      print(user);
+    print(user);
     _widgetOptions = getWidgetOptions(user!, widget.email);
     _load = true;
-    setState(() { });
+    setState(() {});
   }
 
   List<Widget> getWidgetOptions(Map<String, dynamic> user, String email) {
@@ -160,8 +144,8 @@ class _MyHomePageState extends State<MyHomePage> {
     ];
   }
 
-  void onItemTapped(int index) {
-    _getUser();
+  void onItemTapped(int index) async {
+    await _getUser();
     setState(() {
       _selectedIndex = index;
     });
