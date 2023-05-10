@@ -24,6 +24,7 @@ class _FriendsPageState extends State<FriendsPage> {
   Map<String, dynamic>? amigos;
   Map<String, dynamic>? solicitudes;
   Map<String, dynamic>? mensajes;
+  Map<String, dynamic>? user;
   bool _load = false;
   late List<dynamic> lista_amigos = [];
   late List<dynamic> lista_solicitudes = [];
@@ -31,6 +32,7 @@ class _FriendsPageState extends State<FriendsPage> {
   @override
   void initState() {
     super.initState();
+    _getUser();
     _getAmistades();
     _getMensajes();
     _getSolicitudes();
@@ -40,9 +42,14 @@ class _FriendsPageState extends State<FriendsPage> {
   void didUpdateWidget(FriendsPage oldWidget) {
     super.didUpdateWidget(oldWidget);
     _load = false;
+    _getUser();
     _getAmistades();
     _getMensajes();
     _getSolicitudes();
+  }
+
+  Future<void> _getUser() async {
+    user = await getUserCode(widget.codigo);
   }
 
   Future<void> _getAmistades() async {
@@ -242,7 +249,8 @@ class _FriendsPageState extends State<FriendsPage> {
                             codigo2: lista_amigos[0][index]["Codigo"],
                             amistad: true,
                             fotoAmigo: lista_amigos[0][index]["Foto"],
-                            nombreAmigo: lista_amigos[0][index]["Nombre"]
+                            nombreAmigo: lista_amigos[0][index]["Nombre"],
+                            MiFoto: user!["foto"],
                           ),
                         ),
                       );
