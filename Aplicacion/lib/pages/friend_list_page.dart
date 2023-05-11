@@ -141,10 +141,12 @@ class _FriendsPageState extends State<FriendsPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AnimatedContainer(
+            curve: Curves.ease,
             duration: const Duration(milliseconds: 200),
             height: lista_solicitudes[0] != null ? 140 : 0,
             width: double.infinity,
             child: AnimatedOpacity(
+              curve: Curves.ease,
               duration: const Duration(milliseconds: 200),
               opacity: lista_solicitudes[0] != null ? 1.0 : 0.0,
                 child: lista_solicitudes[0] != null
@@ -201,7 +203,7 @@ class _FriendsPageState extends State<FriendsPage> {
                 style: Theme.of(context).textTheme.headlineSmall),
           ),
           Expanded(
-            child: lista_amigos[0] == null
+            child: (lista_amigos.isEmpty || lista_amigos[0] == null)
             ? const SizedBox()
             : ListView.separated(
               itemCount: lista_amigos[0].length,
@@ -264,6 +266,7 @@ class _FriendsPageState extends State<FriendsPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: null,
         tooltip: 'Añadir amigo',
         onPressed: () async {
           await openDialog(context, AddFriendDialog(codigo: widget.codigo));

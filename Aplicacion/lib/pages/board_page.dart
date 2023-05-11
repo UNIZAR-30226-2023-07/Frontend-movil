@@ -631,7 +631,7 @@ class _BoardPageState extends State<BoardPage>{
                 builder: (context) =>  PauseGameDialog(codigo: widget.MiCodigo, idPartida: widget.idPartida,)
             );
           } else{
-            openSnackBar(context, Text("Solo puede parar una partida su creador en su turno"));
+            openSnackBar(context, const Text("Solo puede parar una partida su creador en su turno"));
             return false;
           }
       return true;

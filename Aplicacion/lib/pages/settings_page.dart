@@ -166,10 +166,12 @@ class _SettingsPageState extends State<SettingsPage> {
               ],
             ),
             AnimatedContainer(
+              curve: Curves.ease,
               duration: Duration(milliseconds: _animationsDuration),
               height: _musicOn ? 50 : 0,
               width: double.infinity,
               child: AnimatedOpacity(
+                curve: Curves.ease,
                 duration: Duration(milliseconds: _animationsDuration),
                 opacity: _musicOn ? 1.0 : 0.0,
                 child: _musicOn
@@ -226,10 +228,12 @@ class _SettingsPageState extends State<SettingsPage> {
               ],
             ),
             AnimatedContainer(
+              curve: Curves.ease,
               duration: Duration(milliseconds: _animationsDuration),
               height: _soundEffectsOn ? 50 : 0,
               width: double.infinity,
               child: AnimatedOpacity(
+                curve: Curves.ease,
                 duration: Duration(milliseconds: _animationsDuration),
                 opacity: _soundEffectsOn ? 1.0 : 0.0,
                 child: _soundEffectsOn

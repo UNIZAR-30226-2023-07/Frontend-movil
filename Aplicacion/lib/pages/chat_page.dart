@@ -89,12 +89,6 @@ class _ShowMessagesState extends State<ShowMessages> {
       if (widget.len[i]["Receptor"] == widget.MiCodigo) {
         bool res = await leerMensajes(
             widget.len[i]["Emisor"], widget.len[i]["Receptor"]);
-        if (context.mounted) {
-          if (!res) {
-            openSnackBar(
-                context, const Text('No se ha podido enviar la petición'));
-          }
-        }
       }
     }
   }
