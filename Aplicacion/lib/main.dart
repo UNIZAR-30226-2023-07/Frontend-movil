@@ -144,11 +144,11 @@ class _MyHomePageState extends State<MyHomePage> {
     ];
   }
 
-  void onItemTapped(int index) async {
-    await _getUser();
+  void onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+    _getUser();
   }
 
   @override

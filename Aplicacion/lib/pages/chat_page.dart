@@ -45,13 +45,10 @@ class _ShowMessagesState extends State<ShowMessages> {
       procesarMensajes();
     }
     _scrollController = ScrollController();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollToBottom();
-      }
-    });
     _load = true;
+
+    _scrollToBottom();
+
     setState(() {});
   }
 
@@ -69,21 +66,21 @@ class _ShowMessagesState extends State<ShowMessages> {
       procesarMensajes();
     }
     _load = true;
+    _scrollToBottom();
     setState(() {});
   }
 
   void _scrollToBottom() {
-    /*
-    _scrollController.animateTo(
-      _scrollController.position.maxScrollExtent,
-      duration: const Duration(milliseconds: 200),
-      curve: Curves.easeInOut,
-    );
-    */
-
-    _scrollController.jumpTo(
-      _scrollController.position.maxScrollExtent,
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+        );
+        //_scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+      }
+    });
   }
 
   void procesarMensajes() async {

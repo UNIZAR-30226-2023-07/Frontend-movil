@@ -161,7 +161,6 @@ class TopSection extends StatelessWidget {
   }
 }
 
-/*
 class TournamentTab extends StatefulWidget {
   final String codigo;
   final String email;
@@ -243,102 +242,11 @@ class _TournamentTabState extends State<TournamentTab> {
           },
         );
       },
-
       separatorBuilder: (context, index) => const Divider(),
     );
   }
 }
-*/
 
-class TournamentTab extends StatefulWidget {
-  final String codigo;
-  final String email;
-
-  const TournamentTab({super.key, required this.codigo, required this.email});
-
-  @override
-  State<TournamentTab> createState() => _TournamentTabState();
-}
-
-class _TournamentTabState extends State<TournamentTab> {
-  late Future<Map<String, dynamic>?> pendientesFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    pendientesFuture = getPartidasPendientes(widget.codigo);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<Map<String, dynamic>?>(
-      future: pendientesFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          // Aquí puedes manejar el error o mostrar un mensaje al usuario
-          return const Center(child: Text('Ha ocurrido un error'));
-        } else {
-          List<dynamic>? lista_pendientes = snapshot.data?.values.toList();
-          if (lista_pendientes == null || lista_pendientes.isEmpty) {
-            return const SizedBox();
-          } else {
-            return ListView.separated(
-              itemCount: lista_pendientes[0].length,
-              itemBuilder: (_, index) {
-                return ListTile(
-                  leading: Hero(
-                    tag: index,
-                    child: const Icon(
-                      Icons.wine_bar,
-                      size: 35,
-                      color: Colors.amber,
-                    ),
-                  ),
-                  title: Text(
-                      "Partida de ${(lista_pendientes[0][index])["Creador"]}"),
-                  subtitle: Text(
-                      "Código: ${(lista_pendientes[0][index])["Clave"]}"),
-                  onTap: () async {
-                    bool torneo = true;
-                    if((lista_pendientes[0][index])["Tipo"] == "amistosa"){
-                      torneo = false;
-                    }
-                    Map<String, dynamic>? res = await unirPartida(widget.codigo, (lista_pendientes[0][index])["Clave"]);
-                    if (context.mounted) {
-                      if (res == null) {
-                        openSnackBar(context, const Text('No se ha podido enviar la petición'));
-                        Navigator.pop(context);
-                      } else {
-                        openSnackBar(context, const Text('Uniendose'));
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) =>
-                              LobbyPage(ranked: torneo,
-                                  idPartida: (lista_pendientes[0][index])["Clave"],
-                                  MiCodigo: widget.codigo,
-                                  creador: (lista_pendientes[0][index])["Creador"] == widget.codigo,
-                                  email: widget.email,
-                                  jug: res["jugadores"] ?? [],
-                                  nueva: false)),
-                        );
-                      }
-                    }
-                  },
-                );
-              },
-              separatorBuilder: (context, index) => const Divider(),
-            );
-          }
-        }
-      },
-    );
-  }
-}
-
-
-/*
 class RankingTab extends StatefulWidget {
   final String codigo;
 
@@ -461,111 +369,3 @@ class _RankingTabState extends State<RankingTab> {
     }
   }
 }
-*/
-
-class RankingTab extends StatefulWidget {
-  final String codigo;
-
-  const RankingTab({super.key, required this.codigo});
-
-  @override
-  State<RankingTab> createState() => _RankingTabState();
-}
-
-class _RankingTabState extends State<RankingTab> {
-  late List<dynamic> lista_amigos;
-
-  Future<List<dynamic>> _getAmistades() async {
-    Map<String, dynamic>? amigos = await getAmistades(widget.codigo);
-    return amigos!.values.toList();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<List<dynamic>>(
-      future: _getAmistades(),
-      builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        } else {
-          lista_amigos = snapshot.data!;
-          if (lista_amigos[0] != null) {
-            return ListView.separated(
-              itemCount: lista_amigos[0].length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  contentPadding: const EdgeInsets.all(10),
-                  leading: SizedBox(
-                    width: 120,
-                    child: Row(
-                      children: [
-                        (index == 0)
-                            ? const Icon(
-                          Icons.wine_bar,
-                          color: Colors.amber,
-                          size: 35,
-                        )
-                            : (index == 1)
-                            ? const Icon(
-                          Icons.wine_bar,
-                          color: Colors.grey,
-                          size: 35,
-                        )
-                            : (index == 2)
-                            ? const Icon(
-                          Icons.wine_bar,
-                          color: Colors.deepOrangeAccent,
-                          size: 35,
-                        )
-                            : Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: Text(
-                            '$index',
-                            style: const TextStyle(
-                                fontSize: 25, color: Colors.indigoAccent),
-                          ),
-                        ),
-                        const Spacer(),
-                        CircularBorderPicture(image: ProfileImage
-                            .urls[(lista_amigos[0][index])["Foto"] % 9]!,),
-                      ],
-                    ),
-                  ),
-                  title: Row(
-                    children: [
-                      Text(
-                        (lista_amigos[0][index])["Nombre"],
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  trailing: Points(value: ((lista_amigos[0][index])["Puntos"])),
-                  onTap: () async {
-                    Map<String, dynamic>? user = await getUserCode((lista_amigos[0][index])["Codigo"]);
-                    setState(() { });
-                    if (context.mounted) {
-                      Navigator.push(context,
-                        MaterialPageRoute(builder: (
-                            context) => ProfilePage(email: '', user: user, editActive: false,)),
-                      );
-                      print(user);
-                    }
-                  },
-                );
-              },
-              separatorBuilder: (context, index) => const Divider(),
-            );
-          } else {
-            return Container();
-          }
-        }
-      },
-    );
-  }
-}
-
