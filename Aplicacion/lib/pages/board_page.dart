@@ -15,7 +15,7 @@ import '../services/open_snack_bar.dart';
 import '../services/profile_image.dart';
 import '../widgets/circular_border_picture.dart';
 
-const String _IP = '52.174.124.24';
+const String _IP = '13.93.90.135';
 const String _PUERTO = '3001';
 
 List<int> CSelecion= [];

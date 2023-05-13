@@ -12,7 +12,7 @@ import 'board_page.dart';
 import '../widgets/custom_filled_button.dart';
 import '../widgets/circular_border_picture.dart';
 
-const String _IP = '52.174.124.24';
+const String _IP = '13.93.90.135';
 const String _PUERTO = '3001';
 
 List<Map<String, dynamic>> jugadores = [];
@@ -75,7 +75,7 @@ class _LobbyPage extends State<LobbyPage> {
         String tipo = indice >= 0
             ? datos["tipo"].substring(0, indice)
             : datos["tipo"];
-        if (tipo == "Partida_Iniciada") {
+        if (tipo == "Partida_Iniciada" && widget.nueva) {
           openSnackBar(context, const Text('Iniciando partida'));
           Map<String, String> turnos = {};
           for (int i = 0; i < datos["turnos"].length; i++) {
@@ -100,6 +100,26 @@ class _LobbyPage extends State<LobbyPage> {
               ? datos["tipo"].substring(indice + 2)
               : "";
           recuperarUser(N_codigo);
+        } else if (tipo == "Partida_reanudada" && !widget.nueva) {
+          openSnackBar(context, const Text('Reanudando partida'));
+          Map<String, String> turnos = {};
+          for (int i = 0; i < datos["turnos"].length; i++) {
+            List<dynamic> t = datos["turnos"][i];
+            turnos[t[1]] = t[0];
+          }
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) =>
+                BoardPage(init: true,
+                    idPartida: widget.idPartida,
+                    MiCodigo: widget.MiCodigo,
+                    turnos: turnos,
+                    ranked: widget.ranked,
+                    creador: widget.creador,
+                    email: widget.email,
+                    ws_partida: ws_partida)),
+          );
         }
       });
   }
