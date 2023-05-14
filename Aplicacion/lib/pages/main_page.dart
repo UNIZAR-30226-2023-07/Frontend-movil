@@ -291,8 +291,9 @@ class _TournamentTabState extends State<TournamentTab> {
                       color: Colors.amber,
                     ),
                   ),
-                  title: Text(
-                      "Partida de ${(listaPendientes[0][index])["Creador"]}"),
+                  title: (listaPendientes[0][index])["Tipo"] == "amistosa" ?
+                      Text("Partida de ${(listaPendientes[0][index])["Creador"]}") :
+                      Text("Torneo de ${(listaPendientes[0][index])["Creador"]}"),
                   subtitle: Text(
                       "Código: ${(listaPendientes[0][index])["Clave"]}"),
                   onTap: () async {

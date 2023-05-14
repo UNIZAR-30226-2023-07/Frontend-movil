@@ -98,8 +98,8 @@ class _BoardPageState extends State<BoardPage>{
           'ws://$_IP:$_PUERTO/api/ws/torneo/${widget.idPartida}');
       ws_torneo.stream.listen((message) {
         Map<String, dynamic> datos = jsonDecode(message);
-        puntos.clear();
         if(datos["tipo"] == "Partida_terminada"){
+          puntos.clear();
           for(int i = 0; i < datos["puntos"].length; i++){
             puntos.add(datos["puntos"][i]);
           }
@@ -128,6 +128,11 @@ class _BoardPageState extends State<BoardPage>{
                       creador: widget.creador,
                       ws_partida: widget.ws_partida,
                       finT: true,));
+          }
+        } else if(datos["tipo"] == "Puntos"){
+          puntos.clear();
+          for(int i = 0; i < datos["puntos"].length; i++){
+            puntos.add(datos["puntos"][i]);
           }
         }
       });

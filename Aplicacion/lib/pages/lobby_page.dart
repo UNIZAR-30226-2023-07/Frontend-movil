@@ -45,6 +45,7 @@ class LobbyPage extends StatefulWidget {
 
 class _LobbyPage extends State<LobbyPage> {
   late final ws_partida;
+  late final ws_torneo;
   late StreamSubscription subscription;
   bool _load = false;
   Map<String, String> turnos = {};
@@ -56,18 +57,56 @@ class _LobbyPage extends State<LobbyPage> {
     for (int i = 0; i < widget.jug.length; i++) {
       recuperarUser(widget.jug[i]);
     }
-    recuperarUser(widget.MiCodigo);
+      recuperarUser(widget.MiCodigo);
 
-      if (!widget.ranked) {
-        ws_partida = IOWebSocketChannel.connect(
-            'ws://$_IP:$_PUERTO/api/ws/partida/${widget.idPartida}');
-      } else {
-        ws_partida = IOWebSocketChannel.connect(
+      if (widget.ranked) {
+        ws_torneo = IOWebSocketChannel.connect(
             'ws://$_IP:$_PUERTO/api/ws/torneo/${widget.idPartida}');
+
       }
+      ws_partida = IOWebSocketChannel.connect(
+        'ws://$_IP:$_PUERTO/api/ws/partida/${widget.idPartida}');
       ws_partida.stream.handleError((error) {
         print('Error: $error');
       });
+
+    if(widget.ranked) {
+      ws_torneo.stream.listen((message) async {
+        print('Received: $message');
+        Map<String, dynamic> datos = jsonDecode(message);
+        int indice = datos["tipo"].indexOf(": ");
+        String tipo = indice >= 0
+            ? datos["tipo"].substring(0, indice)
+            : datos["tipo"];
+        if (tipo == "Partida_Iniciada") {
+          turnos.clear();
+          for (int i = 0; i < datos["turnos"].length; i++) {
+            List<dynamic> t = datos["turnos"][i];
+            turnos[t[1]] = t[0];
+          }
+          if (widget.nueva) {
+            openSnackBar(context, const Text('Iniciando partida'));
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) =>
+                  BoardPage(init: true,
+                      idPartida: widget.idPartida,
+                      MiCodigo: widget.MiCodigo,
+                      turnos: turnos,
+                      ranked: widget.ranked,
+                      creador: widget.creador,
+                      email: widget.email,
+                      ws_partida: ws_partida)),
+            );
+          }
+        } else if (tipo == "Nuevo_Jugador" || tipo == "Nuevo_Jugador ") {
+          String N_codigo = indice >= 0
+              ? datos["tipo"].substring(indice + 2)
+              : "";
+          recuperarUser(N_codigo);
+        }
+      });
+    }
 
       subscription = ws_partida.stream.listen((message) async {
         print('Received: $message');
