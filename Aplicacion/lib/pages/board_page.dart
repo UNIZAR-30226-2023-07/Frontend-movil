@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:playing_cards/playing_cards.dart';
 import 'package:untitled/dialogs/pause_game_dialog.dart';
 import 'package:untitled/dialogs/winner_dialog.dart';
+import 'package:untitled/pages/rules_page.dart';
 import 'package:untitled/services/audio_manager.dart';
 import 'package:untitled/services/http_petitions.dart';
 import 'package:wakelock/wakelock.dart';
@@ -876,6 +877,12 @@ class _BoardPageState extends State<BoardPage>{
         title: Text('Turno de: $t_actual'),
         actions: [
           IconButton(
+            tooltip: 'Ver reglas',
+            onPressed: _openRulesPage,
+            icon: const Icon(Icons.info),
+          ),
+          IconButton(
+            tooltip: 'Ver jugadores',
             onPressed: _openBottomSheet,
             icon: const Icon(Icons.person),
           ),
@@ -897,14 +904,15 @@ class _BoardPageState extends State<BoardPage>{
           children: [
             Text(
               "${widget.turnos[index.toString()]}",
-              style: TextStyle(
+              style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold
               ),
             ),
           ],
         ),
-        trailing: !widget.ranked ? Badge(
+        trailing: !widget.ranked
+        ? Badge(
           label: Text('${widget.num_cartas[index.toString()]} cartas')
         ) :
         Badge(
@@ -915,6 +923,16 @@ class _BoardPageState extends State<BoardPage>{
     separatorBuilder: (context, index) => const Divider(),
   ),
   );
+
+  void _openRulesPage() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+               const RulesPage()
+        )
+    );
+  }
 
 }
 

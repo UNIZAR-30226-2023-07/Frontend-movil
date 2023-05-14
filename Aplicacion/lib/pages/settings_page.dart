@@ -199,14 +199,12 @@ class _SettingsPageState extends State<SettingsPage> {
                         },
                       ),
                     ),
-                    Tooltip(
-                        message: 'Silenciar música',
-                        child: IconButton(
-                          color: Theme.of(context).colorScheme.primary,
-                          iconSize: 30,
-                          icon: _musicIcon,
-                          onPressed: muteUnmuteMusic,
-                        )
+                    IconButton(
+                      tooltip: 'Silenciar música',
+                      color: Theme.of(context).colorScheme.primary,
+                      iconSize: 30,
+                      icon: _musicIcon,
+                      onPressed: muteUnmuteMusic,
                     )
                   ],
                 )
@@ -262,14 +260,12 @@ class _SettingsPageState extends State<SettingsPage> {
                         },
                       ),
                     ),
-                    Tooltip(
-                        message: 'Silenciar efectos de sonido',
-                        child: IconButton(
-                          color: Theme.of(context).colorScheme.primary,
-                          iconSize: 30,
-                          icon: _soundEffectsIcon,
-                          onPressed: muteUnmuteSoundEffects,
-                        )
+                    IconButton(
+                      tooltip: 'Silenciar efectos de sonido',
+                      color: Theme.of(context).colorScheme.primary,
+                      iconSize: 30,
+                      icon: _soundEffectsIcon,
+                      onPressed: muteUnmuteSoundEffects,
                     ),
                   ],
                 )

@@ -25,7 +25,7 @@ const String _crearPartidaURL = 'http://$_IP:$_PUERTO/api/partida/crear';
 const String _unirPartidaURL = 'http://$_IP:$_PUERTO/api/partida/join';
 const String _iniciarPartidaURL = 'http://$_IP:$_PUERTO/api/partida/iniciar';
 const String _pausarPartidaURL = 'http://$_IP:$_PUERTO/api/partida/pausar';
-const String _borrarCuentaURL = 'http://$_IP:$_PUERTO/api/jugador/del/'; //terminar
+const String _borrarCuentaURL = 'http://$_IP:$_PUERTO/api/jugador/del/';
 const String _getHistorialURL = 'http://$_IP:$_PUERTO/api'; //terminar
 
 class User {

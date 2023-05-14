@@ -11,7 +11,7 @@ class AudioManager {
   static AudioPlayer _SFXPlayer = AudioPlayer();
   static bool _SFXPlay = false;
 
-  static void startAudio() async {
+  static Future<void> startAudio() async {
     if(LocalStorage.prefs.getBool('musicOn') != null) {
       _BGMplay = LocalStorage.prefs.getBool('musicOn') as bool;
     }
@@ -33,6 +33,9 @@ class AudioManager {
 
   static Future<void> playBGM(bool value) async {
     _BGMplay = value;
+    if (!value) {
+      await _BGMPlayer.release();
+    }
   }
 
   static Future<void> toggleBGM(bool value) async {
@@ -63,6 +66,9 @@ class AudioManager {
 
   static Future<void> playSFX(bool value) async {
     _SFXPlay = value;
+    if (!value) {
+      await _SFXPlayer.release();
+    }
   }
 
   static Future<void> toggleSFX(bool value) async {

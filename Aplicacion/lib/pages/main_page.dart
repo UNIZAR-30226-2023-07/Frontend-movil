@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:untitled/pages/lobby_page.dart';
 import 'package:untitled/pages/profile_page.dart';
 import '../dialogs/join_game_dialog.dart';
-import '../pages/tournament_page.dart';
 import '../dialogs/create_game_dialog.dart';
 import '../services/http_petitions.dart';
 import '../services/open_snack_bar.dart';

@@ -27,12 +27,16 @@ class DeleteAccountDialog extends StatelessWidget {
                 openSnackBar(context, const Text('No se ha podido borrar la cuenta'));
                 Navigator.pop(context);
               } else {
-                openSnackBar(context, const Text('Cuenta borrada correctamente'));
-                GoogleSignInApi.logout();
-                Navigator.pushReplacement(context,
-                  MaterialPageRoute(
-                    builder: (context) => Login(),
-                  ),);
+                await GoogleSignInApi.logout();
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  Navigator.pushReplacement(context,
+                    MaterialPageRoute(
+                      builder: (context) => const Login()
+                    ));
+                  openSnackBar(context, const Text('Cuenta borrada correctamente'));
+                }
               }
             }
           },

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:untitled/pages/board_page.dart';
+import 'package:untitled/pages/rules_page.dart';
 import 'package:untitled/services/audio_manager.dart';
 import 'package:untitled/services/http_petitions.dart';
 import 'package:untitled/services/local_notifications.dart';
@@ -50,16 +51,16 @@ Future<bool> _startPage() async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await LocalStorage.configurePrefs();
-  AudioManager.startAudio();
   ProfileImage.prepImages();
-  SystemChrome.setPreferredOrientations([
+  await LocalStorage.configurePrefs();
+  await AudioManager.startAudio();
+  await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
   bool res = await _startPage();
-  NotificationService().initNotification();
-  NotificationService().showDailyNotificationAtTime(id: 1, title: 'Recordatorio', body: '¡Echate una partida!', hour: 12, minute: 0);
+  await NotificationService().initNotification();
+  await NotificationService().showDailyNotificationAtTime(id: 1, title: 'Recordatorio', body: '¡Echate una partida!', hour: 12, minute: 0);
 
   runApp(MyApp(res: res));
 }
@@ -167,6 +168,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 PopupMenuItem(
                   value: 1,
+                  child: Text("Ver reglas"),
+                ),
+                PopupMenuItem(
+                  value: 2,
                   child: Text("Cerrar sesión"),
                 ),
               ];
@@ -180,6 +185,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 );
               } else if (menu == 1) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const RulesPage(),
+                  ),
+                );
+              } else if (menu == 2) {
                 openDialog(context, const CloseSessionDialog());
               }
             },
