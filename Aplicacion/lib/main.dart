@@ -176,7 +176,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => SettingsPage(email: widget.email),
+                    builder: (context) => SettingsPage(email: widget.email, code:  user!["codigo"]),
                   ),
                 );
               } else if (menu == 1) {

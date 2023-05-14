@@ -9,8 +9,9 @@ import '../services/local_storage.dart';
 class SettingsPage extends StatefulWidget {
 
   final String email;
+  final String code;
 
-  const SettingsPage({super.key, required this.email});
+  const SettingsPage({super.key, required this.email, required this.code});
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
@@ -304,7 +305,7 @@ class _SettingsPageState extends State<SettingsPage> {
               onPressed: () async {
                 openDialog(
                     context,
-                    DeleteAccountDialog(email: widget.email)
+                    DeleteAccountDialog(code: widget.code)
                 );
               },
               content: const Text('Borrar cuenta')
