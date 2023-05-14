@@ -374,6 +374,7 @@ class _BoardPageState extends State<BoardPage>{
             cartMano.add(Carta(valor, palo));
             print("robada");
             print(cartMano.length);
+            descarte = null;
             setState(() {
 
             });
@@ -708,10 +709,13 @@ class _BoardPageState extends State<BoardPage>{
                       child: GestureDetector(
                         behavior: HitTestBehavior.opaque,
                         onTap: () {
-                          if (modo == 1 && descarte != null) {
+                          if (modo == 1 && descarte != null && abrir != 0) {
                             String data = '{"emisor": "${widget.MiCodigo}","tipo": "Robar_carta_descartes"}';
                             widget.ws_partida!.sink.add(data);
-                          } else if (modo == 2) {
+                          } else if(modo == 1 && descarte != null && abrir == 0){
+                            openSnackBar(context, const Text('Aun no has abierto'));
+                          }
+                            else if (modo == 2) {
                             if (CSelecion.length == 1) {
                               v = false;
                               String data = '{"emisor": "${widget.MiCodigo}","tipo": "Descarte", "info": "${CSelecion[0]}"}';
