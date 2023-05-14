@@ -179,8 +179,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                             });
                                           } else {
                                             if (context.mounted) {
-                                              openSnackBar(context, const Text('Contraseña cambiada'));
                                               Navigator.pop(context);
+                                              openSnackBar(context, const Text('Contraseña cambiada'));
                                             }
                                           }
                                         }

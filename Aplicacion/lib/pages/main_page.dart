@@ -303,10 +303,9 @@ class _TournamentTabState extends State<TournamentTab> {
                     Map<String, dynamic>? res = await unirPartida(widget.codigo, (listaPendientes[0][index])["Clave"]);
                     if (context.mounted) {
                       if (res == null) {
-                        openSnackBar(context, const Text('No se ha podido enviar la petición'));
                         Navigator.pop(context);
+                        openSnackBar(context, const Text('No se ha podido enviar la petición'));
                       } else {
-                        openSnackBar(context, const Text('Uniendose'));
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) =>
@@ -318,6 +317,7 @@ class _TournamentTabState extends State<TournamentTab> {
                                   jug: res["jugadores"] ?? [],
                                   nueva: false)),
                         );
+                        openSnackBar(context, const Text('Uniendose'));
                       }
                     }
                   },

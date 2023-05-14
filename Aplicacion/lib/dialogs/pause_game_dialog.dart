@@ -21,8 +21,8 @@ class PauseGameDialog extends StatelessWidget {
             bool res = await pausarPartida(codigo,idPartida);
             if (context.mounted) {
               if (res == false) {
-                openSnackBar(context, const Text('No se ha podido enviar la petición'));
                 Navigator.pop(context);
+                openSnackBar(context, const Text('No se ha podido enviar la petición'));
               }
             }
 

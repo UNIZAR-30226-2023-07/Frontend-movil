@@ -17,19 +17,18 @@ class DenyFriendDialog extends StatelessWidget {
           onPressed: () async {
             bool res = await denegarAmigo(codigoEm, codigoRec);
             if (context.mounted) {
+              Navigator.pop(context);
               if (!res) {
-                openSnackBar(context, const Text('No se ha podido enviar la petición'));
+                openSnackBar(context, const Text('No se ha podido eliminar la solicitud'));
               } else {
-                openSnackBar(context, const Text('Petición enviada'));
+                openSnackBar(context, const Text('Solicitud eliminada'));
               }
             }
-            else openSnackBar(context, const Text('Peticion eliminada'));
-            Navigator.pop(context);
           },
           child: const Text('Sí'),
         ),
         FilledButton(
-          onPressed: () async {
+          onPressed: () {
             Navigator.pop(context);
           },
           child: const Text('No'),

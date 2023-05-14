@@ -24,10 +24,10 @@ class DeleteAccountDialog extends StatelessWidget {
             bool res = await borrarCuenta(code);
             if (context.mounted) {
               if (!res) {
-                openSnackBar(context, const Text('No se ha podido borrar la cuenta'));
                 Navigator.pop(context);
+                openSnackBar(context, const Text('No se ha podido borrar la cuenta'));
               } else {
-                await GoogleSignInApi.logout();
+                await GoogleSignInApi().signOut();
                 if (context.mounted) {
                   Navigator.pop(context);
                   Navigator.pop(context);

@@ -54,16 +54,16 @@ class JoinGameDialog extends StatelessWidget {
               Map<String, dynamic>? res = await unirPartida(codigo, idPartida.text);
               if (context.mounted) {
                 if (res == null) {
-                  openSnackBar(context, const Text('No se ha podido enviar la petición'));
                   Navigator.pop(context);
+                  openSnackBar(context, const Text('No se ha podido enviar la petición'));
                 } else {
-                  openSnackBar(context, const Text('Uniendose'));
                   Navigator.pop(context);
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => LobbyPage(creador: false, ranked: false, idPartida: idPartida.text,
                         MiCodigo: codigo, jug: res["jugadores"], email:email)),
                   );
+                  openSnackBar(context, const Text('Uniendose'));
                 }
               }
             }
@@ -78,11 +78,10 @@ class JoinGameDialog extends StatelessWidget {
               Map<String, dynamic>? res = await unirPartida(codigo, idPartida.text);
               if (context.mounted) {
                 if (res == null) {
-                  openSnackBar(context, const Text('No se ha podido enviar la petición'));
                   Navigator.pop(context);
+                  openSnackBar(context, const Text('No se ha podido enviar la petición'));
                 } else {
                   if (res["res"] == "ok") {
-                    openSnackBar(context, const Text('Uniendose'));
                     Navigator.pop(context);
                     Navigator.push(
                       context,
@@ -94,9 +93,10 @@ class JoinGameDialog extends StatelessWidget {
                               jug: res["jugadores"],
                               email: email)),
                     );
+                    openSnackBar(context, const Text('Uniendose'));
                   } else {
-                    openSnackBar(context, const Text('Sala llena'));
                     Navigator.pop(context);
+                    openSnackBar(context, const Text('Sala llena'));
                   }
                 }
               }

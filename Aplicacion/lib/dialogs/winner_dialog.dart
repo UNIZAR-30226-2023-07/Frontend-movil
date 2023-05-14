@@ -27,15 +27,17 @@ class WinnerDialog extends StatelessWidget {
       actionsAlignment: MainAxisAlignment.spaceAround,
       actions: [
         FilledButton(
-          onPressed: () {
+          onPressed: () async {
             if(!ranked){
-              AudioManager.toggleBGM(false);
-              openSnackBar(context, const Text('Gracias por jugar'));
-              Navigator.pop(context);
-              Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (
-                    context) => MyHomePage(email: email)),
-              );
+              await AudioManager.toggleBGM(false);
+              if (context.mounted) {
+                Navigator.pop(context);
+                Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (
+                      context) => MyHomePage(email: email)),
+                );
+                openSnackBar(context, const Text('Gracias por jugar'));
+              }
             } else{
               if(!finT) {
                 String data = '{"emisor": "${MiCodigo}","tipo": "Mostrar_tablero"}';
@@ -56,13 +58,15 @@ class WinnerDialog extends StatelessWidget {
                 //             email: email,
                 //             init: true,)),);
               } else {
-                AudioManager.toggleBGM(false);
-                openSnackBar(context, const Text('Gracias por jugar'));
-                Navigator.pop(context);
-                Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (
-                      context) => MyHomePage(email: email)),
-                );
+                await AudioManager.toggleBGM(false);
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (
+                        context) => MyHomePage(email: email)),
+                  );
+                  openSnackBar(context, const Text('Gracias por jugar'));
+                }
               }
             }
           },

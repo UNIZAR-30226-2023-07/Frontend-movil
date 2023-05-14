@@ -50,12 +50,12 @@ class AddFriendDialog extends StatelessWidget {
             if(addFriendFormKey.currentState!.validate()) {
               bool res = await nuevoAmigo(codigo, idAmigo.text);
               if (context.mounted) {
+                Navigator.pop(context);
                 if (!res) {
                   openSnackBar(context, const Text('No se ha podido enviar la petición'));
                 } else {
                   openSnackBar(context, const Text('Petición enviada'));
                 }
-                Navigator.pop(context);
               }
             }
           },

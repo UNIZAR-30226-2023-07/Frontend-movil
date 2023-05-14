@@ -12,7 +12,7 @@ import 'board_page.dart';
 import '../widgets/custom_filled_button.dart';
 import '../widgets/circular_border_picture.dart';
 
-const String _IP = '13.93.90.135';
+const String _IP = '20.160.173.253';
 const String _PUERTO = '3001';
 
 List<Map<String, dynamic>> jugadores = [];
@@ -258,6 +258,7 @@ class _LobbyPage extends State<LobbyPage> {
                   bool res = await iniciarPartida(widget.MiCodigo,widget.idPartida,_isChecked);
                   if (context.mounted) {
                     if (res == false) {
+                      Navigator.pop(context);
                       if(widget.ranked && widget.ranked){
                         openSnackBar(context, const Text('No estan todos los jugadores'));
                       } else if(!widget.creador){
@@ -265,7 +266,6 @@ class _LobbyPage extends State<LobbyPage> {
                       } else{
                         openSnackBar(context, const Text('No se ha podido enviar la petición'));
                       }
-                      Navigator.pop(context);
                     }
                   }
                 } else {

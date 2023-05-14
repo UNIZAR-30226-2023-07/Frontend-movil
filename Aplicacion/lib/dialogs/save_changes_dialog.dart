@@ -21,17 +21,17 @@ class SaveChangesDialog extends StatelessWidget {
           onPressed: () async {
               bool res = await editProfile(email, nombre, desc, foto);
               if (context.mounted) {
-                if (!res) {
-                  openSnackBar(context, const Text('No se han podido guardar los cambios'));
-                } else {
-                  openSnackBar(context, const Text('Cambios guardados'));
-                }
                 Navigator.pop(context);
                 Navigator.pop(context);
                 Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (
                       context) => MyHomePage(email: email)),
                 );
+                if (!res) {
+                  openSnackBar(context, const Text('No se han podido guardar los cambios'));
+                } else {
+                  openSnackBar(context, const Text('Cambios guardados'));
+                }
               }
             },
           child: const Text('Sí'),

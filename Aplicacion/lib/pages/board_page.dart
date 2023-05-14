@@ -16,7 +16,7 @@ import '../services/open_snack_bar.dart';
 import '../services/profile_image.dart';
 import '../widgets/circular_border_picture.dart';
 
-const String _IP = '13.93.90.135';
+const String _IP = '20.160.173.253';
 const String _PUERTO = '3001';
 
 List<int> CSelecion= [];
@@ -722,6 +722,7 @@ class _BoardPageState extends State<BoardPage>{
                             openSnackBar(context, const Text('Aun no has abierto'));
                           }
                             else if (modo == 2) {
+                            print(CSelecion.length);
                             if (CSelecion.length == 1) {
                               v = false;
                               String data = '{"emisor": "${widget.MiCodigo}","tipo": "Descarte", "info": "${CSelecion[0]}"}';
@@ -857,6 +858,7 @@ class _BoardPageState extends State<BoardPage>{
               ),
               Container(
                 width: double.infinity,
+                height: 110,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: FractionalOffset.topCenter,
@@ -1124,30 +1126,44 @@ class _CardViewState extends State<CardView> {
       }
     }
     print(selected);
-    return Container(
+    return SizedBox(
+      width: double.infinity,
       height: 100,
-      color: Colors.white.withOpacity(0),
-      child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
+      child: Stack(
             children: deck!.asMap().entries.map((entry) {
+              final numCards = deck!.asMap().entries.length;
+              final width = MediaQuery.of(context).size.width;
+              double availableSpace = width - 70.0; // 70.0 es el ancho de la tarjeta
+              double spacing = availableSpace / (numCards - 1);
               final int index = entry.key;
               final PlayingCard card = entry.value;
               if (widget.mano) {
-                return mostrar_carta[index] ? GestureDetector(
-                  child: PlayingCardView(
-                    card: card,
-                    style: myCardStyles,
-                    shape: selected[index]
-                        ? RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      side: BorderSide(
-                        color: Colors.lightBlueAccent,
-                        width: 3,
+                return mostrar_carta[index]
+                ? AnimatedPositioned(
+                  bottom: selected[index] ? 10 : 0,
+                  left: numCards <= 10
+                  ? (width - (numCards + 1) * 35) / 2 + index * 35.0
+                  : index * spacing,
+                  duration: const Duration(milliseconds: 500),
+                  curve: Curves.ease,
+                  child: GestureDetector(
+                    child: SizedBox(
+                      width: 70,
+                      height: 100,
+                      child: PlayingCardView(
+                        card: card,
+                        style: myCardStyles,
+                        shape: selected[index]
+                            ? RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          side: const BorderSide(
+                            color: Colors.lightBlueAccent,
+                            width: 3,
+                          ),
+                        )
+                            : null, // No shape border when not selected
                       ),
-                    )
-                        : null, // No shape border when not selected
-                  ),
+                    ),// No shape border when not selected
                   onTap: () {
                     AudioManager.toggleSFX(true);
                     setState(() {
@@ -1165,13 +1181,24 @@ class _CardViewState extends State<CardView> {
                       }
                     });
                   },
-                ) : SizedBox();
+                ),
+                ) : const SizedBox();
               } else {
-                return GestureDetector(
-                  child: PlayingCardView(
-                    card: card,
-                    style: myCardStyles,
-                  ),
+                return AnimatedPositioned(
+                  left: numCards <= 10
+                  ? (width - (numCards + 1) * 35) / 2 + index * 35.0
+                  : index * spacing,
+                  duration: const Duration(milliseconds: 500),
+                  curve: Curves.ease,
+                  child: GestureDetector(
+                    child: SizedBox(
+                        width: 70,
+                        height: 100,
+                    child: PlayingCardView(
+                        card: card,
+                        style: myCardStyles,
+                      ),
+                    ),
                   onTap: () {
                     AudioManager.toggleSFX(true);
                     setState(() {
@@ -1192,11 +1219,11 @@ class _CardViewState extends State<CardView> {
                       }
                     });
                   },
+                ),
                 );
               }
             }).toList(),
           ),
-        ),
     );
   }
 }

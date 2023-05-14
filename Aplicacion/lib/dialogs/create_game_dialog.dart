@@ -23,16 +23,16 @@ class CreateGameDialog extends StatelessWidget {
             Map<String, dynamic>? res = await crearPartida(codigo,"amistosa");
             if (context.mounted) {
               if (res == null) {
-                openSnackBar(context, const Text('No se ha podido enviar la petición'));
                 Navigator.pop(context);
+                openSnackBar(context, const Text('No se ha podido enviar la petición'));
               } else {
-                openSnackBar(context, const Text('Creando partida'));
                 Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => LobbyPage(email: email, creador: true,ranked: false,
                     idPartida: res["clave"], MiCodigo: codigo,)),
                 );
+                openSnackBar(context, const Text('Creando partida'));
               }
             }
           },
@@ -45,8 +45,8 @@ class CreateGameDialog extends StatelessWidget {
             Map<String, dynamic>? res = await crearPartida(codigo,"torneo");
             if (context.mounted) {
               if (res == null) {
-                openSnackBar(context, const Text('No se ha podido enviar la petición'));
                 Navigator.pop(context);
+                openSnackBar(context, const Text('No se ha podido enviar la petición'));
               } else {
                 Navigator.pop(context);
                 Navigator.push(

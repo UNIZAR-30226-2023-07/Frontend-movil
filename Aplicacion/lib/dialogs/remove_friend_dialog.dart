@@ -17,14 +17,13 @@ class RemoveFriendDialog extends StatelessWidget {
           onPressed: () async {
             bool res = await denegarAmigo(codigoEm, codigoRec);
             if (context.mounted) {
+              Navigator.pop(context);
               if (!res) {
                 openSnackBar(context, const Text('No se ha podido enviar la petición'));
               } else {
                 openSnackBar(context, const Text('Amigo eliminado'));
               }
             }
-            else openSnackBar(context, const Text('Amigo eliminado'));
-            Navigator.pop(context);
           },
           child: const Text('Sí'),
         ),

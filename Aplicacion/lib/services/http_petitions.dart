@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import '../services/encrypt_password.dart';
 
-const String _IP = '13.93.90.135';
+const String _IP = '20.160.173.253';
 const String _PUERTO = '3001';
 
 const String _loginURL = 'http://$_IP:$_PUERTO/api/auth/login';

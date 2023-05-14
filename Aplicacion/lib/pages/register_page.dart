@@ -31,11 +31,11 @@ class _RegisterPageState extends State<RegisterPage> {
 
   void _actions(bool response, BuildContext context, String email) {
     if (response) {
-      openSnackBar(context, const Text('Bienvenido'));
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => MyHomePage(email: email)),
       );
+      openSnackBar(context, const Text('Bienvenido'));
     } else {
       openSnackBar(context, const Text('Ha habido un error'));
     }

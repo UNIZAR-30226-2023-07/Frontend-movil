@@ -13,13 +13,15 @@ class CloseSessionDialog extends StatelessWidget {
       actionsAlignment: MainAxisAlignment.spaceAround,
       actions: [
         FilledButton(
-          onPressed: () {
-            GoogleSignInApi().logOut();
-            Navigator.pop(context);
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const Login()),
-            );
+          onPressed: () async {
+            await GoogleSignInApi().signOut();
+            if (context.mounted) {
+              Navigator.pop(context);
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const Login()),
+              );
+            }
           },
           child: const Text('Sí'),
         ),

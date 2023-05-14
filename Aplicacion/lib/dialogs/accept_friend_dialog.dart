@@ -17,17 +17,12 @@ class AcceptFriendDialog extends StatelessWidget {
           onPressed: () async {
             bool res = await aceptarAmigo(codigoEm, codigoRec);
             if (context.mounted) {
-              if (!res) {
-                openSnackBar(context, const Text('No se ha podido enviar la petición'));
-              } else {
-                openSnackBar(context, const Text('Petición enviada'));
-              }
-            }
-            else {
-              openSnackBar(context, const Text('Amigo añadido'));
-            }
-            if (context.mounted) {
               Navigator.pop(context);
+              if (!res) {
+                openSnackBar(context, const Text('No se ha podido aceptar la solicitud'));
+              } else {
+                openSnackBar(context, const Text('Amigo añadido'));
+              }
             }
           },
           child: const Text('Sí'),
@@ -36,17 +31,12 @@ class AcceptFriendDialog extends StatelessWidget {
           onPressed: () async {
             bool res = await denegarAmigo(codigoEm, codigoRec);
             if (context.mounted) {
-              if (!res) {
-                openSnackBar(context, const Text('No se ha podido enviar la petición'));
-              } else {
-                openSnackBar(context, const Text('Petición enviada'));
-              }
-            }
-            else {
-              openSnackBar(context, const Text('Solicitud denegada'));
-            }
-            if (context.mounted) {
               Navigator.pop(context);
+              if (!res) {
+                openSnackBar(context, const Text('No se ha podido denegadar la solicitud'));
+              } else {
+                openSnackBar(context, const Text('Solicitud denegada'));
+              }
             }
           },
           child: const Text('No'),
