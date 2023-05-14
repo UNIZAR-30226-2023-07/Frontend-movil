@@ -47,6 +47,7 @@ class _LobbyPage extends State<LobbyPage> {
   late final ws_partida;
   late StreamSubscription subscription;
   bool _load = false;
+  Map<String, String> turnos = {};
 
   @override
   void initState() {
@@ -75,26 +76,27 @@ class _LobbyPage extends State<LobbyPage> {
         String tipo = indice >= 0
             ? datos["tipo"].substring(0, indice)
             : datos["tipo"];
-        if (tipo == "Partida_Iniciada" && widget.nueva) {
-          openSnackBar(context, const Text('Iniciando partida'));
-          Map<String, String> turnos = {};
+        if (tipo == "Partida_Iniciada") {
+          turnos.clear();
           for (int i = 0; i < datos["turnos"].length; i++) {
             List<dynamic> t = datos["turnos"][i];
             turnos[t[1]] = t[0];
           }
-
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) =>
-                BoardPage(init: true,
-                    idPartida: widget.idPartida,
-                    MiCodigo: widget.MiCodigo,
-                    turnos: turnos,
-                    ranked: widget.ranked,
-                    creador: widget.creador,
-                    email: widget.email,
-                    ws_partida: ws_partida)),
-          );
+          if(widget.nueva) {
+            openSnackBar(context, const Text('Iniciando partida'));
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) =>
+                  BoardPage(init: true,
+                      idPartida: widget.idPartida,
+                      MiCodigo: widget.MiCodigo,
+                      turnos: turnos,
+                      ranked: widget.ranked,
+                      creador: widget.creador,
+                      email: widget.email,
+                      ws_partida: ws_partida)),
+            );
+          }
         } else if (tipo == "Nuevo_Jugador" || tipo == "Nuevo_Jugador ") {
           String N_codigo = indice >= 0
               ? datos["tipo"].substring(indice + 2)
@@ -102,11 +104,6 @@ class _LobbyPage extends State<LobbyPage> {
           recuperarUser(N_codigo);
         } else if (tipo == "Partida_reanudada" && !widget.nueva) {
           openSnackBar(context, const Text('Reanudando partida'));
-          Map<String, String> turnos = {};
-          for (int i = 0; i < datos["turnos"].length; i++) {
-            List<dynamic> t = datos["turnos"][i];
-            turnos[t[1]] = t[0];
-          }
 
           Navigator.push(
             context,

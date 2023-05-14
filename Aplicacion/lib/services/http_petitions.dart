@@ -25,7 +25,7 @@ const String _crearPartidaURL = 'http://$_IP:$_PUERTO/api/partida/crear';
 const String _unirPartidaURL = 'http://$_IP:$_PUERTO/api/partida/join';
 const String _iniciarPartidaURL = 'http://$_IP:$_PUERTO/api/partida/iniciar';
 const String _pausarPartidaURL = 'http://$_IP:$_PUERTO/api/partida/pausar';
-const String _borrarCuentaURL = 'http://$_IP:$_PUERTO/api'; //terminar
+const String _borrarCuentaURL = 'http://$_IP:$_PUERTO/api/jugador/del/'; //terminar
 const String _getHistorialURL = 'http://$_IP:$_PUERTO/api'; //terminar
 
 class User {
@@ -332,15 +332,22 @@ Future<bool> pausarPartida(String codigo, String partida) async {
   return response.statusCode == 200 || response.statusCode == 202;
 }
 
-Future<bool> borrarCuenta(String email) async {
-  final json = '{"email": "$email"}';
+Future<bool> borrarCuenta(String code) async {
+  String uri = "$_borrarCuentaURL$code";
 
-  final response = await http.post(Uri.parse(_borrarCuentaURL), body: json);
+  final response = await http.get(Uri.parse(uri));
 
-  print(response.statusCode);
-  print(response.body);
+  //print(response.statusCode);
 
-  return response.statusCode == 200 || response.statusCode == 202;
+  Map<String, dynamic>? datos = null;
+  bool ret = false;
+  if (response.statusCode == 200 || response.statusCode == 202) {
+    datos = jsonDecode(response.body);
+    ret = datos!["res"] == "usuario eliminado";
+  } else {
+    print('Error al hacer la solicitud: ${response.statusCode}');
+  }
+  return ret;
 }
 
 Future <Map<String, dynamic>?> getHistorial(String codigo) async {

@@ -114,7 +114,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
             ),
-            ListView.separated(
+            /*ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: 20,
@@ -141,7 +141,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 );
               },
               separatorBuilder: (context, index) => const Divider(),
-            ),
+            ),*/
           ],
         ),
       ),
