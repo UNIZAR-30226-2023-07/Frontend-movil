@@ -84,26 +84,41 @@ class _LobbyPage extends State<LobbyPage> {
             List<dynamic> t = datos["turnos"][i];
             turnos[t[1]] = t[0];
           }
-          if (widget.nueva) {
-            openSnackBar(context, const Text('Iniciando partida'));
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) =>
-                  BoardPage(init: true,
-                      idPartida: widget.idPartida,
-                      MiCodigo: widget.MiCodigo,
-                      turnos: turnos,
-                      ranked: widget.ranked,
-                      creador: widget.creador,
-                      email: widget.email,
-                      ws_partida: ws_partida)),
-            );
-          }
         } else if (tipo == "Nuevo_Jugador" || tipo == "Nuevo_Jugador ") {
           String N_codigo = indice >= 0
               ? datos["tipo"].substring(indice + 2)
               : "";
           recuperarUser(N_codigo);
+        } else if(tipo == "Partida_Creada"){
+          openSnackBar(context, const Text('Iniciando torneo'));
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) =>
+                BoardPage(init: true,
+                    idPartida: widget.idPartida,
+                    MiCodigo: widget.MiCodigo,
+                    turnos: turnos,
+                    ranked: widget.ranked,
+                    creador: widget.creador,
+                    email: widget.email,
+                    ws_partida: ws_partida)),
+          );
+        }
+        else if (tipo == "Partida_reanudada" && !widget.nueva) {
+          openSnackBar(context, const Text('Reanudando torneo'));
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) =>
+                BoardPage(init: true,
+                    idPartida: widget.idPartida,
+                    MiCodigo: widget.MiCodigo,
+                    turnos: turnos,
+                    ranked: widget.ranked,
+                    creador: widget.creador,
+                    email: widget.email,
+                    ws_partida: ws_partida)),
+          );
         }
       });
     }
@@ -121,22 +136,22 @@ class _LobbyPage extends State<LobbyPage> {
             List<dynamic> t = datos["turnos"][i];
             turnos[t[1]] = t[0];
           }
-          if(widget.nueva) {
-            openSnackBar(context, const Text('Iniciando partida'));
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) =>
-                  BoardPage(init: true,
-                      idPartida: widget.idPartida,
-                      MiCodigo: widget.MiCodigo,
-                      turnos: turnos,
-                      ranked: widget.ranked,
-                      creador: widget.creador,
-                      email: widget.email,
-                      ws_partida: ws_partida)),
-            );
-          }
-        } else if (tipo == "Nuevo_Jugador" || tipo == "Nuevo_Jugador ") {
+        } else if(tipo == "Partida_Creada"){
+          openSnackBar(context, const Text('Iniciando partida'));
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) =>
+                BoardPage(init: true,
+                    idPartida: widget.idPartida,
+                    MiCodigo: widget.MiCodigo,
+                    turnos: turnos,
+                    ranked: widget.ranked,
+                    creador: widget.creador,
+                    email: widget.email,
+                    ws_partida: ws_partida)),
+          );
+        }
+        else if (tipo == "Nuevo_Jugador" || tipo == "Nuevo_Jugador ") {
           String N_codigo = indice >= 0
               ? datos["tipo"].substring(indice + 2)
               : "";
