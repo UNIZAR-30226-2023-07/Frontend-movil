@@ -8,10 +8,9 @@ import '../services/local_storage.dart';
 
 class SettingsPage extends StatefulWidget {
 
-  final String email;
   final String code;
 
-  const SettingsPage({super.key, required this.email, required this.code});
+  const SettingsPage({super.key, required this.code});
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();

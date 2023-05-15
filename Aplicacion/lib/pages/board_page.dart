@@ -9,6 +9,7 @@ import 'package:untitled/dialogs/winner_dialog.dart';
 import 'package:untitled/pages/rules_page.dart';
 import 'package:untitled/services/audio_manager.dart';
 import 'package:untitled/services/http_petitions.dart';
+import 'package:untitled/widgets/custom_filled_button.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:web_socket_channel/io.dart';
 import '../pages/chat_page.dart';
@@ -73,6 +74,11 @@ class _BoardPageState extends State<BoardPage>{
 
     //Hacer que la pantalla no se pueda apagar
     Wakelock.enable();
+
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+    ]);
 
     fotos.clear();
     if(widget.init) {
@@ -601,6 +607,11 @@ class _BoardPageState extends State<BoardPage>{
     //Permitir que la pantalla se pueda apagar
     Wakelock.disable();
 
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+
     subscription_p.cancel();
     widget.ws_partida!.sink.close();
     super.dispose();
@@ -631,36 +642,111 @@ class _BoardPageState extends State<BoardPage>{
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-        onWillPop: () async {
-          if(widget.creador && modo == 1) {
-            showDialog(
-                context: context,
-                builder: (context) =>  PauseGameDialog(codigo: widget.MiCodigo, idPartida: widget.idPartida,)
-            );
-          } else{
-            openSnackBar(context, const Text("Solo puede parar una partida su creador en su turno"));
-            return false;
-          }
+      onWillPop: () async {
+        if(widget.creador && modo == 1) {
+          showDialog(
+              context: context,
+              builder: (context) =>  PauseGameDialog(codigo: widget.MiCodigo, idPartida: widget.idPartida,)
+          );
+        } else{
+          openSnackBar(context, const Text("Solo puede parar una partida su creador en su turno"));
+          return false;
+        }
       return true;
     },
     child: Scaffold(
       body: !_load
-          ? const Center(child: CircularProgressIndicator())
-      :Container(
+      ? const Center(child: CircularProgressIndicator())
+      : Container(
         color: Colors.green.shade900,
         child: Column(
             children: [
               const SizedBox(height: 10),
-              SizedBox(
-                height: 100,
+              Expanded(
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
+                    Expanded(
+                      flex: 2,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: List.generate(4, (index) => Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: AnimatedContainer(
+                              height: 60,
+                              duration: const Duration(milliseconds: 300),
+                              decoration: BoxDecoration(
+                                color: t_actual != widget.turnos["$index"] ? Theme.of(context).colorScheme.secondaryContainer : Colors.indigoAccent[100],
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(0, 3, 10, 3),
+                                    child: CircularBorderPicture(image: ProfileImage.urls[fotos[index] % 9]!),
+                                  ),
+                                  Column(
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Text(
+                                          "${widget.turnos[index.toString()]}",
+                                        ),
+                                        !widget.ranked
+                                        ? Text('${widget.num_cartas[index.toString()]} cartas')
+                                        : Text('${puntos[index]} puntos // ${widget.num_cartas[index.toString()]} cartas')
+                                      ]
+                                  ),
+                                ],
+                              )
+                          ),
+                        ))
+                      )
+                    ),
+                    Expanded(
+                      flex: 5,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: Column(
+                          children: t.map((e) =>
+                              Column(
+                                children: [
+                                  CardView(ws_partida: widget.ws_partida, c: e, mano: false,idPartida: widget.idPartida,MiCodigo: widget.MiCodigo),
+                                ],
+                              )).toList(),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: 110,
+                margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  gradient: LinearGradient(
+                    begin: FractionalOffset.topCenter,
+                    end: FractionalOffset.bottomCenter,
+                    colors: [
+                      /*
+                      Colors.brown.shade900,
+                      Colors.brown,
+                      Colors.brown.shade900
+                      */
+                      Theme.of(context).colorScheme.secondaryContainer,
+                      Theme.of(context).colorScheme.tertiaryContainer,
+                    ],
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    const SizedBox(width: 10,),
                     Container(
                       height: 100,
+                      width: 70,
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.white),
-                        borderRadius: BorderRadius.circular(10)
+                          border: Border.all(color: Theme.of(context).colorScheme.primary),
+                          borderRadius: BorderRadius.circular(10)
                       ),
                       child: GestureDetector(
                         onTap: () {
@@ -680,37 +766,13 @@ class _BoardPageState extends State<BoardPage>{
                         ),
                       ),
                     ),
-                    abrir == 1 ?
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          if (modo == 2) {
-                            List<String> cartas = [];
-                            for(List<int> i in Indices_abrir){
-                              String _cartas = i[0].toString();
-                              for (int j = 1; j < i.length; j++) {
-                                _cartas = _cartas + "," +
-                                    i[j].toString();
-                              }
-                              _cartas = "\"$_cartas\"";
-                              cartas.add(_cartas);
-                            }
-                            abrir = 0;
-                            print("$cartas");
-                            String data = '{"emisor": "${widget.MiCodigo}","tipo": "Abrir", "cartas": $cartas}';
-                            widget.ws_partida!.sink.add(data);
-                              //mandar peticion a logica de que quiero cerrar
-                          }
-                        });
-                      },
-                      child: const Text('Fin Abrir'),
-                    )
-                        : Container(
+                    const SizedBox(width: 10,),
+                    Container(
                       height: 100,
                       width: 70,
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.white),
-                        borderRadius: BorderRadius.circular(10)
+                          border: Border.all(color: Theme.of(context).colorScheme.primary),
+                          borderRadius: BorderRadius.circular(10)
                       ),
                       child: GestureDetector(
                         behavior: HitTestBehavior.opaque,
@@ -721,7 +783,7 @@ class _BoardPageState extends State<BoardPage>{
                           } else if(modo == 1 && descarte != null && abrir == 0){
                             openSnackBar(context, const Text('Aun no has abierto'));
                           }
-                            else if (modo == 2) {
+                          else if (modo == 2) {
                             print(CSelecion.length);
                             if (CSelecion.length == 1) {
                               v = false;
@@ -747,134 +809,160 @@ class _BoardPageState extends State<BoardPage>{
                         ),
                       ),
                     ),
-                    Column(
-                      children: [
-                        Stack(
-                          children:[
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(context,
-                                  MaterialPageRoute(builder: (
-                                      context) => ChatPage( amistad: false, idPartida: widget.idPartida, MiCodigo: widget.MiCodigo,)),);
-                              },
-                              child: const Text('Mostrar chat'),
-                            ),
-
-                          ],
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              if(modo == 2 && abrir == 0){
-                                abrir = 1;
-                                openSnackBar(context, const Text('Añade las combinaciones para abrir'));
-                              }
-                              else if(modo == 1){
-                                openSnackBar(context, const Text('Roba una carta para comenzar'));
-                              }
-                              else {
-                                if (CSelecion.isNotEmpty) {
-                                  if (abrir == 1) {
-                                    List<int> temp_i = [];
-                                    for (int i in CSelecion) {
-                                      temp_i.add(i);
-                                      mostrar_carta[i] = false;
-                                    }
-                                    Indices_abrir.add(temp_i);
-
-                                    List<Carta> temp = [];
-                                    for (int i in CSelecion) {
-                                      temp.add(cartMano[i]);
-                                    }
-                                    Cartas_abrir.add(temp);
-
-                                    // CSelecion.sort((a, b) => b.compareTo(a));
-                                    // for (int i in CSelecion) {
-                                    //   cartMano.removeAt(i);
-                                    // }
-                                    CSelecion.clear();
-                                    if(v) {
+                    const SizedBox(width: 10,),
+                    Expanded(child: CardView(ws_partida: widget.ws_partida,c: cartMano,mano: true,idPartida: widget.idPartida,MiCodigo: widget.MiCodigo),),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                        width: 200,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            abrir == 1
+                            ? const SizedBox.shrink()
+                            : Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                IconButton(
+                                  tooltip: 'Salir de la partida',
+                                  onPressed: ()async {
+                                    if(widget.creador && modo == 1) {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) =>  PauseGameDialog(codigo: widget.MiCodigo, idPartida: widget.idPartida,)
+                                      );
+                                    } else {
                                       openSnackBar(context, const Text(
-                                          'Se han eviado las cartas, una vez hayas colocado las suficientes combinaciones '
-                                              'para abrir pulsa Fin Abrir y recibiras los resultados'));
+                                          "Solo puede parar una partida su creador en su turno"));
                                     }
-                                    setState(() {
+                                  },
+                                  icon: Icon(Icons.exit_to_app, color: Theme.of(context).colorScheme.primary,),
+                                ),
+                                IconButton(
+                                  tooltip: 'Ver reglas',
+                                  onPressed: _openRulesPage,
+                                  icon: Icon(Icons.info, color: Theme.of(context).colorScheme.primary,),
+                                ),
+                                IconButton(
+                                  tooltip: 'Mostrar chat',
+                                  onPressed: () {
+                                    Navigator.push(context,
+                                      MaterialPageRoute(builder: (
+                                          context) => ChatPage( amistad: false, idPartida: widget.idPartida, MiCodigo: widget.MiCodigo,)),);
+                                  },
+                                  icon: Icon(Icons.people_alt, color: Theme.of(context).colorScheme.primary,),
+                                ),
+                              ],
+                            ),
+                            CustomFilledButton(
+                              height: 40,
+                              content: abrir == 0 ? const Text('Abrir') : const Text('Añadir Combinación'),
+                              onPressed: () {
+                                setState(() {
+                                  if(modo == 2 && abrir == 0){
+                                    abrir = 1;
+                                    openSnackBar(context, const Text('Añade las combinaciones para abrir'));
+                                  }
+                                  else if(modo == 1){
+                                    openSnackBar(context, const Text('Roba una carta para comenzar'));
+                                  }
+                                  else {
+                                    if (CSelecion.isNotEmpty) {
+                                      if (abrir == 1) {
+                                        List<int> temp_i = [];
+                                        for (int i in CSelecion) {
+                                          temp_i.add(i);
+                                          mostrar_carta[i] = false;
+                                        }
+                                        Indices_abrir.add(temp_i);
 
-                                    });
-                                    // Navigator.pushReplacement(context,
-                                    //   MaterialPageRoute(
-                                    //       builder: (context) =>
-                                    //           BoardPage(
-                                    //             actualizar: false,
-                                    //             ws_partida: widget.ws_partida,
-                                    //             idPartida: widget.idPartida,
-                                    //             MiCodigo: widget.MiCodigo,
-                                    //             turnos: widget.turnos,
-                                    //             ranked: widget.ranked,
-                                    //             creador: widget.creador,
-                                    //             email: widget.email)),);
-                                  }
-                                  else if (abrir == 2) {
-                                    String _cartas = CSelecion[0].toString();
-                                    for (int i = 1; i < CSelecion.length; i++) {
-                                      _cartas = _cartas + "," +
-                                          CSelecion[i].toString();
+                                        List<Carta> temp = [];
+                                        for (int i in CSelecion) {
+                                          temp.add(cartMano[i]);
+                                        }
+                                        Cartas_abrir.add(temp);
+
+                                        // CSelecion.sort((a, b) => b.compareTo(a));
+                                        // for (int i in CSelecion) {
+                                        //   cartMano.removeAt(i);
+                                        // }
+                                        CSelecion.clear();
+                                        if(v) {
+                                          openSnackBar(context, const Text(
+                                              'Se han eviado las cartas, una vez hayas colocado las suficientes combinaciones '
+                                                  'para abrir pulsa Fin Abrir y recibiras los resultados'));
+                                        }
+                                        setState(() {
+
+                                        });
+                                        // Navigator.pushReplacement(context,
+                                        //   MaterialPageRoute(
+                                        //       builder: (context) =>
+                                        //           BoardPage(
+                                        //             actualizar: false,
+                                        //             ws_partida: widget.ws_partida,
+                                        //             idPartida: widget.idPartida,
+                                        //             MiCodigo: widget.MiCodigo,
+                                        //             turnos: widget.turnos,
+                                        //             ranked: widget.ranked,
+                                        //             creador: widget.creador,
+                                        //             email: widget.email)),);
+                                      }
+                                      else if (abrir == 2) {
+                                        String _cartas = CSelecion[0].toString();
+                                        for (int i = 1; i < CSelecion.length; i++) {
+                                          _cartas = _cartas + "," +
+                                              CSelecion[i].toString();
+                                        }
+                                        _cartas = "\"$_cartas\"";
+                                        List<String> cartas = [_cartas];
+                                        String data = '{"emisor": "${widget
+                                            .MiCodigo}","tipo": "Colocar_combinacion", "cartas": $cartas}';
+                                        widget.ws_partida!.sink.add(data);
+                                      }
                                     }
-                                    _cartas = "\"$_cartas\"";
-                                    List<String> cartas = [_cartas];
-                                    String data = '{"emisor": "${widget
-                                        .MiCodigo}","tipo": "Colocar_combinacion", "cartas": $cartas}';
-                                    widget.ws_partida!.sink.add(data);
+                                    else{
+                                      openSnackBar(context, const Text('Debes seleccionar las cartas a añadir'));
+                                    }
                                   }
-                                }
-                                else{
-                                  openSnackBar(context, const Text('Debes seleccionar las cartas a añadir'));
-                                }
-                              }
-                            });
-                          },
-                          child: abrir == 0 ? const Text('Abrir') : const Text('Añadir Combinación'),
-                        ),
-                      ],
-                    )
+                                });
+                              },
+                            ),
+                            abrir == 1 ?
+                            CustomFilledButton(
+                              height: 40,
+                              content: const Text('Fin Abrir'),
+                              onPressed: () {
+                                setState(() {
+                                  if (modo == 2) {
+                                    List<String> cartas = [];
+                                    for(List<int> i in Indices_abrir){
+                                      String _cartas = i[0].toString();
+                                      for (int j = 1; j < i.length; j++) {
+                                        _cartas = _cartas + "," +
+                                            i[j].toString();
+                                      }
+                                      _cartas = "\"$_cartas\"";
+                                      cartas.add(_cartas);
+                                    }
+                                    abrir = 0;
+                                    print("$cartas");
+                                    String data = '{"emisor": "${widget.MiCodigo}","tipo": "Abrir", "cartas": $cartas}';
+                                    widget.ws_partida!.sink.add(data);
+                                    //mandar peticion a logica de que quiero cerrar
+                                  }
+                                });
+                              },
+                            )
+                            : const SizedBox.shrink(),
+                          ],
+                        )
+                    ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 10,),
-              const Divider(color: Colors.white,),
-              Expanded(
-                child:SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: Column(
-                    children: t.map((e) =>
-                      Column(
-                        children: [
-                          CardView(ws_partida: widget.ws_partida, c: e, mano: false,idPartida: widget.idPartida,MiCodigo: widget.MiCodigo),
-                          const Divider(color: Colors.white,),
-                        ],
-                      )).toList(),
-                  ),
-                ),
-              ),
-              Container(
-                width: double.infinity,
-                height: 110,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: FractionalOffset.topCenter,
-                    end: FractionalOffset.bottomCenter,
-                    colors: [
-                      Colors.brown.shade900,
-                      Colors.brown,
-                      Colors.brown.shade900
-                    ],
-                  ),
-                ),
-
-                child: CardView(ws_partida: widget.ws_partida,c: cartMano,mano: true,idPartida: widget.idPartida,MiCodigo: widget.MiCodigo),
               )
             ]),
       ),
+      /*
       appBar: AppBar(
         title: Text('Turno de: $t_actual'),
         actions: [
@@ -890,40 +978,41 @@ class _BoardPageState extends State<BoardPage>{
           ),
         ],
       ),
+      */
     ),
     );
   }
   Future _openBottomSheet() => showModalBottomSheet(
     context: context,
     builder: (context) => ListView.separated(
-    shrinkWrap: true,
-    physics: const NeverScrollableScrollPhysics(),
-    itemCount: widget.turnos.length,
-    itemBuilder: (context, index)  {
-      return ListTile(
-        leading: CircularBorderPicture(image: ProfileImage.urls[fotos[index] % 9]!),
-        title: Row(
-          children: [
-            Text(
-              "${widget.turnos[index.toString()]}",
-              style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: widget.turnos.length,
+      itemBuilder: (context, index)  {
+        return ListTile(
+          leading: CircularBorderPicture(image: ProfileImage.urls[fotos[index] % 9]!),
+          title: Row(
+            children: [
+              Text(
+                "${widget.turnos[index.toString()]}",
+                style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold
+                ),
               ),
-            ),
-          ],
-        ),
-        trailing: !widget.ranked
-        ? Badge(
-          label: Text('${widget.num_cartas[index.toString()]} cartas')
-        ) :
-        Badge(
-            label: Text('${puntos[index]} puntos // ${widget.num_cartas[index.toString()]} cartas')
-        )
-      );
-    },
-    separatorBuilder: (context, index) => const Divider(),
-  ),
+            ],
+          ),
+          trailing: !widget.ranked
+          ? Badge(
+            label: Text('${widget.num_cartas[index.toString()]} cartas')
+          ) :
+          Badge(
+              label: Text('${puntos[index]} puntos // ${widget.num_cartas[index.toString()]} cartas')
+          )
+        );
+      },
+      separatorBuilder: (context, index) => const Divider(),
+    ),
   );
 
   void _openRulesPage() {
@@ -1128,12 +1217,12 @@ class _CardViewState extends State<CardView> {
     print(selected);
     return SizedBox(
       width: double.infinity,
-      height: 100,
+      height: 110,
       child: Stack(
             children: deck!.asMap().entries.map((entry) {
               final numCards = deck!.asMap().entries.length;
               final width = MediaQuery.of(context).size.width;
-              double availableSpace = width - 70.0; // 70.0 es el ancho de la tarjeta
+              double availableSpace = width - 390 - 70.0; // 70.0 es el ancho de la tarjeta
               double spacing = availableSpace / (numCards - 1);
               final int index = entry.key;
               final PlayingCard card = entry.value;
@@ -1142,9 +1231,9 @@ class _CardViewState extends State<CardView> {
                 ? AnimatedPositioned(
                   bottom: selected[index] ? 10 : 0,
                   left: numCards <= 10
-                  ? (width - (numCards + 1) * 35) / 2 + index * 35.0
+                  ? (width - 390 - (numCards + 1) * 35) / 2 + index * 35.0
                   : index * spacing,
-                  duration: const Duration(milliseconds: 500),
+                  duration: const Duration(milliseconds: 300),
                   curve: Curves.ease,
                   child: GestureDetector(
                     child: SizedBox(
@@ -1156,8 +1245,8 @@ class _CardViewState extends State<CardView> {
                         shape: selected[index]
                             ? RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
-                          side: const BorderSide(
-                            color: Colors.lightBlueAccent,
+                          side: BorderSide(
+                            color: Theme.of(context).colorScheme.primary,
                             width: 3,
                           ),
                         )
@@ -1186,9 +1275,9 @@ class _CardViewState extends State<CardView> {
               } else {
                 return AnimatedPositioned(
                   left: numCards <= 10
-                  ? (width - (numCards + 1) * 35) / 2 + index * 35.0
+                  ? ((width - (width / 7 * 2)) - (numCards + 1) * 35) / 2 + index * 35.0
                   : index * spacing,
-                  duration: const Duration(milliseconds: 500),
+                  duration: const Duration(milliseconds: 300),
                   curve: Curves.ease,
                   child: GestureDetector(
                     child: SizedBox(

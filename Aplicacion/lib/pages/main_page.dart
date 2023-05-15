@@ -90,7 +90,7 @@ class TopSection extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: Colors.indigoAccent,
+                    color: Theme.of(context).colorScheme.primary,
                     width: 3.0,
                   ),
                 ),
@@ -105,8 +105,8 @@ class TopSection extends StatelessWidget {
               ),
               Text(
                 user["nombre"],
-                style: const TextStyle(
-                  color: Colors.indigoAccent,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.primary,
                   fontSize: 25,
                   fontWeight: FontWeight.bold,
                 ),
@@ -498,29 +498,29 @@ class _RankingTabState extends State<RankingTab> {
                     child: Row(
                       children: [
                         (index == 0)
-                            ? const Icon(
+                        ? const Icon(
                           Icons.wine_bar,
                           color: Colors.amber,
                           size: 35,
                         )
-                            : (index == 1)
-                            ? const Icon(
+                        : (index == 1)
+                        ? const Icon(
                           Icons.wine_bar,
                           color: Colors.grey,
                           size: 35,
                         )
-                            : (index == 2)
-                            ? const Icon(
+                        : (index == 2)
+                        ? const Icon(
                           Icons.wine_bar,
                           color: Colors.deepOrangeAccent,
                           size: 35,
                         )
-                            : Padding(
+                        : Padding(
                           padding: const EdgeInsets.only(left: 8.0),
                           child: Text(
                             '$index',
-                            style: const TextStyle(
-                                fontSize: 25, color: Colors.indigoAccent),
+                            style: TextStyle(
+                                fontSize: 25, color: Theme.of(context).colorScheme.primary),
                           ),
                         ),
                         const Spacer(),

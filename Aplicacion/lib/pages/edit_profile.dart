@@ -63,7 +63,7 @@ class _EditProfilePageState extends State<EditProfilePage>{
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: Colors.indigoAccent,
+                      color: Theme.of(context).colorScheme.primary,
                       width: 3.0,
                     ),
                   ),
@@ -101,8 +101,8 @@ class _EditProfilePageState extends State<EditProfilePage>{
               RichText(
                 text: TextSpan(
                   text: widget.nombre,
-                  style: const TextStyle(
-                    color: Colors.indigoAccent,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
                     fontSize: 25,
                     fontWeight: FontWeight.bold,
                   ),

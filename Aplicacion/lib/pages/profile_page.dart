@@ -71,7 +71,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => SettingsPage(email: widget.email, code: widget.user!["codigo"],),
+                    builder: (context) => SettingsPage(code: widget.user!["codigo"],),
                   ),
                 );
               } else if (menu == 1) {

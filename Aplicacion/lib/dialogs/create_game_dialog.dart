@@ -18,7 +18,7 @@ class CreateGameDialog extends StatelessWidget {
       actionsOverflowAlignment: OverflowBarAlignment.center,
       actions: [
         CustomFilledButton(
-          width: 40,
+          height: 40,
           onPressed: () async {
             Map<String, dynamic>? res = await crearPartida(codigo,"amistosa");
             if (context.mounted) {
@@ -40,7 +40,7 @@ class CreateGameDialog extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         CustomFilledButton(
-          width: 40,
+          height: 40,
           onPressed: () async {
             Map<String, dynamic>? res = await crearPartida(codigo,"torneo");
             if (context.mounted) {

@@ -48,7 +48,7 @@ class JoinGameDialog extends StatelessWidget {
       actionsOverflowAlignment: OverflowBarAlignment.center,
       actions: [
         CustomFilledButton(
-          width: 40,
+          height: 40,
           onPressed: () async {
             if(joinGameFormKey.currentState!.validate()) {
               Map<String, dynamic>? res = await unirPartida(codigo, idPartida.text);
@@ -72,7 +72,7 @@ class JoinGameDialog extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         CustomFilledButton(
-          width: 40,
+          height: 40,
           onPressed: () async {
             if(joinGameFormKey.currentState!.validate()) {
               Map<String, dynamic>? res = await unirPartida(codigo, idPartida.text);
@@ -106,7 +106,7 @@ class JoinGameDialog extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         CustomFilledButton(
-          width: 40,
+          height: 40,
           onPressed: () {
             Navigator.pop(context);
           },

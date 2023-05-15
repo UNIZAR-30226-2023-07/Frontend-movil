@@ -24,7 +24,7 @@ class CircularBorderPicture extends StatelessWidget {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             border: Border.all(
-              color: Colors.indigoAccent,
+              color: Theme.of(context).colorScheme.primary,
               width: 3.0,
             ),
           ),
