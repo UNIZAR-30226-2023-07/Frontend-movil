@@ -91,6 +91,7 @@ class _BoardPageState extends State<BoardPage> {
       DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft,
     ]);
+
     if (widget.init) {
       AudioManager.toggleBGM(true);
       abrir = 0;
@@ -661,6 +662,8 @@ class _BoardPageState extends State<BoardPage> {
       DeviceOrientation.portraitDown,
     ]);
 
+    AudioManager.toggleBGM(false);
+
     subscription_p.cancel();
     widget.ws_partida!.sink.close();
     super.dispose();
@@ -689,6 +692,11 @@ class _BoardPageState extends State<BoardPage> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.black,
+      statusBarBrightness: Brightness.dark,
+      statusBarIconBrightness: Brightness.light,
+    ));
     return WillPopScope(
       onWillPop: () async {
         if (widget.creador && modo == 1) {
@@ -719,81 +727,81 @@ class _BoardPageState extends State<BoardPage> {
                       children: [
                         Expanded(
                             flex: 2,
-                            child: SingleChildScrollView(
-                                scrollDirection: Axis.vertical,
-                                child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: List.generate(
-                                        widget.turnos.length,
-                                        (index) => Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 10),
-                                              child: AnimatedContainer(
-                                                  height: 55,
-                                                  duration: const Duration(
-                                                      milliseconds: 300),
-                                                  decoration: BoxDecoration(
-                                                    color: t_actual !=
-                                                            widget.turnos[
-                                                                "$index"]
-                                                        ? Theme.of(context)
-                                                            .colorScheme
-                                                            .secondaryContainer
-                                                        : Colors
-                                                            .indigoAccent[100],
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            30),
-                                                  ),
-                                                  child: Row(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.secondaryContainer,
+                              ),
+                              child: Column(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceEvenly,
+                                  children: List.generate(
+                                      widget.turnos.length,
+                                          (index) => AnimatedContainer(
+                                            height: 55,
+                                            duration: const Duration(
+                                                milliseconds: 300),
+                                            decoration: BoxDecoration(
+                                              color: t_actual !=
+                                                  widget.turnos[
+                                                  "$index"]
+                                                  ? Theme.of(context)
+                                                  .colorScheme
+                                                  .secondaryContainer
+                                                  : Colors
+                                                  .indigoAccent[100],
+                                              borderRadius:
+                                              BorderRadius.circular(30),
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                  const EdgeInsets
+                                                      .fromLTRB(
+                                                      0, 3, 10, 3),
+                                                  child: CircularBorderPicture(
+                                                      image: ProfileImage
+                                                          .urls[
+                                                      fotos[index] %
+                                                          9]!),
+                                                ),
+                                                Column(
+                                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                                     children: [
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .fromLTRB(
-                                                                0, 3, 10, 3),
-                                                        child: CircularBorderPicture(
-                                                            image: ProfileImage
-                                                                    .urls[
-                                                                fotos[index] %
-                                                                    9]!),
+                                                      Text(
+                                                        "${widget.turnos[index.toString()]}",
                                                       ),
-                                                      Column(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceEvenly,
-                                                          children: [
-                                                            Text(
-                                                              "${widget.turnos[index.toString()]}",
-                                                            ),
-                                                            !widget.ranked
-                                                                ? Text(
-                                                                    '${widget.num_cartas[index.toString()]} cartas')
-                                                                : Text(
-                                                                    '${puntos[index]} puntos // ${widget.num_cartas[index.toString()]} cartas')
-                                                          ]),
-                                                    ],
-                                                  )),
-                                            ))))),
+                                                      !widget.ranked
+                                                          ? Text(
+                                                          '${widget.num_cartas[index.toString()]} cartas')
+                                                          : Text(
+                                                          '${puntos[index]} puntos // ${widget.num_cartas[index.toString()]} cartas')
+                                                    ]),
+                                              ],
+                                            )),
+                                      ))
+                            ),
+                            ),
                         Expanded(
                           flex: 5,
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.vertical,
-                            child: Column(
-                              children: t
-                                  .map((e) => Column(
-                                        children: [
-                                          CardView(
-                                              ws_partida: widget.ws_partida,
-                                              c: e,
-                                              mano: false,
-                                              idPartida: widget.idPartida,
-                                              MiCodigo: widget.MiCodigo),
-                                        ],
-                                      ))
-                                  .toList(),
+                          child: Container(
+                            margin: const EdgeInsets.only(top: 10),
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.vertical,
+                              child: Column(
+                                children: t.map((e) => Column(
+                                  children: [
+                                    CardView(
+                                        ws_partida: widget.ws_partida,
+                                        c: e,
+                                        mano: false,
+                                        idPartida: widget.idPartida,
+                                        MiCodigo: widget.MiCodigo),
+                                  ],
+                                ))
+                                    .toList(),
+                              ),
                             ),
                           ),
                         ),
@@ -803,9 +811,7 @@ class _BoardPageState extends State<BoardPage> {
                   Container(
                     width: MediaQuery.of(context).size.width,
                     height: 110,
-                    margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
                       gradient: LinearGradient(
                         begin: FractionalOffset.topCenter,
                         end: FractionalOffset.bottomCenter,
@@ -986,7 +992,7 @@ class _BoardPageState extends State<BoardPage> {
                                               );
                                             },
                                             icon: Icon(
-                                              Icons.people_alt,
+                                              Icons.chat,
                                               color: Theme.of(context)
                                                   .colorScheme
                                                   .primary,
@@ -1372,7 +1378,7 @@ class _CardViewState extends State<CardView> {
           final numCards = deck!.asMap().entries.length;
           final width = MediaQuery.of(context).size.width;
           double availableSpace =
-              width - 390 - 70.0; // 70.0 es el ancho de la tarjeta
+              width - 370 - 70.0; // 70.0 es el ancho de la tarjeta
           double spacing = availableSpace / (numCards - 1);
           final int index = entry.key;
           final PlayingCard card = entry.value;
@@ -1381,7 +1387,7 @@ class _CardViewState extends State<CardView> {
                 ? AnimatedPositioned(
                     bottom: selected[index] ? 10 : 0,
                     left: numCards <= 10
-                        ? (width - 390 - (numCards + 1) * 35) / 2 + index * 35.0
+                        ? (width - 370 - (numCards + 1) * 35) / 2 + index * 35.0
                         : index * spacing,
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.ease,
@@ -1403,7 +1409,7 @@ class _CardViewState extends State<CardView> {
                                 )
                               : null, // No shape border when not selected
                         ),
-                      ), // No shape border when not selected
+                      ),
                       onTap: () {
                         AudioManager.toggleSFX(true);
                         setState(() {

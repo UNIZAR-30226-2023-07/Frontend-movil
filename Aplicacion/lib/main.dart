@@ -55,12 +55,12 @@ void main() async {
   await AudioManager.startAudio();
   ProfileImage.prepImages();
   bool res = await _startPage();
-  await SystemChrome.setPreferredOrientations([
+  SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  await NotificationService().initNotification();
-  await NotificationService().showDailyNotificationAtTime(id: 1, title: 'Recordatorio', body: '¡Echate una partida!', hour: 12, minute: 0);
+  NotificationService().initNotification();
+  NotificationService().showDailyNotificationAtTime(id: 1, title: 'Recordatorio', body: '¡Echate una partida!', hour: 12, minute: 0);
 
   runApp(MyApp(res: res));
 }
