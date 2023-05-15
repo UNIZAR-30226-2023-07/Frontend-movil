@@ -64,6 +64,7 @@ class BoardPage extends StatefulWidget {
 List<String> puntos = ["0", "0", "0", "0"];
 class _BoardPageState extends State<BoardPage>{
   bool _load = false;
+  bool _load2 = false;
   late StreamSubscription subscription_p;
   late List<int> fotos = <int>[];
   late IOWebSocketChannel ws_torneo;
@@ -71,7 +72,8 @@ class _BoardPageState extends State<BoardPage>{
   @override
   void initState() {
     super.initState();
-
+    fotos.clear();
+    procesarFotos();
     //Hacer que la pantalla no se pueda apagar
     Wakelock.enable();
 
@@ -79,8 +81,6 @@ class _BoardPageState extends State<BoardPage>{
       DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft,
     ]);
-
-    fotos.clear();
     if(widget.init) {
       AudioManager.toggleBGM(true);
       abrir = 0;
@@ -94,7 +94,6 @@ class _BoardPageState extends State<BoardPage>{
         modo = 0;
       }
     }
-    procesarFotos();
 
 
       widget.ws_partida = IOWebSocketChannel.connect(
@@ -505,7 +504,7 @@ class _BoardPageState extends State<BoardPage>{
                 t.add(temp);
               }
             }
-            if(t_actual != "bot1" && t_actual != "bot2" && t_actual != "bot3" ){
+            if(t_actual == widget.MiCodigo){
               String data = '{"emisor": "${widget.MiCodigo}","tipo": "Mostrar_manos"}';
               widget.ws_partida!.sink.add(data);
             }
@@ -600,6 +599,10 @@ class _BoardPageState extends State<BoardPage>{
         fotos.add(2);
       }
     }
+    _load2 = true;
+    setState(() {
+
+    });
   }
 
   @override
@@ -655,7 +658,7 @@ class _BoardPageState extends State<BoardPage>{
       return true;
     },
     child: Scaffold(
-      body: !_load
+      body: !_load || !_load2
       ? const Center(child: CircularProgressIndicator())
       : Container(
         color: Colors.green.shade900,
@@ -667,40 +670,44 @@ class _BoardPageState extends State<BoardPage>{
                   children: [
                     Expanded(
                       flex: 2,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: List.generate(4, (index) => Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: AnimatedContainer(
-                              height: 60,
-                              duration: const Duration(milliseconds: 300),
-                              decoration: BoxDecoration(
-                                color: t_actual != widget.turnos["$index"] ? Theme.of(context).colorScheme.secondaryContainer : Colors.indigoAccent[100],
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              child: Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(0, 3, 10, 3),
-                                    child: CircularBorderPicture(image: ProfileImage.urls[fotos[index] % 9]!),
-                                  ),
-                                  Column(
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        Text(
-                                          "${widget.turnos[index.toString()]}",
-                                        ),
-                                        !widget.ranked
-                                        ? Text('${widget.num_cartas[index.toString()]} cartas')
-                                        : Text('${puntos[index]} puntos // ${widget.num_cartas[index.toString()]} cartas')
-                                      ]
-                                  ),
-                                ],
-                              )
-                          ),
-                        ))
+                      child: SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: List.generate(widget.turnos.length, (index) => Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: AnimatedContainer(
+                                height: 60,
+                                duration: const Duration(milliseconds: 300),
+                                decoration: BoxDecoration(
+                                  color: t_actual != widget.turnos["$index"] ? Theme.of(context).colorScheme.secondaryContainer : Colors.indigoAccent[100],
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(0, 3, 10, 3),
+                                      child: CircularBorderPicture(image: ProfileImage.urls[fotos[index] % 9]!),
+                                    ),
+                                    Column(
+                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          Text(
+                                            "${widget.turnos[index.toString()]}",
+                                          ),
+                                          !widget.ranked
+                                          ? Text('${widget.num_cartas[index.toString()]} cartas')
+                                          : Text('${puntos[index]} puntos // ${widget.num_cartas[index.toString()]} cartas')
+                                        ]
+                                    ),
+                                  ],
+                                )
+                            ),
+                          )
+                        )
+                       )
                       )
-                    ),
+                      ),
                     Expanded(
                       flex: 5,
                       child: SingleChildScrollView(
