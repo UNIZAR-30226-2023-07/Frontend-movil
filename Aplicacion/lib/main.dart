@@ -51,14 +51,14 @@ Future<bool> _startPage() async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  ProfileImage.prepImages();
   await LocalStorage.configurePrefs();
   await AudioManager.startAudio();
+  ProfileImage.prepImages();
+  bool res = await _startPage();
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  bool res = await _startPage();
   await NotificationService().initNotification();
   await NotificationService().showDailyNotificationAtTime(id: 1, title: 'Recordatorio', body: '¡Echate una partida!', hour: 12, minute: 0);
 

@@ -672,7 +672,7 @@ class _BoardPageState extends State<BoardPage>{
                         children: List.generate(4, (index) => Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           child: AnimatedContainer(
-                              height: 60,
+                              height: 55,
                               duration: const Duration(milliseconds: 300),
                               decoration: BoxDecoration(
                                 color: t_actual != widget.turnos["$index"] ? Theme.of(context).colorScheme.secondaryContainer : Colors.indigoAccent[100],
@@ -721,7 +721,7 @@ class _BoardPageState extends State<BoardPage>{
               Container(
                 width: MediaQuery.of(context).size.width,
                 height: 110,
-                margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+                margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   gradient: LinearGradient(
@@ -824,7 +824,7 @@ class _BoardPageState extends State<BoardPage>{
                               children: [
                                 IconButton(
                                   tooltip: 'Salir de la partida',
-                                  onPressed: ()async {
+                                  onPressed: () async {
                                     if(widget.creador && modo == 1) {
                                       showDialog(
                                           context: context,
