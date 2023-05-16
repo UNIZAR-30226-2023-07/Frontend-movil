@@ -134,7 +134,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ? const Text(
                     'VICTORIA',
                     style: TextStyle(
-                      color: Colors.indigoAccent,
+                      color: Colors.green,
                       fontSize: 18
                     ),
                   )
@@ -148,7 +148,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   subtitle: partidas[index]['Tipo'] == 'amistosa'
                   ? Text('Partida de ${partidas[index]['Creador']} con código: ${partidas[index]['Clave']}')
                   : Text('Torneo de ${partidas[index]['Creador']} con código: ${partidas[index]['Clave']}'),
-                  trailing: Points(value: partidas[index]['Puntos'],),
+                  trailing: partidas[index]['Tipo'] == 'amistosa'
+                  ? const SizedBox()
+                  : Points(value: partidas[index]['Puntos'],),
                 );
               },
               separatorBuilder: (context, index) => const Divider(),

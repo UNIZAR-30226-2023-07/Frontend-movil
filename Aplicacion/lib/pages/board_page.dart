@@ -16,6 +16,7 @@ import '../pages/chat_page.dart';
 import '../services/open_snack_bar.dart';
 import '../services/profile_image.dart';
 import '../widgets/circular_border_picture.dart';
+import '../widgets/points.dart';
 
 const String _IP = '20.160.173.253';
 const String _PUERTO = '3001';
@@ -721,60 +722,59 @@ class _BoardPageState extends State<BoardPage> {
                     child: Row(
                       children: [
                         Expanded(
-                            flex: 2,
-                            child: Padding(
+                          flex: 2,
+                          child: Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 10),
                               child: Column(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.spaceEvenly,
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                   children: List.generate(
-                                      widget.turnos.length,
-                                          (index) => AnimatedContainer(
-                                            height: 50,
-                                            duration: const Duration(
-                                                milliseconds: 300),
-                                            decoration: BoxDecoration(
-                                              color: t_actual !=
-                                                  widget.turnos[
-                                                  "$index"]
-                                                  ? Theme.of(context)
-                                                  .colorScheme
-                                                  .secondaryContainer
-                                                  : Colors
-                                                  .indigoAccent[100],
-                                              borderRadius:
-                                              BorderRadius.circular(30),
+                                    widget.turnos.length,
+                                        (index) => AnimatedContainer(
+                                        height: 50,
+                                        duration: const Duration(
+                                            milliseconds: 300),
+                                        decoration: BoxDecoration(
+                                          color: t_actual !=
+                                              widget.turnos[
+                                              "$index"]
+                                              ? Theme.of(context)
+                                              .colorScheme
+                                              .secondaryContainer
+                                              : Colors
+                                              .indigoAccent[100],
+                                          borderRadius:
+                                          BorderRadius.circular(30),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Padding(
+                                              padding:
+                                              const EdgeInsets
+                                                  .fromLTRB(
+                                                  0, 3, 0, 3),
+                                              child: CircularBorderPicture(
+                                                  image: ProfileImage
+                                                      .urls[
+                                                  fotos[index] %
+                                                      9]!),
                                             ),
-                                            child: Row(
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                  const EdgeInsets
-                                                      .fromLTRB(
-                                                      0, 3, 10, 3),
-                                                  child: CircularBorderPicture(
-                                                      image: ProfileImage
-                                                          .urls[
-                                                      fotos[index] %
-                                                          9]!),
-                                                ),
-                                                Column(
-                                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                    children: [
-                                                      Text(
-                                                        "${widget.turnos[index.toString()]}",
-                                                      ),
-                                                      !widget.ranked
-                                                          ? Text(
-                                                          '${widget.num_cartas[index.toString()]} cartas')
-                                                          : Text(
-                                                          '${puntos[index]} puntos // ${widget.num_cartas[index.toString()]} cartas')
-                                                    ]),
-                                              ],
-                                            )),
-                                      ))
-                            ),
-                            ),
+                                            Column(
+                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text("${widget.turnos[index.toString()]}", style: const TextStyle(fontWeight: FontWeight.bold),),
+                                                  Text('${widget.num_cartas[index.toString()]} cartas')
+                                                ]),
+                                            const Spacer(),
+                                            widget.ranked
+                                                ? Points(value: int.parse(puntos[index]))
+                                                : const SizedBox.shrink(),
+                                            const SizedBox(width: 10,)
+                                          ],
+                                        )),
+                                  ))
+                          ),
+                        ),
                         Expanded(
                           flex: 5,
                           child: SingleChildScrollView(
@@ -808,10 +808,10 @@ class _BoardPageState extends State<BoardPage> {
                         end: FractionalOffset.bottomCenter,
                         colors: [
                           /*
-                      Colors.brown.shade900,
-                      Colors.brown,
-                      Colors.brown.shade900
-                      */
+                        Colors.brown.shade900,
+                        Colors.brown,
+                        Colors.brown.shade900
+                        */
                           Theme.of(context).colorScheme.secondaryContainer,
                           Theme.of(context).colorScheme.tertiaryContainer,
                         ],
@@ -881,7 +881,7 @@ class _BoardPageState extends State<BoardPage> {
                                   cartMano.removeAt(CSelecion[0]);
                                   mostrar_carta.removeAt(CSelecion[0]);
                                   selected[CSelecion[0]] =
-                                      !selected[CSelecion[0]];
+                                  !selected[CSelecion[0]];
                                   CSelecion.clear();
                                   widget.ws_partida!.sink.add(data);
                                 } else {
@@ -897,13 +897,13 @@ class _BoardPageState extends State<BoardPage> {
                             },
                             child: descarte == null
                                 ? Container(
-                                    height: 100,
-                                    width: 70,
-                                  )
+                              height: 100,
+                              width: 70,
+                            )
                                 : PlayingCardView(
-                                    card: descarte!,
-                                    style: setStyle(),
-                                  ),
+                              card: descarte!,
+                              style: setStyle(),
+                            ),
                           ),
                         ),
                         const SizedBox(
@@ -926,71 +926,71 @@ class _BoardPageState extends State<BoardPage> {
                                 abrir == 1
                                     ? const SizedBox.shrink()
                                     : Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          IconButton(
-                                            tooltip: 'Salir de la partida',
-                                            onPressed: () async {
-                                              if (widget.creador && modo == 1) {
-                                                showDialog(
-                                                    context: context,
-                                                    builder: (context) =>
-                                                        PauseGameDialog(
-                                                          codigo:
-                                                              widget.MiCodigo,
-                                                          idPartida:
-                                                              widget.idPartida,
-                                                        ));
-                                              } else {
-                                                openSnackBar(
-                                                    context,
-                                                    const Text(
-                                                        "Solo puede parar una partida su creador en su turno"));
-                                              }
-                                            },
-                                            icon: Icon(
-                                              Icons.exit_to_app,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .primary,
-                                            ),
-                                          ),
-                                          IconButton(
-                                            tooltip: 'Ver reglas',
-                                            onPressed: _openRulesPage,
-                                            icon: Icon(
-                                              Icons.info,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .primary,
-                                            ),
-                                          ),
-                                          IconButton(
-                                            tooltip: 'Mostrar chat',
-                                            onPressed: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        ChatPage(
-                                                          amistad: false,
-                                                          idPartida:
-                                                              widget.idPartida,
-                                                          MiCodigo:
-                                                              widget.MiCodigo,
-                                                        )),
-                                              );
-                                            },
-                                            icon: Icon(
-                                              Icons.chat,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .primary,
-                                            ),
-                                          ),
-                                        ],
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    IconButton(
+                                      tooltip: 'Salir de la partida',
+                                      onPressed: () async {
+                                        if (widget.creador && modo == 1) {
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) =>
+                                                  PauseGameDialog(
+                                                    codigo:
+                                                    widget.MiCodigo,
+                                                    idPartida:
+                                                    widget.idPartida,
+                                                  ));
+                                        } else {
+                                          openSnackBar(
+                                              context,
+                                              const Text(
+                                                  "Solo puede parar una partida su creador en su turno"));
+                                        }
+                                      },
+                                      icon: Icon(
+                                        Icons.exit_to_app,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
                                       ),
+                                    ),
+                                    IconButton(
+                                      tooltip: 'Ver reglas',
+                                      onPressed: _openRulesPage,
+                                      icon: Icon(
+                                        Icons.info,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                      ),
+                                    ),
+                                    IconButton(
+                                      tooltip: 'Mostrar chat',
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ChatPage(
+                                                    amistad: false,
+                                                    idPartida:
+                                                    widget.idPartida,
+                                                    MiCodigo:
+                                                    widget.MiCodigo,
+                                                  )),
+                                        );
+                                      },
+                                      icon: Icon(
+                                        Icons.chat,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                                 CustomFilledButton(
                                   height: 40,
                                   content: abrir == 0
@@ -1035,7 +1035,7 @@ class _BoardPageState extends State<BoardPage> {
                                                   context,
                                                   const Text(
                                                       'Se han eviado las cartas, una vez hayas colocado las suficientes combinaciones '
-                                                      'para abrir pulsa Fin Abrir y recibiras los resultados'));
+                                                          'para abrir pulsa Fin Abrir y recibiras los resultados'));
                                             }
                                             setState(() {});
                                             // Navigator.pushReplacement(context,
@@ -1052,10 +1052,10 @@ class _BoardPageState extends State<BoardPage> {
                                             //             email: widget.email)),);
                                           } else if (abrir == 2) {
                                             String _cartas =
-                                                CSelecion[0].toString();
+                                            CSelecion[0].toString();
                                             for (int i = 1;
-                                                i < CSelecion.length;
-                                                i++) {
+                                            i < CSelecion.length;
+                                            i++) {
                                               _cartas = _cartas +
                                                   "," +
                                                   CSelecion[i].toString();
@@ -1078,36 +1078,36 @@ class _BoardPageState extends State<BoardPage> {
                                 ),
                                 abrir == 1
                                     ? CustomFilledButton(
-                                        height: 40,
-                                        content: const Text('Fin Abrir'),
-                                        onPressed: () {
-                                          setState(() {
-                                            if (modo == 2) {
-                                              List<String> cartas = [];
-                                              for (List<int> i
-                                                  in Indices_abrir) {
-                                                String _cartas =
-                                                    i[0].toString();
-                                                for (int j = 1;
-                                                    j < i.length;
-                                                    j++) {
-                                                  _cartas = _cartas +
-                                                      "," +
-                                                      i[j].toString();
-                                                }
-                                                _cartas = "\"$_cartas\"";
-                                                cartas.add(_cartas);
-                                              }
-                                              abrir = 0;
-                                              print("$cartas");
-                                              String data =
-                                                  '{"emisor": "${widget.MiCodigo}","tipo": "Abrir", "cartas": $cartas}';
-                                              widget.ws_partida!.sink.add(data);
-                                              //mandar peticion a logica de que quiero cerrar
-                                            }
-                                          });
-                                        },
-                                      )
+                                  height: 40,
+                                  content: const Text('Fin Abrir'),
+                                  onPressed: () {
+                                    setState(() {
+                                      if (modo == 2) {
+                                        List<String> cartas = [];
+                                        for (List<int> i
+                                        in Indices_abrir) {
+                                          String _cartas =
+                                          i[0].toString();
+                                          for (int j = 1;
+                                          j < i.length;
+                                          j++) {
+                                            _cartas = _cartas +
+                                                "," +
+                                                i[j].toString();
+                                          }
+                                          _cartas = "\"$_cartas\"";
+                                          cartas.add(_cartas);
+                                        }
+                                        abrir = 0;
+                                        print("$cartas");
+                                        String data =
+                                            '{"emisor": "${widget.MiCodigo}","tipo": "Abrir", "cartas": $cartas}';
+                                        widget.ws_partida!.sink.add(data);
+                                        //mandar peticion a logica de que quiero cerrar
+                                      }
+                                    });
+                                  },
+                                )
                                     : const SizedBox.shrink(),
                               ],
                             )),
