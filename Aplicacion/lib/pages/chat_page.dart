@@ -151,8 +151,7 @@ class _ShowMessagesState extends State<ShowMessages> {
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 0, horizontal: 5),
                                     child: CircularBorderPicture(
-                                        width: 52,
-                                        height: 52,
+                                        size: 52,
                                         image: widget.amistad
                                             ? ProfileImage
                                                 .urls[widget.MiFoto % 9]!
@@ -170,8 +169,7 @@ class _ShowMessagesState extends State<ShowMessages> {
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 0, horizontal: 5),
                                     child: CircularBorderPicture(
-                                        width: 52,
-                                        height: 52,
+                                        size: 52,
                                         image: widget.amistad
                                             ? ProfileImage
                                                 .urls[widget.fotoAmigo % 9]!
@@ -373,8 +371,7 @@ class _ChatPage extends State<ChatPage> {
               ? Row(
                   children: [
                     CircularBorderPicture(
-                        width: 45,
-                        height: 45,
+                        size: 45,
                         image: ProfileImage.getImage(widget.fotoAmigo % 9)),
                     Padding(
                         padding: const EdgeInsets.only(left: 10),

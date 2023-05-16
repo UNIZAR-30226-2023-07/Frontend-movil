@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:untitled/pages/settings_page.dart';
+import 'package:untitled/widgets/points.dart';
 import '../dialogs/close_session_dialog.dart';
 import '../services/http_petitions.dart';
 import '../services/open_dialog.dart';
@@ -17,17 +18,18 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   bool _load = false;
+  Map<String, dynamic>? historial;
 
 
   @override
   void initState() {
     super.initState();
     _getUser();
-    //_getHistorial();
+    _getHistorial();
   }
 
   Future<void> _getHistorial() async {
-    widget.user = await getHistorial(widget.user!["codigo"]);
+    historial = await getHistorial(widget.user!["codigo"]);
     //_load = true;
     setState(() {
       _load = true;
@@ -48,6 +50,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    List<dynamic> partidas;
+    if (historial == null || historial!['partidas'] == null) {
+      partidas = [];
+    } else {
+      partidas = historial!['partidas'];
+    }
     return Scaffold(
       appBar: !widget.editActive
       ? AppBar(
@@ -114,34 +122,37 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
             ),
-            /*ListView.separated(
+            historial!['partidas'] != null
+            ? ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: 20,
-              itemBuilder: (_, index) {
+              itemCount: historial!.length,
+              itemBuilder: (context, index) {
                 return ListTile(
-                  title: const Text(
-                    '1º Puesto',
+                  title: partidas[index]['Ganador'] == true
+                  ? const Text(
+                    'VICTORIA',
                     style: TextStyle(
-                      color: Colors.lightBlue,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                      color: Colors.indigoAccent,
+                      fontSize: 18
+                    ),
+                  )
+                  : const Text(''
+                    'Derrota',
+                    style: TextStyle(
+                      color: Colors.redAccent,
+                      fontSize: 18
                     ),
                   ),
-                  subtitle: const Text('Torneo de fulanito'),
-                  trailing: const Text(
-                    '+100',
-                    style: TextStyle(
-                      color: Colors.lightBlue,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  onTap: (){},
+                  subtitle: partidas[index]['Tipo'] == 'amistosa'
+                  ? Text('Partida de ${partidas[index]['Creador']} con código: ${partidas[index]['Clave']}')
+                  : Text('Torneo de ${partidas[index]['Creador']} con código: ${partidas[index]['Clave']}'),
+                  trailing: Points(value: partidas[index]['Puntos'],),
                 );
               },
               separatorBuilder: (context, index) => const Divider(),
-            ),*/
+            )
+            : const SizedBox()
           ],
         ),
       ),
@@ -164,8 +175,9 @@ class Stat extends StatelessWidget {
           Text(
             title,
             style: TextStyle(
-                color: Colors.blueGrey[700],
-                fontWeight: FontWeight.bold),
+              color: Colors.blueGrey[700],
+              fontWeight: FontWeight.bold,
+            ),
           ),
           Text(
             value,

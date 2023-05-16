@@ -26,7 +26,7 @@ const String _unirPartidaURL = 'http://$_IP:$_PUERTO/api/partida/join';
 const String _iniciarPartidaURL = 'http://$_IP:$_PUERTO/api/partida/iniciar';
 const String _pausarPartidaURL = 'http://$_IP:$_PUERTO/api/partida/pausar';
 const String _borrarCuentaURL = 'http://$_IP:$_PUERTO/api/jugador/del/';
-const String _getHistorialURL = 'http://$_IP:$_PUERTO/api'; //terminar
+const String _getHistorialURL = 'http://$_IP:$_PUERTO/api/jugador/historial/';
 
 class User {
   final String nickname;
@@ -339,7 +339,7 @@ Future<bool> borrarCuenta(String code) async {
 
   //print(response.statusCode);
 
-  Map<String, dynamic>? datos = null;
+  Map<String, dynamic>? datos;
   bool ret = false;
   if (response.statusCode == 200 || response.statusCode == 202) {
     datos = jsonDecode(response.body);
@@ -355,7 +355,7 @@ Future <Map<String, dynamic>?> getHistorial(String codigo) async {
 
   final response = await http.get(Uri.parse(uri));
 
-  //print(response.statusCode);
+  print(response.statusCode);
 
   Map<String, dynamic>? datos;
   if (response.statusCode == 200 || response.statusCode == 202) {

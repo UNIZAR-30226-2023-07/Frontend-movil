@@ -692,11 +692,7 @@ class _BoardPageState extends State<BoardPage> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.black,
-      statusBarBrightness: Brightness.dark,
-      statusBarIconBrightness: Brightness.light,
-    ));
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
     return WillPopScope(
       onWillPop: () async {
         if (widget.creador && modo == 1) {
@@ -721,24 +717,20 @@ class _BoardPageState extends State<BoardPage> {
             : Container(
                 color: Colors.green.shade900,
                 child: Column(children: [
-                  const SizedBox(height: 10),
                   Expanded(
                     child: Row(
                       children: [
                         Expanded(
                             flex: 2,
-                            child: Container(
+                            child: Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 10),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.secondaryContainer,
-                              ),
                               child: Column(
                                   mainAxisAlignment:
                                   MainAxisAlignment.spaceEvenly,
                                   children: List.generate(
                                       widget.turnos.length,
                                           (index) => AnimatedContainer(
-                                            height: 55,
+                                            height: 50,
                                             duration: const Duration(
                                                 milliseconds: 300),
                                             decoration: BoxDecoration(
@@ -785,23 +777,20 @@ class _BoardPageState extends State<BoardPage> {
                             ),
                         Expanded(
                           flex: 5,
-                          child: Container(
-                            margin: const EdgeInsets.only(top: 10),
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.vertical,
-                              child: Column(
-                                children: t.map((e) => Column(
-                                  children: [
-                                    CardView(
-                                        ws_partida: widget.ws_partida,
-                                        c: e,
-                                        mano: false,
-                                        idPartida: widget.idPartida,
-                                        MiCodigo: widget.MiCodigo),
-                                  ],
-                                ))
-                                    .toList(),
-                              ),
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            child: Column(
+                              children: t.map((e) => Column(
+                                children: [
+                                  CardView(
+                                      ws_partida: widget.ws_partida,
+                                      c: e,
+                                      mano: false,
+                                      idPartida: widget.idPartida,
+                                      MiCodigo: widget.MiCodigo),
+                                ],
+                              ))
+                                  .toList(),
                             ),
                           ),
                         ),
@@ -809,9 +798,11 @@ class _BoardPageState extends State<BoardPage> {
                     ),
                   ),
                   Container(
+                    margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
                     width: MediaQuery.of(context).size.width,
                     height: 110,
                     decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
                       gradient: LinearGradient(
                         begin: FractionalOffset.topCenter,
                         end: FractionalOffset.bottomCenter,
@@ -1378,7 +1369,7 @@ class _CardViewState extends State<CardView> {
           final numCards = deck!.asMap().entries.length;
           final width = MediaQuery.of(context).size.width;
           double availableSpace =
-              width - 370 - 70.0; // 70.0 es el ancho de la tarjeta
+              width - 390 - 70.0; // 70.0 es el ancho de la tarjeta
           double spacing = availableSpace / (numCards - 1);
           final int index = entry.key;
           final PlayingCard card = entry.value;
@@ -1387,7 +1378,7 @@ class _CardViewState extends State<CardView> {
                 ? AnimatedPositioned(
                     bottom: selected[index] ? 10 : 0,
                     left: numCards <= 10
-                        ? (width - 370 - (numCards + 1) * 35) / 2 + index * 35.0
+                        ? (width - 390 - (numCards + 1) * 35) / 2 + index * 35.0
                         : index * spacing,
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.ease,

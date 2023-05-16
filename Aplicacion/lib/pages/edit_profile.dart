@@ -232,8 +232,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
                   child: Center(
                       child: CircularBorderPicture(
                     image: ProfileImage.urls[index]!,
-                    width: 100,
-                    height: 100,
+                    size: 100,
                   )),
                 );
               }),
