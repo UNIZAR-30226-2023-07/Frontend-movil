@@ -124,9 +124,10 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             historial!['partidas'] != null
             ? ListView.separated(
+              reverse: true,
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: historial!.length,
+              itemCount: partidas.length,
               itemBuilder: (context, index) {
                 return ListTile(
                   title: partidas[index]['Ganador'] == true
@@ -138,7 +139,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   )
                   : const Text(''
-                    'Derrota',
+                    'DERROTA',
                     style: TextStyle(
                       color: Colors.redAccent,
                       fontSize: 18
