@@ -131,6 +131,7 @@ class _EditProfilePageState extends State<EditProfilePage>{
             padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 30),
             child: Text(
               descrp,
+              textAlign: TextAlign.center,
               style: const TextStyle(
                 color: Colors.blueGrey,
                 fontSize: 18,
@@ -307,7 +308,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
                       ),
                       TextField(
                         controller: _descripcion,
-                        keyboardType: TextInputType.text,
+                        keyboardType: TextInputType.multiline,
                         maxLength: 200,
                         maxLines: 5,
                         minLines: 5,
@@ -329,11 +330,12 @@ class _ProfilePictureState extends State<ProfilePicture> {
                 content: const Text('Guardar cambios'),
                 onPressed: () {
                   if(_changesKey.currentState!.validate()) {
+                    final safeContent = _descripcion.text.replaceAll('\n', '\\n');
                     openDialog(
                         context,
                         SaveChangesDialog(
                             nombre: _nombre.text,
-                            desc: _descripcion.text == "" ? " " : _descripcion.text,
+                            desc: safeContent == "" ? " " : safeContent,
                             foto: ProfileImage.getIndex(),
                             email: widget.email,
                             codigo: widget.codigo));
