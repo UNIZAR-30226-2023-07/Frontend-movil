@@ -245,6 +245,7 @@ class _LoginState extends State<Login> {
                                         if (user != null) {
                                           final bool res = await login(user.email, '1234');
                                           if (!res) {
+                                            GoogleSignInApi().signOut();
                                             setState(() {
                                               _emailError = 'El email o la contraseña no coinciden';
                                               _passwordError = 'El email o la contraseña no coinciden';

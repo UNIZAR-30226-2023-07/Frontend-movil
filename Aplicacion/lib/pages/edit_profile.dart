@@ -95,37 +95,25 @@ class _EditProfilePageState extends State<EditProfilePage>{
               ),
             ],
           ),
+          Text(
+            widget.nombre,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.primary,
+              fontSize: 25,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              RichText(
-                text: TextSpan(
-                  text: widget.nombre,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  children: <TextSpan>[
-                    TextSpan(
-                      text: '#${widget.codigo}',
-                      style: const TextStyle(
-                        color: Colors.grey,
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
+              Text(
+                '#${widget.codigo}',
+                style: const TextStyle(
+                  color: Colors.grey,
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              /*
-              IconButton(
-                  onPressed: () {
-                    FlutterClipboard.copy(widget.codigo);
-                  },
-                  icon: const Icon(Icons.copy)
-              ),
-              */
               (widget.editActive)
               ? Tooltip(
                 message: 'Compartir código de amigo',

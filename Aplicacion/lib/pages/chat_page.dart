@@ -423,8 +423,9 @@ class _ChatPage extends State<ChatPage> {
                               ///msg.add(_textController.text);
 
                               if (widget.amistad) {
+                                final safeContent = _textController.text.replaceAll('\n', '\\n');
                                 final data =
-                                    '{"Emisor": "${widget.MiCodigo}","Receptor": "${widget.codigo2}", "Contenido": "${_textController.text}"}';
+                                    '{"Emisor": "${widget.MiCodigo}","Receptor": "${widget.codigo2}", "Contenido": "$safeContent"}';
                                 wb_amistad.sink.add(data);
                                 lista_mensajes.add(jsonDecode(data));
                                 _getMensajes();
@@ -442,6 +443,8 @@ class _ChatPage extends State<ChatPage> {
                                 wb_amistad.sink.add(data);
                                 _textController.clear();
                               }
+                            } else {
+                              print('no va');
                             }
                           },
                           child: const Icon(Icons.send),

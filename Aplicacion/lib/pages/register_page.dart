@@ -261,8 +261,12 @@ class _RegisterPageState extends State<RegisterPage> {
                                       onPressed: () async {
                                         final user = await GoogleSignInApi().signIn();
                                         if (user != null) {
-                                          final bool res = await register(user.displayName!, user.email, '1234');
+                                          List<String>? names = user.displayName?.split(' ');
+                                          String? firstName = names?.first;
+                                          print(firstName);
+                                          final bool res = await register(firstName!, user.email, '1234');
                                           if (!res) {
+                                            GoogleSignInApi().signOut();
                                             setState(() {
                                               _emailError = 'El email o la contraseña no coinciden';
                                               _passwordError = 'El email o la contraseña no coinciden';
