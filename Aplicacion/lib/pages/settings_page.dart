@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:untitled/services/audio_manager.dart';
 import 'package:untitled/services/open_dialog.dart';
 import 'package:untitled/widgets/custom_filled_button.dart';
-import '../dialogs/delete_account.dart';
+import '../dialogs/delete_account_dialog.dart';
 import '../themes/theme_manager.dart';
 import '../services/local_storage.dart';
 
